@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Duel Stars Online</title>
+<title>Crossfire Online v. 10</title>
 <style>
   html,body{margin:0;overflow:hidden;background:#05070d;font-family:Arial,sans-serif;user-select:none;color:white}
   button,input,select{font-family:inherit}
@@ -36,21 +36,20 @@
   #winnerSub{font-size:22px;font-weight:900;color:#fff;text-shadow:0 2px 8px #000}
   #codeStatus{min-height:20px;font-size:13px;font-weight:800;color:#ffe66d;margin-top:8px}
   #codeInput{text-transform:none;letter-spacing:1px}
-  #lobbyBanner{position:fixed;left:50%;top:120px;transform:translateX(-50%);z-index:11;padding:12px 22px;border-radius:16px;border:2px solid rgba(255,255,255,.24);background:linear-gradient(90deg,rgba(138,70,255,.92),rgba(0,229,255,.92));color:#fff;font-size:28px;font-weight:1000;letter-spacing:2px;text-shadow:0 2px 5px #000;box-shadow:0 0 22px rgba(0,229,255,.22);display:none;pointer-events:none}
-</style>
+  </style>
 </head>
 <body>
-<div id="hud"><div><b>Duel Stars Online</b></div><div>Status: <b id="statusText">Connecting</b></div><div>Ammo: <b id="ammoText">∞</b></div><div>Score: <b id="scoreText">0 - 0</b></div><div>Shards: <b id="shards">0</b></div><div class="tiny">WASD move · Shift sprint · Ctrl while sprinting to slide · Mouse look · Click attack · Right-click scope/special · R reload · Scroll switch weapons · E interact · Tab closes menus</div></div>
+<div id="hud"><div><b>Crossfire Online</b></div><div>Status: <b id="statusText">Connecting</b></div><div>Ammo: <b id="ammoText">∞</b></div><div>Score: <b id="scoreText">0 - 0</b></div><div>Shards: <b id="shards">0</b></div><div class="tiny">WASD move · Shift sprint · Ctrl while sprinting to slide · Mouse look · Click attack · Right-click scope/special · R reload · Scroll switch weapons · E interact · Tab closes menus</div></div>
 <div id="topHealth"><div id="healthLabel">HEALTH</div><div id="healthBarWrap"><div id="healthBarFill"></div><span id="healthBarText">150 / 150</span></div></div>
 <div id="winnerOverlay"><div id="winnerBox"><div id="winnerTitle">ROUND WON</div><div id="winnerSub">Blue won the round</div></div></div>
 <div id="msg"></div><div id="hint"></div><div id="crosshair"></div><div id="scopeOverlay"></div><div id="clickToLock">Click game to control camera</div>
 <div id="playerList"><b>Online Lobby</b><div id="playersOnline" class="tiny">Loading...</div></div>
-<div id="lobbyBanner">DAGGERS R HERE</div>
+
 <div id="weaponBar"></div><button id="settingsBtn">Settings</button>
 <div id="settingsPanel" class="panel"><div class="row between"><div><h2>Duel Stars</h2><p>Weapons and player customization. Press Tab to close.</p></div><button class="btn danger" id="closeSettings">×</button></div><div class="tabs"><button class="tab on" data-tab="weapons">Weapons</button><button class="tab" data-tab="me">Me</button></div><div id="weaponsTab"></div><div id="meTab" style="display:none"></div></div>
 <div id="shopPanel" class="panel"><div class="row between"><div><h2>Shop Basket</h2><p>Buy locked weapons with shards.</p></div><button class="btn danger" id="closeShop">×</button></div><div id="shopItems"></div></div>
 <div id="codePanel" class="panel"><div class="row between"><div><h2>Gift Code</h2><p>Enter a code for a reward. Each code can only be redeemed once per player.</p></div><button class="btn danger" id="closeCode">×</button></div><div class="card"><label>Code</label><input id="codeInput" placeholder="example: &lt;xoxo&gt; or rivals"><button class="btn primary" id="redeemCodeBtn">Redeem</button><div id="codeStatus"></div></div></div>
-<div id="loadoutPanel"><h1>Duel Stars Loadout</h1><p>Choose exactly one weapon from each category before the round starts.</p><div class="loadGrid" id="loadoutGrid"></div><button class="btn primary" id="readyBtn" style="font-size:20px;padding:14px 30px">Ready</button><p id="readyStatus">Waiting for players...</p></div>
+<div id="loadoutPanel"><h1>Crossfire Loadout</h1><p>Choose exactly one weapon from each category before the round starts.</p><div class="loadGrid" id="loadoutGrid"></div><button class="btn primary" id="readyBtn" style="font-size:20px;padding:14px 30px">Ready</button><p id="readyStatus">Waiting for players...</p></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -78,7 +77,7 @@ const RPG_INDEX=11;
 const KATANA_INDEX=12;
 const KATANA_BLOCK_DURATION=4;
 const KATANA_BLOCK_COOLDOWN=5;
-const GIFT_CODES={xoxo:{shards:20,message:"+20 shards"},rivals:{shards:20,message:"+20 shards"}};
+const GIFT_CODES={xoxo:{shards:20,message:"+20 shards"},rivals:{shards:20,message:"+20 shards"},goat:{shards:20,message:"+20 shards"}};
 const weapons=[
 {name:"Assault Rifle",short:"AR",type:"primary",damage:16,cooldown:95,speed:95,spread:.018,pellets:1,head:1.6,scope:1.35,magSize:30,reserveSize:120,reloadTime:2000},
 {name:"Handgun",short:"Handgun",type:"secondary",damage:32,cooldown:310,speed:86,spread:.014,pellets:1,head:1.7,magSize:12,reserveSize:60,reloadTime:1600},
