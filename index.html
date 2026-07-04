@@ -26,7 +26,7 @@
   .slot small{display:block;color:rgba(255,255,255,.65);font-size:11px;margin-top:2px}.active{border-color:#00e5ff;box-shadow:0 0 16px rgba(0,229,255,.55);color:#8cf7ff}
   #settingsBtn{position:fixed;right:18px;bottom:18px;z-index:10;border:2px solid rgba(140,247,255,.55);border-radius:999px;padding:12px 18px;background:rgba(0,229,255,.92);color:#061018;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 0 20px rgba(0,229,255,.28)}
   .panel{display:none;position:fixed;right:18px;top:14px;width:380px;max-height:calc(100vh - 36px);overflow:auto;z-index:12;background:linear-gradient(180deg,rgba(12,18,34,.97),rgba(3,7,14,.95));border:2px solid rgba(140,247,255,.35);border-radius:18px;padding:14px;box-shadow:0 0 30px rgba(0,229,255,.18)}
-  .panel h2,.panel h3{margin:0;color:#8cf7ff}.panel p{color:rgba(255,255,255,.74);font-size:13px;margin:5px 0 10px}.row{display:flex;gap:8px;align-items:center}.between{justify-content:space-between}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.shopTabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.shopTab.on{background:#00e5ff;color:#061018}.tab,.btn,.card button{border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer;background:rgba(255,255,255,.1);color:white}.tab.on,.btn.primary{background:#00e5ff;color:#061018}.btn.danger{background:#ff4b4b;color:white}.card{border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.06);padding:10px;margin:8px 0}.weaponGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.weaponCard{border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(0,0,0,.22);padding:9px}.weaponCard b{color:#fff}.weaponCard small{display:block;color:#a9dfe8;margin-top:3px}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:rgba(255,255,255,.12);font-size:12px;margin-top:5px}.locked{opacity:.55}.equipped{outline:2px solid #00e5ff}.colorPick{display:flex;gap:8px;flex-wrap:wrap}.colorSwatch{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.35);cursor:pointer}.colorSwatch.sel{border-color:#fff;box-shadow:0 0 12px #fff}input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(0,0,0,.25);color:white;padding:10px;font-weight:700}
+  .panel h2,.panel h3{margin:0;color:#8cf7ff}.panel p{color:rgba(255,255,255,.74);font-size:13px;margin:5px 0 10px}.row{display:flex;gap:8px;align-items:center}.between{justify-content:space-between}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.shopTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.shopTab.on{background:#00e5ff;color:#061018}.tab,.btn,.card button{border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer;background:rgba(255,255,255,.1);color:white}.tab.on,.btn.primary{background:#00e5ff;color:#061018}.btn.danger{background:#ff4b4b;color:white}.card{border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.06);padding:10px;margin:8px 0}.weaponGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.weaponCard{border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(0,0,0,.22);padding:9px}.weaponCard b{color:#fff}.weaponCard small{display:block;color:#a9dfe8;margin-top:3px}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:rgba(255,255,255,.12);font-size:12px;margin-top:5px}.locked{opacity:.55}.equipped{outline:2px solid #00e5ff}.colorPick{display:flex;gap:8px;flex-wrap:wrap}.colorSwatch{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.35);cursor:pointer}.colorSwatch.sel{border-color:#fff;box-shadow:0 0 12px #fff}input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(0,0,0,.25);color:white;padding:10px;font-weight:700}
 
   #modeVotePanel,#mapVotePanel{display:none;position:fixed;inset:0;z-index:21;background:radial-gradient(circle at center,rgba(40,10,16,.95),rgba(0,0,0,.98));padding:30px;box-sizing:border-box;overflow:auto;text-align:center}
   #modeVotePanel h1,#mapVotePanel h1{margin:8px 0 6px;font-size:44px;letter-spacing:3px;text-transform:uppercase;color:#fff;text-shadow:0 0 18px rgba(255,18,35,.55),0 4px 10px #000}
@@ -86,7 +86,7 @@
 
 <div id="weaponBar"></div><button id="settingsBtn">Settings</button>
 <div id="settingsPanel" class="panel"><div class="row between"><div><h2>Crossfire Online</h2><p>Settings. Press Tab to close.</p></div><button class="btn danger" id="closeSettings">×</button></div><div class="tabs"><button class="tab on" data-tab="weapons">Weapons</button><button class="tab" data-tab="me">Me</button></div><div id="weaponsTab"></div><div id="meTab" style="display:none"></div></div>
-<div id="shopPanel" class="panel"><div class="row between"><div><h2>Shop Basket</h2><p>Buy weapons </p></div><button class="btn danger" id="closeShop">×</button></div><div class="shopTabs"><button class="btn shopTab on" id="shopWeaponsBtn" onclick="setShopTab('weapons')">Weapons</button><button class="btn shopTab" id="shopSkinsBtn" onclick="setShopTab('skins')">Buy Skins</button></div><div id="shopItems"></div><div id="shopSkins" style="display:none"></div></div>
+<div id="shopPanel" class="panel"><div class="row between"><div><h2>Shop Basket</h2><p>Buy weapons, skins, and emotes.</p></div><button class="btn danger" id="closeShop">×</button></div><div class="shopTabs"><button class="btn shopTab on" id="shopWeaponsBtn" onclick="setShopTab('weapons')">Weapons</button><button class="btn shopTab" id="shopSkinsBtn" onclick="setShopTab('skins')">Buy Skins</button><button class="btn shopTab" id="shopEmotesBtn" onclick="setShopTab('emotes')">Emotes</button></div><div id="shopItems"></div><div id="shopSkins" style="display:none"></div><div id="shopEmotes" style="display:none"></div></div>
 <div id="codePanel" class="panel"><div class="row between"><div><h2>Gift Code</h2><p>Enter code.</p></div><button class="btn danger" id="closeCode">×</button></div><div class="card"><label>Code</label><input id="codeInput" placeholder="example: &lt;xoxo&gt; or rivals"><button class="btn primary" id="redeemCodeBtn">Redeem</button><div id="codeStatus"></div></div></div>
 <div id="updatesPanel" class="panel">
   <div class="row between">
@@ -137,6 +137,16 @@ let unlocked=JSON.parse(localStorage.getItem("duelStarsUnlocked")||"[true,true,t
 while(unlocked.length<10) unlocked.push(false);
 let loadout=JSON.parse(localStorage.getItem("duelStarsLoadout")||'{"primary":0,"secondary":1,"melee":2,"support":3}');
 let currentWeapon=loadout.primary;
+const EMOTES={
+ dance:{name:'Victory Dance',cost:10,key:'z',duration:5200,desc:'A goofy win dance.'},
+ floss:{name:'Side Shuffle',cost:12,key:'x',duration:5200,desc:'Fast side-to-side dance.'},
+ laugh:{name:'Laugh Taunt',cost:9,key:'c',duration:3600,desc:'Laugh at the other player.'},
+ loser:{name:'L Dance',cost:14,key:'v',duration:4500,desc:'Make a giant L pose and dance.'},
+ facepalm:{name:'Facepalm',cost:8,key:'b',duration:3200,desc:'For when they miss badly.'},
+ violin:{name:'Tiny Violin',cost:13,key:'n',duration:4200,desc:'Mock them with a sad tiny violin.'}
+};
+let ownedEmotes=JSON.parse(localStorage.getItem("duelStarsOwnedEmotes")||"[]");
+let activeEmote={id:null,start:0,until:0};
 let ownedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsWeaponSkins")||'{"arTrueGold":false,"crimsonPrimary":false,"voidSecondary":false,"frostMelee":false,"plasmaSupport":false}');
 let equippedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsEquippedSkins")||'{"assaultRifle":null,"primary":null,"secondary":null,"melee":null,"support":null}');
 if(ownedWeaponSkins.arTrueGold==null)ownedWeaponSkins.arTrueGold=false;
@@ -193,7 +203,7 @@ const player={pos:new THREE.Vector3(0,1.7,LOBBY_Z),vel:new THREE.Vector3(),healt
 const STAND_HEIGHT=1.7,SLIDE_HEIGHT=1.05,SLIDE_SPEED=19.5,SLIDE_DURATION=.68,SLIDE_COOLDOWN=.85;
 const walls=[];let playBluePad,playRedPad,shopBasket,presentBox,blackboard,secretLaserSpot,weaponView;
 const $=id=>document.getElementById(id);const msg=$('msg'),hint=$('hint');
-function saveLocal(){localStorage.setItem("duelStarsShards",shards);localStorage.setItem("duelStarsName",playerName);localStorage.setItem("duelStarsSkin",skinColor);localStorage.setItem("duelStarsAvatar",JSON.stringify(avatar));localStorage.setItem("duelStarsUnlocked",JSON.stringify(unlocked));localStorage.setItem("duelStarsLoadout",JSON.stringify(loadout));localStorage.setItem("duelStarsWeaponSkins",JSON.stringify(ownedWeaponSkins));localStorage.setItem("duelStarsEquippedSkins",JSON.stringify(equippedWeaponSkins));}
+function saveLocal(){localStorage.setItem("duelStarsShards",shards);localStorage.setItem("duelStarsName",playerName);localStorage.setItem("duelStarsSkin",skinColor);localStorage.setItem("duelStarsAvatar",JSON.stringify(avatar));localStorage.setItem("duelStarsUnlocked",JSON.stringify(unlocked));localStorage.setItem("duelStarsLoadout",JSON.stringify(loadout));localStorage.setItem("duelStarsWeaponSkins",JSON.stringify(ownedWeaponSkins));localStorage.setItem("duelStarsEquippedSkins",JSON.stringify(equippedWeaponSkins));localStorage.setItem("duelStarsOwnedEmotes",JSON.stringify(ownedEmotes));}
 function hasTrueGoldAR(){return !!ownedWeaponSkins.arTrueGold;}
 function isGoldARActive(){return equippedWeaponSkins.assaultRifle==='truegold'&&hasTrueGoldAR();}
 function hasVoidSecondarySkin(){return !!ownedWeaponSkins.voidSecondary;}
@@ -225,6 +235,30 @@ function renderTypeSkinControls(type){
  return `<div class="skinBox"><small>${type} skin set: <b>${s.label}</b></small><br><button onclick="toggleSkinSet('${type}')">${equipped?'Unequip '+s.label+' Set':'Equip '+s.label+' Set'}</button></div>`;
 }
 function renderSecondarySkinControls(){return renderTypeSkinControls('secondary');}
+function hasEmote(id){return ownedEmotes.includes(id);}
+function renderOwnedEmotes(){
+ const ids=Object.keys(EMOTES).filter(hasEmote);
+ if(!ids.length)return '<p>No emotes owned yet. Buy them in the shop.</p><button class="btn primary" onclick="openShop()">Open Shop</button>';
+ return `<div class="weaponGrid">${ids.map(id=>`<button class="btn" onclick="playEmote('${id}')">${EMOTES[id].key.toUpperCase()} · ${EMOTES[id].name}</button>`).join('')}</div><p>Hotkeys work in lobby or match: ${ids.map(id=>EMOTES[id].key.toUpperCase()).join(', ')}</p>`;
+}
+function renderShopEmotes(){
+ return Object.entries(EMOTES).map(([id,e])=>{
+  const owned=hasEmote(id);
+  return `<div class="card"><div class="row between"><div><b>${e.name}</b><p>${e.desc}</p><small>${owned?'Owned':'Cost: '+e.cost+' shards'} · Hotkey ${e.key.toUpperCase()}</small></div>${owned?`<button class="btn primary" onclick="playEmote('${id}')">Use</button>`:`<button class="btn primary" onclick="buyEmote('${id}')">Buy</button>`}</div></div>`;
+ }).join('');
+}
+function playEmote(id){
+ const e=EMOTES[id];if(!e)return;
+ if(!hasEmote(id))return setMessage('Buy '+e.name+' first',900);
+ const now=Date.now();activeEmote={id,start:now,until:now+e.duration};
+ if(myRef)myRef.update({emote:id,emoteStart:now,emoteUntil:now+e.duration});
+ setMessage(e.name+'!',700);
+}
+function stopEmote(){
+ if(activeEmote.id&&myRef)myRef.update({emote:null,emoteStart:null,emoteUntil:null});
+ activeEmote={id:null,start:0,until:0};
+}
+window.playEmote=playEmote;
 function setMessage(t,ms=1200){msg.textContent=t;if(ms)setTimeout(()=>{if(msg.textContent===t)msg.textContent=""},ms)}
 function getRoundSpawn(side){const spawns=MAP_SPAWNS[activeMap]||STARTS;return (spawns[side]||STARTS[side]||STARTS.blue).clone();}
 function spawnForRound(){if(!mySide)return;slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;player.height=STAND_HEIGHT;player.pos.copy(getRoundSpawn(mySide));player.vel.set(0,0,0);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;stopADS();}
@@ -909,6 +943,56 @@ function makePlayerMesh(color,name,avatarData){
  group.userData={torso,head,leftArm,rightArm,leftHand,rightHand,leftLeg,rightLeg,gun,bomb,accessory,label,name:name||'Player',avatar:{...a}};
  scene.add(group);return group;
 }
+function resetAvatarPose(m){
+ const u=m.userData;
+ if(u.torso){u.torso.position.set(0,1.18,0);u.torso.rotation.set(0,0,0);}
+ if(u.head){u.head.position.set(0,1.94,0);u.head.rotation.set(0,0,0);}
+ if(u.leftArm){u.leftArm.position.set(-.62,1.18,0);u.leftArm.rotation.set(0,0,0);}
+ if(u.rightArm){u.rightArm.position.set(.62,1.18,0);u.rightArm.rotation.set(0,0,0);}
+ if(u.leftHand){u.leftHand.position.set(-.62,.63,0);u.leftHand.rotation.set(0,0,0);}
+ if(u.rightHand){u.rightHand.position.set(.62,.63,0);u.rightHand.rotation.set(0,0,0);}
+ if(u.leftLeg){u.leftLeg.position.set(-.22,.38,0);u.leftLeg.rotation.set(0,0,0);}
+ if(u.rightLeg){u.rightLeg.position.set(.22,.38,0);u.rightLeg.rotation.set(0,0,0);}
+ if(u.gun){u.gun.position.set(.63,1.12,-.32);u.gun.rotation.set(.03,0,0);u.gun.visible=true;}
+}
+function applyEmotePose(m,id,start=0,until=0){
+ resetAvatarPose(m);
+ if(!id||Date.now()>Number(until||0))return;
+ const u=m.userData,t=(Date.now()-Number(start||Date.now()))/1000;
+ const s=Math.sin(t*7),c=Math.cos(t*7),slow=Math.sin(t*3.2);
+ if(id==='dance'){
+  u.torso.position.y=1.18+Math.abs(s)*.08;
+  u.head.rotation.z=slow*.18;
+  u.leftArm.rotation.z=1.15+s*.55;u.rightArm.rotation.z=-1.15-s*.55;
+  u.leftHand.position.y=.8+Math.abs(c)*.18;u.rightHand.position.y=.8+Math.abs(s)*.18;
+  u.leftLeg.rotation.x=slow*.25;u.rightLeg.rotation.x=-slow*.25;
+ }else if(id==='floss'){
+  u.torso.rotation.y=slow*.35;u.head.rotation.y=-slow*.28;
+  u.leftArm.position.z=-.25*s;u.rightArm.position.z=.25*s;
+  u.leftArm.rotation.z=.6;u.rightArm.rotation.z=.6;
+  u.leftHand.position.z=-.35*s;u.rightHand.position.z=.35*s;
+  u.leftLeg.rotation.z=-slow*.18;u.rightLeg.rotation.z=slow*.18;
+ }else if(id==='laugh'){
+  u.head.rotation.x=.18+Math.abs(s)*.12;
+  u.torso.rotation.x=-.08*Math.abs(s);
+  u.leftArm.rotation.x=-1.15;u.leftArm.rotation.z=.25;u.leftHand.position.set(-.35,1.55,-.28);
+  u.rightArm.rotation.z=-.75+slow*.25;
+ }else if(id==='loser'){
+  u.leftArm.rotation.z=1.55;u.leftArm.rotation.x=-.2;u.leftHand.position.set(-.62,1.82,-.05);
+  u.rightArm.rotation.z=-.05;u.rightArm.rotation.x=-1.45;u.rightHand.position.set(.28,1.94,-.18);
+  u.head.rotation.z=slow*.2;u.torso.position.y=1.18+Math.abs(s)*.06;
+  u.leftLeg.rotation.x=slow*.25;u.rightLeg.rotation.x=-slow*.25;
+ }else if(id==='facepalm'){
+  u.head.rotation.x=.25;u.head.rotation.z=slow*.08;
+  u.rightArm.rotation.x=-1.55;u.rightArm.rotation.z=-.25;u.rightHand.position.set(.13,1.95,-.34);
+  u.leftArm.rotation.z=.55;
+ }else if(id==='violin'){
+  u.gun.visible=false;
+  u.leftArm.rotation.x=-1.25;u.leftArm.rotation.z=.45;u.leftHand.position.set(-.25,1.45,-.25);
+  u.rightArm.rotation.x=-1.3;u.rightArm.rotation.z=-.35+Math.sin(t*12)*.35;u.rightHand.position.set(.25,1.45,-.25+.12*Math.sin(t*12));
+  u.head.rotation.z=.18+slow*.08;u.torso.rotation.y=slow*.15;
+ }
+}
 function applyAvatarToMesh(m,p){
  const a=getAvatarData(p);
  if(!m.userData.avatar)m.userData.avatar={};
@@ -937,6 +1021,7 @@ function updateRemoteMeshes(){
   m.position.lerp(target,.35);
   m.rotation.y=Number(p.yaw)||0;
   applyAvatarToMesh(m,p);
+  applyEmotePose(m,p.emote,p.emoteStart,p.emoteUntil);
   updateRemoteWeaponModel(m,p);
   if(m.userData.bomb){m.userData.bomb.visible=!!(currentMatch&&currentMatch.gameType==='tag'&&p.matchId===matchId&&p.side===currentMatch.tagger);m.userData.bomb.rotation.y+=.08;}
   if((p.name||'Player')!==m.userData.name){m.remove(m.userData.label);m.userData.label.material.map.dispose();m.userData.label.material.dispose();m.userData.label=makeNameSprite(p.name);m.add(m.userData.label);m.userData.name=p.name||'Player';}
@@ -1894,7 +1979,8 @@ function renderSettings(){
  <div class="card"><h3>Shirt Color</h3>${swatches('shirt',avatar.shirt)}</div>
  <div class="card"><h3>Pants Color</h3>${swatches('pants',avatar.pants)}</div>
  <div class="card"><h3>Head / Hands Color</h3>${swatches('head',avatar.head)}</div>
- <div class="card"><h3>Accessory</h3><div class="weaponGrid">${['none','cap','crown','horns','headphones'].map(a=>`<button class="${avatar.accessory===a?'btn primary':'btn'}" onclick="setAccessory('${a}')">${a==='none'?'None':a[0].toUpperCase()+a.slice(1)}</button>`).join('')}</div></div>`;
+ <div class="card"><h3>Accessory</h3><div class="weaponGrid">${['none','cap','crown','horns','headphones'].map(a=>`<button class="${avatar.accessory===a?'btn primary':'btn'}" onclick="setAccessory('${a}')">${a==='none'?'None':a[0].toUpperCase()+a.slice(1)}</button>`).join('')}</div></div>
+ <div class="card"><h3>Emotes</h3><p>Use these to dance or taunt. You have to buy them first.</p>${renderOwnedEmotes()}</div>`;
 }
 
 window.equipWeapon=function(i){let t=weapons[i].type;if(!unlocked[i])return;loadout[t]=i;saveLocal();renderSettings();renderWeaponBar();setMessage('Equipped '+weapons[i].name,650)};
@@ -1925,12 +2011,13 @@ function redeemCode(){
  if(authUid){const ref=db.ref('duelStars/redeems/'+code+'/'+authUid);ref.transaction(cur=>cur||{claimed:true,player:uid||authUid,time:Date.now()}).then(res=>{if(res.committed){giveReward()}else{$('codeStatus').textContent='You already redeemed this code.';markCodeRedeemed(code)}}).catch(e=>{$('codeStatus').textContent='Code error: '+e.message;});}else giveReward()
 }
 function setShopTab(tab){
- const weaponsTab=$('shopItems'),skinsTab=$('shopSkins'),wBtn=$('shopWeaponsBtn'),sBtn=$('shopSkinsBtn');
- if(!weaponsTab||!skinsTab)return;
- const skins=tab==='skins';
- weaponsTab.style.display=skins?'none':'block';
+ const weaponsTab=$('shopItems'),skinsTab=$('shopSkins'),emotesTab=$('shopEmotes'),wBtn=$('shopWeaponsBtn'),sBtn=$('shopSkinsBtn'),eBtn=$('shopEmotesBtn');
+ if(!weaponsTab||!skinsTab||!emotesTab)return;
+ const skins=tab==='skins',emotes=tab==='emotes';
+ weaponsTab.style.display=(!skins&&!emotes)?'block':'none';
  skinsTab.style.display=skins?'block':'none';
- wBtn?.classList.toggle('on',!skins);sBtn?.classList.toggle('on',skins);
+ emotesTab.style.display=emotes?'block':'none';
+ wBtn?.classList.toggle('on',!skins&&!emotes);sBtn?.classList.toggle('on',skins);eBtn?.classList.toggle('on',emotes);
 }
 function renderShop(){
  let items=weapons.map((w,i)=>w.cost&&!unlocked[i]?`<div class="card"><div class="row between"><div><b>${w.name}</b><p>${w.type} · ${w.cost} shards</p></div><button class="btn primary" onclick="buyWeapon(${i})">Buy</button></div></div>`:'').join('');
@@ -1940,7 +2027,9 @@ function renderShop(){
   return `<div class="card"><div class="row between"><div><b>${s.name}</b><p>${s.desc}</p><small>${owned?(equipped?'Owned · Equipped':'Owned'):'Cost: '+SKIN_SET_COST+' shards'}</small></div>${owned?`<button class="btn primary" onclick="toggleSkinSet('${type}')">${equipped?'Unequip':'Equip'}</button>`:`<button class="btn primary" onclick="buySkinSet('${type}')">Buy</button>`}</div></div>`;
  }).join('');
  $('shopSkins').innerHTML=cards;
+ const emoteEl=$('shopEmotes');if(emoteEl)emoteEl.innerHTML=renderShopEmotes();
 }
+window.buyEmote=function(id){const e=EMOTES[id];if(!e)return;if(hasEmote(id))return setMessage('Already owned',700);if(shards<e.cost)return setMessage('Need '+e.cost+' shards',900);shards-=e.cost;ownedEmotes.push(id);saveLocal();$('shards').textContent=shards;renderShop();renderSettings();setMessage('Bought '+e.name,900)};
 window.buyWeapon=function(i){let w=weapons[i];if(unlocked[i])return setMessage('Already owned',700);if(shards<w.cost)return setMessage('Need '+w.cost+' shards',900);shards-=w.cost;unlocked[i]=true;saveLocal();$('shards').textContent=shards;renderShop();renderSettings();setMessage('Bought '+w.name,900)};
 window.buySkinSet=function(type){const s=SKIN_SETS[type];if(!s)return;if(hasSkinSet(type))return setMessage(s.label+' set already owned',800);if(shards<SKIN_SET_COST)return setMessage('Need '+SKIN_SET_COST+' shards',900);shards-=SKIN_SET_COST;ownedWeaponSkins[s.key]=true;equippedWeaponSkins[s.equip]=s.value;saveLocal();$('shards').textContent=shards;renderShop();renderSettings();if(weapons[currentWeapon]?.type===type)rebuildWeaponModel();setMessage('Bought '+s.name,1100)};
 window.buyVoidSecondarySkin=function(){buySkinSet('secondary')};
@@ -2041,9 +2130,10 @@ function networkTick(t){
   joinMatch(remotePlayers[uid].matchId,remotePlayers[uid].side);
   return;
  }
+ if(activeEmote.id&&Date.now()>activeEmote.until)stopEmote();
  if(t-lastNet>50){
   lastNet=t;
-  let data={authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,katanaBlocking:(katanaState.blocking&&currentWeapon===KATANA_INDEX&&roundPhase==='playing'),updated:firebase.database.ServerValue.TIMESTAMP};
+  let data={authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,emote:activeEmote.id,emoteStart:activeEmote.start||null,emoteUntil:activeEmote.until||null,katanaBlocking:(katanaState.blocking&&currentWeapon===KATANA_INDEX&&roundPhase==='playing'),updated:firebase.database.ServerValue.TIMESTAMP};
   if(matchId){data.mode='match';data.matchId=matchId;data.side=mySide||null;}
   else if(gameMode==='lobby'){data.mode='lobby';data.matchId=null;data.side=null;}
   myRef.update(data);
@@ -2109,8 +2199,10 @@ document.addEventListener('keydown',e=>{
     }
     return;
   }
-  if(['w','a','s','d',' ','shift','ctrl','e','tab','1','2','3','4','r'].includes(k))e.preventDefault();
+  if(['w','a','s','d',' ','shift','ctrl','e','tab','1','2','3','4','r','z','x','c','v','b','n'].includes(k))e.preventDefault();
   if(['w','a','s','d',' ','shift','ctrl'].includes(k)) keys[k]=true;
+  const emoteId=Object.keys(EMOTES).find(id=>EMOTES[id].key===k);
+  if(emoteId){playEmote(emoteId);return;}
   if(k==='r')reloadCurrent();
   if(k==='tab'){
     keys={};
