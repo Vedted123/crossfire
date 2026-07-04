@@ -131,6 +131,8 @@ const MODE_DESCS={duel:'Classic first-to-5 duel with weapon loadouts.',tag:'Two-
 let shards=Number(localStorage.getItem("duelStarsShards")||0);
 let playerName=localStorage.getItem("duelStarsName")||("Player"+Math.floor(Math.random()*999));
 let skinColor=localStorage.getItem("duelStarsSkin")||"#4fd3ff";
+let avatar=JSON.parse(localStorage.getItem("duelStarsAvatar")||'{"shirt":"#4fd3ff","pants":"#111827","head":"#ffcc99","accessory":"none"}');
+if(!avatar.shirt)avatar.shirt=skinColor;if(!avatar.pants)avatar.pants="#111827";if(!avatar.head)avatar.head="#ffcc99";if(!avatar.accessory)avatar.accessory="none";
 let unlocked=JSON.parse(localStorage.getItem("duelStarsUnlocked")||"[true,true,true,true,false,false,false,false,false,false,true]");
 while(unlocked.length<10) unlocked.push(false);
 let loadout=JSON.parse(localStorage.getItem("duelStarsLoadout")||'{"primary":0,"secondary":1,"melee":2,"support":3}');
@@ -191,7 +193,7 @@ const player={pos:new THREE.Vector3(0,1.7,LOBBY_Z),vel:new THREE.Vector3(),healt
 const STAND_HEIGHT=1.7,SLIDE_HEIGHT=1.05,SLIDE_SPEED=19.5,SLIDE_DURATION=.68,SLIDE_COOLDOWN=.85;
 const walls=[];let playBluePad,playRedPad,shopBasket,presentBox,blackboard,secretLaserSpot,weaponView;
 const $=id=>document.getElementById(id);const msg=$('msg'),hint=$('hint');
-function saveLocal(){localStorage.setItem("duelStarsShards",shards);localStorage.setItem("duelStarsName",playerName);localStorage.setItem("duelStarsSkin",skinColor);localStorage.setItem("duelStarsUnlocked",JSON.stringify(unlocked));localStorage.setItem("duelStarsLoadout",JSON.stringify(loadout));localStorage.setItem("duelStarsWeaponSkins",JSON.stringify(ownedWeaponSkins));localStorage.setItem("duelStarsEquippedSkins",JSON.stringify(equippedWeaponSkins));}
+function saveLocal(){localStorage.setItem("duelStarsShards",shards);localStorage.setItem("duelStarsName",playerName);localStorage.setItem("duelStarsSkin",skinColor);localStorage.setItem("duelStarsAvatar",JSON.stringify(avatar));localStorage.setItem("duelStarsUnlocked",JSON.stringify(unlocked));localStorage.setItem("duelStarsLoadout",JSON.stringify(loadout));localStorage.setItem("duelStarsWeaponSkins",JSON.stringify(ownedWeaponSkins));localStorage.setItem("duelStarsEquippedSkins",JSON.stringify(equippedWeaponSkins));}
 function hasTrueGoldAR(){return !!ownedWeaponSkins.arTrueGold;}
 function isGoldARActive(){return equippedWeaponSkins.assaultRifle==='truegold'&&hasTrueGoldAR();}
 function hasVoidSecondarySkin(){return !!ownedWeaponSkins.voidSecondary;}
@@ -698,10 +700,113 @@ function rebuildWeaponModel(){
 }
 function makeNameSprite(name){const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,512,128);ctx.font='bold 48px Arial';ctx.textAlign='center';ctx.textBaseline='middle';const safe=(name||'Player').slice(0,18);const w=Math.min(470,ctx.measureText(safe).width+46);ctx.fillStyle='rgba(0,0,0,.62)';ctx.strokeStyle='rgba(140,247,255,.95)';ctx.lineWidth=4;roundRect(ctx,(512-w)/2,25,w,78,22);ctx.fill();ctx.stroke();ctx.fillStyle='white';ctx.fillText(safe,256,64);const tex=new THREE.CanvasTexture(canvas);tex.needsUpdate=true;const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));spr.scale.set(2.7,.68,1);spr.position.y=2.7;spr.userData.labelName=safe;return spr;}
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
-function makePlayerMesh(color,name){const group=new THREE.Group();const body=new THREE.Mesh(new THREE.CapsuleGeometry(.45,1.05,6,12),new THREE.MeshStandardMaterial({color:new THREE.Color(color||'#4fd3ff')}));body.position.y=1;body.castShadow=true;group.add(body);const head=new THREE.Mesh(new THREE.SphereGeometry(.32,16,16),new THREE.MeshStandardMaterial({color:0xffc3aa}));head.position.y=1.9;head.castShadow=true;group.add(head);const gun=new THREE.Mesh(new THREE.BoxGeometry(.18,.18,.9),new THREE.MeshStandardMaterial({color:0x111111,metalness:.18,roughness:.45}));gun.position.set(.35,1.35,.25);group.add(gun);const bomb=new THREE.Group();const bombBody=new THREE.Mesh(new THREE.SphereGeometry(.18,16,16),new THREE.MeshStandardMaterial({color:0x050505,roughness:.42,metalness:.18}));const fuse=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.22,8),new THREE.MeshBasicMaterial({color:0xffcc55}));fuse.position.set(.08,.18,0);fuse.rotation.z=-.45;const spark=new THREE.Mesh(new THREE.SphereGeometry(.045,10,10),new THREE.MeshBasicMaterial({color:0xff5500}));spark.position.set(.15,.29,0);bomb.add(bombBody,fuse,spark);bomb.position.y=2.45;bomb.visible=false;group.add(bomb);const label=makeNameSprite(name);group.add(label);group.userData.body=body;group.userData.gun=gun;group.userData.bomb=bomb;group.userData.label=label;group.userData.name=name||'Player';scene.add(group);return group;}
-function updateRemoteMeshes(){for(const id in remotePlayers){if(id===uid)continue;let p=remotePlayers[id];if(!remoteMeshes[id])remoteMeshes[id]=makePlayerMesh(p.color,p.name);let m=remoteMeshes[id];let visible=p.mode==='lobby'||p.matchId===matchId;m.visible=visible;let groundY=Math.max(0,(Number(p.y)||1.7)-1.7);let target=new THREE.Vector3(Number(p.x)||0,groundY,Number(p.z)||LOBBY_Z);m.position.lerp(target,.35);m.rotation.y=Number(p.yaw)||0;m.userData.body.material.color.set(p.color||'#4fd3ff');if(m.userData.gun){const gold=(Number(p.weapon)===0&&!!p.goldArSkin);const voidSec=!!p.voidSecondarySkin&&weapons[Number(p.weapon)]?.type==='secondary';const skin=String(p.skinSet||'');const skinColor=skin==='Crimson'?0xc1121f:skin==='Frost'?0x8cf7ff:skin==='Plasma'?0x00ff8a:(voidSec?0x6d2cff:0x111111);m.userData.gun.material.color.set(gold?0xe0b73c:skinColor);m.userData.gun.material.metalness=gold?.55:((voidSec||skin)?.35:.18);m.userData.gun.material.roughness=gold?.22:((voidSec||skin)?.24:.45);}if(m.userData.bomb){m.userData.bomb.visible=!!(currentMatch&&currentMatch.gameType==='tag'&&p.matchId===matchId&&p.side===currentMatch.tagger);m.userData.bomb.rotation.y+=.08;}if((p.name||'Player')!==m.userData.name){m.remove(m.userData.label);m.userData.label.material.map.dispose();m.userData.label.material.dispose();m.userData.label=makeNameSprite(p.name);m.add(m.userData.label);m.userData.name=p.name||'Player';}if(m.userData.label){m.userData.label.visible=visible;m.userData.label.quaternion.copy(camera.quaternion);}}
+function getAvatarData(p={}){
+ return {
+  shirt:p.shirtColor||p.avatar?.shirt||p.color||'#4fd3ff',
+  pants:p.pantsColor||p.avatar?.pants||'#111827',
+  head:p.headColor||p.avatar?.head||'#ffcc99',
+  accessory:p.accessory||p.avatar?.accessory||'none'
+ };
+}
+function makeBlockPart(w,h,d,color,x,y,z){
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:new THREE.Color(color),roughness:.55,metalness:.02}));
+ mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;return mesh;
+}
+function makeAvatarAccessory(type){
+ const g=new THREE.Group();g.userData.type=type||'none';
+ if(type==='cap'){
+  const cap=new THREE.Mesh(new THREE.BoxGeometry(.72,.18,.72),new THREE.MeshStandardMaterial({color:0x111827,roughness:.42}));
+  cap.position.y=.18;
+  const brim=new THREE.Mesh(new THREE.BoxGeometry(.5,.07,.26),new THREE.MeshStandardMaterial({color:0x05070d,roughness:.42}));
+  brim.position.set(0,.1,-.42);
+  g.add(cap,brim);
+ }else if(type==='crown'){
+  const band=new THREE.Mesh(new THREE.BoxGeometry(.72,.16,.72),new THREE.MeshStandardMaterial({color:0xffd54a,metalness:.25,roughness:.25}));
+  band.position.y=.08;g.add(band);
+  for(let i=-1;i<=1;i++){const spike=new THREE.Mesh(new THREE.ConeGeometry(.11,.28,4),new THREE.MeshStandardMaterial({color:0xfff09a,metalness:.18,roughness:.2}));spike.position.set(i*.22,.3,-.22);g.add(spike);}
+ }else if(type==='horns'){
+  const mat=new THREE.MeshStandardMaterial({color:0xf1f1f1,roughness:.3});
+  const l=new THREE.Mesh(new THREE.ConeGeometry(.11,.38,10),mat);l.position.set(-.32,.22,0);l.rotation.z=.45;
+  const r=l.clone();r.position.x=.32;r.rotation.z=-.45;g.add(l,r);
+ }else if(type==='headphones'){
+  const band=new THREE.Mesh(new THREE.TorusGeometry(.42,.035,8,28),new THREE.MeshStandardMaterial({color:0x05070d,roughness:.35}));
+  band.rotation.x=Math.PI/2;band.position.y=.1;
+  const l=new THREE.Mesh(new THREE.BoxGeometry(.16,.3,.16),new THREE.MeshStandardMaterial({color:0x111827,roughness:.35}));l.position.set(-.43,-.08,0);
+  const r=l.clone();r.position.x=.43;g.add(band,l,r);
+ }
+ return g;
+}
+function makePlayerMesh(color,name,avatarData){
+ const a=avatarData||{shirt:color||'#4fd3ff',pants:'#111827',head:'#ffcc99',accessory:'none'};
+ const group=new THREE.Group();
+
+ const torso=makeBlockPart(.82,.92,.42,a.shirt,0,1.18,0);
+ const head=makeBlockPart(.58,.58,.58,a.head,0,1.94,0);
+ const leftArm=makeBlockPart(.28,.86,.34,a.shirt,-.62,1.18,0);
+ const rightArm=makeBlockPart(.28,.86,.34,a.shirt,.62,1.18,0);
+ const leftHand=makeBlockPart(.28,.22,.34,a.head,-.62,.63,0);
+ const rightHand=makeBlockPart(.28,.22,.34,a.head,.62,.63,0);
+ const leftLeg=makeBlockPart(.34,.82,.36,a.pants,-.22,.38,0);
+ const rightLeg=makeBlockPart(.34,.82,.36,a.pants,.22,.38,0);
+
+ const faceMat=new THREE.MeshBasicMaterial({color:0x111111});
+ const eyeL=new THREE.Mesh(new THREE.BoxGeometry(.07,.07,.012),faceMat);eyeL.position.set(-.13,2.02,-.296);
+ const eyeR=eyeL.clone();eyeR.position.x=.13;
+ const smile=new THREE.Mesh(new THREE.BoxGeometry(.22,.035,.012),faceMat);smile.position.set(0,1.85,-.297);
+
+ const gun=new THREE.Mesh(new THREE.BoxGeometry(.18,.18,.9),new THREE.MeshStandardMaterial({color:0x111111,metalness:.18,roughness:.45}));
+ gun.position.set(.55,1.12,-.33);gun.rotation.x=.05;
+
+ const bomb=new THREE.Group();
+ const bombBody=new THREE.Mesh(new THREE.SphereGeometry(.18,16,16),new THREE.MeshStandardMaterial({color:0x050505,roughness:.42,metalness:.18}));
+ const fuse=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.22,8),new THREE.MeshBasicMaterial({color:0xffcc55}));
+ fuse.position.set(.08,.18,0);fuse.rotation.z=-.45;
+ const spark=new THREE.Mesh(new THREE.SphereGeometry(.045,10,10),new THREE.MeshBasicMaterial({color:0xff5500}));
+ spark.position.set(.15,.29,0);bomb.add(bombBody,fuse,spark);bomb.position.y=2.65;bomb.visible=false;
+
+ const accessory=makeAvatarAccessory(a.accessory);accessory.position.y=2.28;
+
+ group.add(torso,head,leftArm,rightArm,leftHand,rightHand,leftLeg,rightLeg,eyeL,eyeR,smile,gun,bomb,accessory);
+ const label=makeNameSprite(name);group.add(label);
+ group.userData={torso,head,leftArm,rightArm,leftHand,rightHand,leftLeg,rightLeg,gun,bomb,accessory,label,name:name||'Player',avatar:{...a}};
+ scene.add(group);return group;
+}
+function applyAvatarToMesh(m,p){
+ const a=getAvatarData(p);
+ if(!m.userData.avatar)m.userData.avatar={};
+ const old=m.userData.avatar;
+ if(old.shirt!==a.shirt){[m.userData.torso,m.userData.leftArm,m.userData.rightArm].forEach(part=>part&&part.material.color.set(a.shirt));}
+ if(old.pants!==a.pants){[m.userData.leftLeg,m.userData.rightLeg].forEach(part=>part&&part.material.color.set(a.pants));}
+ if(old.head!==a.head){[m.userData.head,m.userData.leftHand,m.userData.rightHand].forEach(part=>part&&part.material.color.set(a.head));}
+ if(old.accessory!==a.accessory){
+  if(m.userData.accessory)m.remove(m.userData.accessory);
+  m.userData.accessory=makeAvatarAccessory(a.accessory);
+  m.userData.accessory.position.y=2.28;
+  m.add(m.userData.accessory);
+ }
+ m.userData.avatar={...a};
+}
+function updateRemoteMeshes(){
+ for(const id in remotePlayers){
+  if(id===uid)continue;
+  let p=remotePlayers[id];
+  if(!remoteMeshes[id])remoteMeshes[id]=makePlayerMesh(p.color,p.name,getAvatarData(p));
+  let m=remoteMeshes[id];
+  let visible=p.mode==='lobby'||p.matchId===matchId;
+  m.visible=visible;
+  let groundY=Math.max(0,(Number(p.y)||1.7)-1.7);
+  let target=new THREE.Vector3(Number(p.x)||0,groundY,Number(p.z)||LOBBY_Z);
+  m.position.lerp(target,.35);
+  m.rotation.y=Number(p.yaw)||0;
+  applyAvatarToMesh(m,p);
+  if(m.userData.gun){const gold=(Number(p.weapon)===0&&!!p.goldArSkin);const voidSec=!!p.voidSecondarySkin&&weapons[Number(p.weapon)]?.type==='secondary';const skin=String(p.skinSet||'');const skinColor=skin==='Crimson'?0xc1121f:skin==='Frost'?0x8cf7ff:skin==='Plasma'?0x00ff8a:(voidSec?0x6d2cff:0x111111);m.userData.gun.material.color.set(gold?0xe0b73c:skinColor);m.userData.gun.material.metalness=gold?.55:((voidSec||skin)?.35:.18);m.userData.gun.material.roughness=gold?.22:((voidSec||skin)?.24:.45);}
+  if(m.userData.bomb){m.userData.bomb.visible=!!(currentMatch&&currentMatch.gameType==='tag'&&p.matchId===matchId&&p.side===currentMatch.tagger);m.userData.bomb.rotation.y+=.08;}
+  if((p.name||'Player')!==m.userData.name){m.remove(m.userData.label);m.userData.label.material.map.dispose();m.userData.label.material.dispose();m.userData.label=makeNameSprite(p.name);m.add(m.userData.label);m.userData.name=p.name||'Player';}
+  if(m.userData.label){m.userData.label.visible=visible;m.userData.label.quaternion.copy(camera.quaternion);}
+ }
  for(const id in remoteMeshes){if(!remotePlayers[id]){let m=remoteMeshes[id];if(m.userData.label){m.userData.label.material.map.dispose();m.userData.label.material.dispose();}scene.remove(m);delete remoteMeshes[id];}}
 }
+
 function getRemoteOpponent(){if(!remoteId||!remotePlayers[remoteId])return null;return remotePlayers[remoteId];}
 function normalizePlayers(raw){
  const now=Date.now();
@@ -728,7 +833,7 @@ function cleanupOwnGhosts(){
   if(Object.keys(updates).length)db.ref().update(updates);
  }).catch(()=>{});
 }
-function authStart(){auth.signInAnonymously().then(res=>{authUid=res.user.uid;uid=authUid+'_'+tabId;myRef=db.ref('duelStars/players/'+uid);myRef.onDisconnect().remove();myRef.set({authUid:authUid,tabId:tabId,name:playerName,color:skinColor,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,mode:'lobby',matchId:null,weapon:currentWeapon,goldArSkin:isGoldARActive(),updated:firebase.database.ServerValue.TIMESTAMP});cleanupOwnGhosts();listenOnline();listenMyAssignment();listenQueue();$('statusText').textContent='Lobby';setMessage('Connected as '+playerName,650);}).catch(e=>{console.error(e);$('statusText').textContent='Firebase error';setMessage('Firebase auth error: '+e.message,0)});}
+function authStart(){auth.signInAnonymously().then(res=>{authUid=res.user.uid;uid=authUid+'_'+tabId;myRef=db.ref('duelStars/players/'+uid);myRef.onDisconnect().remove();myRef.set({authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,mode:'lobby',matchId:null,weapon:currentWeapon,goldArSkin:isGoldARActive(),updated:firebase.database.ServerValue.TIMESTAMP});cleanupOwnGhosts();listenOnline();listenMyAssignment();listenQueue();$('statusText').textContent='Lobby';setMessage('Connected as '+playerName,650);}).catch(e=>{console.error(e);$('statusText').textContent='Firebase error';setMessage('Firebase auth error: '+e.message,0)});}
 function listenOnline(){db.ref('duelStars/players').on('value',snap=>{remotePlayers=normalizePlayers(snap.val()||{});let list=Object.entries(remotePlayers).filter(([id,p])=>p.mode==='lobby').map(([id,p])=>`<div>${p.name||'Player'} ${id===uid?'(you)':''}</div>`).join('')||'<div>No players</div>';$('playersOnline').innerHTML=list;updateRemoteMeshes();});}
 function listenMyAssignment(){
  if(!myRef)return;
@@ -1645,7 +1750,13 @@ function renderSettings(){
  weapons.forEach((w,i)=>{if(!w.tagOnly)byType[w.type].push([w,i])});
  const actionFor=(w,i)=>unlocked[i]?`<button onclick="equipWeapon(${i})">Equip</button>`:(i===LASER_INDEX?`<button disabled>Find secret corner</button>`:`<button onclick="openShop()">Shop</button>`);
  tabW.innerHTML=Object.entries(byType).map(([type,arr])=>`<div class="card"><h3>${type.toUpperCase()}</h3><p>You can equip only one ${type} at a time.</p>${SKIN_SETS[type]?renderTypeSkinControls(type):''}<div class="weaponGrid">${arr.map(([w,i])=>`<div class="weaponCard ${!unlocked[i]?'locked':''} ${loadout[type]===i?'equipped':''}"><b>${w.name}</b><small>${unlocked[i]?'Owned':(i===LASER_INDEX?'Secret locked':'Locked')} ${w.cost?'· '+w.cost+' shards':''}</small><span class="pill">${type}</span><br>${actionFor(w,i)}${i===0?renderAssaultRifleSkinControls():''}</div>`).join('')}</div></div>`).join('');
- $('meTab').innerHTML=`<div class="card"><h3>Me</h3><p>Other players see this in the online lobby.</p><label>Display name</label><input id="nameInput" value="${playerName.replace(/"/g,'&quot;')}"><button class="btn primary" onclick="saveName()">Save Name</button></div><div class="card"><h3>Skin Color</h3><div class="colorPick">${['#4fd3ff','#ff4b4b','#66ff99','#ffe66d','#b46cff','#ff8c33','#ffffff','#111111'].map(c=>`<div class="colorSwatch ${skinColor===c?'sel':''}" style="background:${c}" onclick="setSkin('${c}')"></div>`).join('')}</div></div>`;
+ const colors=['#4fd3ff','#ff4b4b','#66ff99','#ffe66d','#b46cff','#ff8c33','#ffffff','#111111','#c1121f','#8cf7ff','#ffcc99','#6d2cff'];
+ const swatches=(part,val)=>`<div class="colorPick">${colors.map(c=>`<div class="colorSwatch ${val===c?'sel':''}" title="${c}" style="background:${c}" onclick="setAvatarColor('${part}','${c}')"></div>`).join('')}</div>`;
+ $('meTab').innerHTML=`<div class="card"><h3>Me</h3><p>Other players now see a blocky Roblox-style avatar.</p><label>Display name</label><input id="nameInput" value="${playerName.replace(/"/g,'&quot;')}"><button class="btn primary" onclick="saveName()">Save Name</button></div>
+ <div class="card"><h3>Shirt Color</h3>${swatches('shirt',avatar.shirt)}</div>
+ <div class="card"><h3>Pants Color</h3>${swatches('pants',avatar.pants)}</div>
+ <div class="card"><h3>Head / Hands Color</h3>${swatches('head',avatar.head)}</div>
+ <div class="card"><h3>Accessory</h3><div class="weaponGrid">${['none','cap','crown','horns','headphones'].map(a=>`<button class="${avatar.accessory===a?'btn primary':'btn'}" onclick="setAccessory('${a}')">${a==='none'?'None':a[0].toUpperCase()+a.slice(1)}</button>`).join('')}</div></div>`;
 }
 
 window.equipWeapon=function(i){let t=weapons[i].type;if(!unlocked[i])return;loadout[t]=i;saveLocal();renderSettings();renderWeaponBar();setMessage('Equipped '+weapons[i].name,650)};
@@ -1659,7 +1770,9 @@ window.toggleSkinSet=function(type){
  renderSettings();renderWeaponBar();
  setMessage(equippedWeaponSkins[s.equip]===s.value?s.label+' set equipped':s.label+' set unequipped',900);
 };
-window.toggleVoidSecondarySkin=function(){toggleSkinSet('secondary')};window.saveName=function(){playerName=$('nameInput').value.trim().slice(0,18)||'Player';saveLocal();if(myRef)myRef.update({name:playerName});renderSettings()};window.setSkin=function(c){skinColor=c;saveLocal();if(myRef)myRef.update({color:skinColor});renderSettings()};
+window.toggleVoidSecondarySkin=function(){toggleSkinSet('secondary')};window.saveName=function(){playerName=$('nameInput').value.trim().slice(0,18)||'Player';saveLocal();if(myRef)myRef.update({name:playerName});renderSettings()};window.setSkin=function(c){skinColor=c;avatar.shirt=c;saveLocal();if(myRef)myRef.update({color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
+window.setAvatarColor=function(part,c){if(!['shirt','pants','head'].includes(part))return;avatar[part]=c;if(part==='shirt')skinColor=c;saveLocal();if(myRef)myRef.update({color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
+window.setAccessory=function(a){avatar.accessory=a;saveLocal();if(myRef)myRef.update({shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
 function openSettings(){menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('settingsPanel').style.display='block';$('shopPanel').style.display='none';renderSettings();document.exitPointerLock?.()}function closeSettings(){menuOpen=false;$('settingsPanel').style.display='none'}function openShop(){shopOpen=true;menuOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('shopPanel').style.display='block';$('settingsPanel').style.display='none';setShopTab('weapons');renderShop();document.exitPointerLock?.()}function closeShop(){shopOpen=false;$('shopPanel').style.display='none'}
 function openCodePanel(){menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('settingsPanel').style.display='none';$('shopPanel').style.display='none';$('codePanel').style.display='block';$('codeStatus').textContent='';$('codeInput').value='';document.exitPointerLock?.()}function closeCodePanel(){menuOpen=false;$('codePanel').style.display='none'}
 function cleanCode(raw){return String(raw||'').trim().toLowerCase().replace(/[<>\s]/g,'');}
@@ -1792,7 +1905,7 @@ function networkTick(t){
  }
  if(t-lastNet>50){
   lastNet=t;
-  let data={authUid:authUid,tabId:tabId,name:playerName,color:skinColor,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,katanaBlocking:(katanaState.blocking&&currentWeapon===KATANA_INDEX&&roundPhase==='playing'),updated:firebase.database.ServerValue.TIMESTAMP};
+  let data={authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,katanaBlocking:(katanaState.blocking&&currentWeapon===KATANA_INDEX&&roundPhase==='playing'),updated:firebase.database.ServerValue.TIMESTAMP};
   if(matchId){data.mode='match';data.matchId=matchId;data.side=mySide||null;}
   else if(gameMode==='lobby'){data.mode='lobby';data.matchId=null;data.side=null;}
   myRef.update(data);
