@@ -78,16 +78,16 @@
   </div>
 </div>
 
-<div id="hud"><div><b>Crossfire Online</b></div><div>Status: <b id="statusText">Connecting</b></div><div>Ammo: <b id="ammoText">∞</b></div><div>Score: <b id="scoreText">0 - 0</b></div><div>Shards: <b id="shards">0</b></div><div class="tiny">WASD move · Shift sprint · Ctrl while sprinting to slide · Mouse look · Click attack · Right-click scope/special · R reload · Scroll switch weapons · E interact · Tab closes menus</div></div>
+<div id="hud"><div><b>Crossfire Online</b></div><div>Status: <b id="statusText">Connecting</b></div><div>Ammo: <b id="ammoText">∞</b></div><div>Score: <b id="scoreText">0 - 0</b></div><div>Shards: <b id="shards">0</b></div><div class="tiny">Same controls as rivals</div></div>
 <div id="topHealth"><div id="healthLabel">HEALTH</div><div id="healthBarWrap"><div id="healthBarFill"></div><span id="healthBarText">150 / 150</span></div></div>
 <div id="winnerOverlay"><div id="winnerBox"><div id="winnerTitle">ROUND WON</div><div id="winnerSub">Blue won the round</div></div></div>
-<div id="msg"></div><div id="hint"></div><div id="crosshair"></div><div id="scopeOverlay"></div><div id="clickToLock">Click game to control camera</div>
+<div id="msg"></div><div id="hint"></div><div id="crosshair"></div><div id="scopeOverlay"></div><div id="clickToLock">Click to shoot</div>
 <div id="playerList"><b>Online Lobby</b><div id="playersOnline" class="tiny">Loading...</div></div>
 
 <div id="weaponBar"></div><button id="settingsBtn">Settings</button>
-<div id="settingsPanel" class="panel"><div class="row between"><div><h2>Duel Stars</h2><p>Weapons and player customization. Press Tab to close.</p></div><button class="btn danger" id="closeSettings">×</button></div><div class="tabs"><button class="tab on" data-tab="weapons">Weapons</button><button class="tab" data-tab="me">Me</button></div><div id="weaponsTab"></div><div id="meTab" style="display:none"></div></div>
-<div id="shopPanel" class="panel"><div class="row between"><div><h2>Shop Basket</h2><p>Buy weapons and skin sets with shards.</p></div><button class="btn danger" id="closeShop">×</button></div><div class="shopTabs"><button class="btn shopTab on" id="shopWeaponsBtn" onclick="setShopTab('weapons')">Weapons</button><button class="btn shopTab" id="shopSkinsBtn" onclick="setShopTab('skins')">Buy Skins</button></div><div id="shopItems"></div><div id="shopSkins" style="display:none"></div></div>
-<div id="codePanel" class="panel"><div class="row between"><div><h2>Gift Code</h2><p>Enter a code for a reward. Each code can only be redeemed once per player.</p></div><button class="btn danger" id="closeCode">×</button></div><div class="card"><label>Code</label><input id="codeInput" placeholder="example: &lt;xoxo&gt; or rivals"><button class="btn primary" id="redeemCodeBtn">Redeem</button><div id="codeStatus"></div></div></div>
+<div id="settingsPanel" class="panel"><div class="row between"><div><h2>Crossfire Online</h2><p>Crossfire Menu Press Tab to close.</p></div><button class="btn danger" id="closeSettings">×</button></div><div class="tabs"><button class="tab on" data-tab="weapons">Weapons</button><button class="tab" data-tab="me">Me</button></div><div id="weaponsTab"></div><div id="meTab" style="display:none"></div></div>
+<div id="shopPanel" class="panel"><div class="row between"><div><h2>Shop Basket</h2><p>Buy weapons with shards.</p></div><button class="btn danger" id="closeShop">×</button></div><div class="shopTabs"><button class="btn shopTab on" id="shopWeaponsBtn" onclick="setShopTab('weapons')">Weapons</button><button class="btn shopTab" id="shopSkinsBtn" onclick="setShopTab('skins')">Buy Skins</button></div><div id="shopItems"></div><div id="shopSkins" style="display:none"></div></div>
+<div id="codePanel" class="panel"><div class="row between"><div><h2>Gift Code</h2><p>Enter a code for shards.</p></div><button class="btn danger" id="closeCode">×</button></div><div class="card"><label>Code</label><input id="codeInput" placeholder="example: &lt;xoxo&gt; or rivals"><button class="btn primary" id="redeemCodeBtn">Redeem</button><div id="codeStatus"></div></div></div>
 <div id="updatesPanel" class="panel">
   <div class="row between">
     <div><h2>Update Blackboard</h2><p>The latest changes are posted here.</p></div>
@@ -97,18 +97,15 @@
     <span class="patchTag">LATEST PATCH</span>
     <h3>What just changed</h3>
     <ul>
-      <li>Added the lobby blackboard for update notes.</li>
-      <li>Added the secret-unlock Laser Gun secondary.</li>
-      <li>Laser Gun rapidly fires glowing laser bullets.</li>
-      <li>Blade models were rebuilt with connected flat triangle blades.</li>
-      <li>True Gold Assault Rifle skin is still available from the gift code.</li>
-      <li>Disaster Island added as a new survival gamemode.</li>
+      <li>Added skin sets</li>
+      <li>sivansh is bad at rivals</li>
+      <li>Katana, knife, and daggers models were changed</li>
     </ul>
   </div>
 </div>
-<div id="modeVotePanel"><h1>Choose Gamemode</h1><p>Vote for the gamemode. Majority wins. Ties pick a random tied gamemode.</p><div class="mapGrid" id="modeVoteGrid"></div><p class="voteStatus" id="modeVoteStatus">Waiting for votes...</p></div>
-<div id="mapVotePanel"><h1>Choose Map</h1><p>Vote for the arena. Majority wins. Ties pick a random tied map.</p><div class="mapGrid" id="mapVoteGrid"></div><p class="voteStatus" id="mapVoteStatus">Waiting for votes...</p></div>
-<div id="loadoutPanel"><h1>Loadout</h1><p>Choose exactly one weapon from each category before the round starts.</p><div class="loadGrid" id="loadoutGrid"></div><button class="btn primary" id="readyBtn" style="font-size:20px;padding:14px 30px">Ready</button><p id="readyStatus">Waiting for players...</p></div>
+<div id="modeVotePanel"><h1>Choose Gamemode</h1><p>Vote for the gamemode. Majority wins.</p><div class="mapGrid" id="modeVoteGrid"></div><p class="voteStatus" id="modeVoteStatus">Waiting for votes...</p></div>
+<div id="mapVotePanel"><h1>Choose Map</h1><p>Vote for the arena. Majority wins.</p><div class="mapGrid" id="mapVoteGrid"></div><p class="voteStatus" id="mapVoteStatus">Waiting for votes...</p></div>
+<div id="loadoutPanel"><h1>Loadout</h1><p>Choose ur weapon</p><div class="loadGrid" id="loadoutGrid"></div><button class="btn primary" id="readyBtn" style="font-size:20px;padding:14px 30px">Ready</button><p id="readyStatus">Waiting for players...</p></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
