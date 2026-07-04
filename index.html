@@ -72,6 +72,8 @@
   #chatMessages{height:190px;overflow:auto;padding:8px 10px;font-size:13px;line-height:1.32;text-shadow:0 1px 2px #000}
   .chatLine{margin:0 0 5px 0;word-break:break-word}.chatName{color:#ffe66d;font-weight:1000}.chatText{color:rgba(255,255,255,.88)}
   #chatInputRow{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(255,255,255,.12)}#chatInput{height:36px;padding:8px;font-size:13px}#chatSend{min-width:64px;border:0;border-radius:10px;background:#00e5ff;color:#061018;font-weight:1000;cursor:pointer}
+  #emoteMenu{display:none;position:fixed;left:50%;bottom:112px;transform:translateX(-50%);z-index:18;width:min(430px,86vw);border:2px solid rgba(255,230,109,.38);border-radius:18px;background:linear-gradient(180deg,rgba(20,16,8,.96),rgba(4,5,9,.95));padding:12px;box-shadow:0 0 28px rgba(255,230,109,.18);text-align:center}
+  #emoteMenu h3{margin:0 0 8px;color:#ffe66d}#emoteSlots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.emoteSlot{border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(255,255,255,.08);color:white;padding:9px;font-weight:1000;cursor:pointer}.emoteSlot b{color:#8cf7ff}.emoteHint{font-size:12px;color:rgba(255,255,255,.65);margin-top:8px}
 </style>
 </head>
 <body>
@@ -91,7 +93,7 @@
 <div id="msg"></div><div id="hint"></div><div id="crosshair"></div><div id="scopeOverlay"></div><div id="clickToLock">Click game to control camera</div>
 <div id="playerList"><b>Online Lobby</b><div id="playersOnline" class="tiny">Loading...</div></div>
 
-<div id="weaponBar"></div><button id="chatToggle" title="Chat">💬</button><div id="chatPanel"><div id="chatHead"><span>Chat</span><button class="btn danger" id="chatClose">×</button></div><div id="chatMessages"><div class="chatLine"><span class="chatText">No messages yet.</span></div></div><div id="chatInputRow"><input id="chatInput" maxlength="120" placeholder="Type message..."><button id="chatSend">Send</button></div></div><button id="settingsBtn">Settings</button>
+<div id="weaponBar"></div><button id="chatToggle" title="Chat">💬</button><div id="chatPanel"><div id="chatHead"><span>Chat</span><button class="btn danger" id="chatClose">×</button></div><div id="chatMessages"><div class="chatLine"><span class="chatText">No messages yet.</span></div></div><div id="chatInputRow"><input id="chatInput" maxlength="120" placeholder="Type message..."><button id="chatSend">Send</button></div></div><div id="emoteMenu"><h3>Hold V · Pick Emote</h3><div id="emoteSlots"></div><div class="emoteHint">Press 1, 2, 3... or click an emote.</div></div><button id="settingsBtn">Settings</button>
 <div id="settingsPanel" class="panel"><div class="row between"><div><h2>Crossfire Online</h2><p>Settings. Press Tab to close.</p></div><button class="btn danger" id="closeSettings">×</button></div><div class="tabs"><button class="tab on" data-tab="weapons">Weapons</button><button class="tab" data-tab="me">Me</button></div><div id="weaponsTab"></div><div id="meTab" style="display:none"></div></div>
 <div id="shopPanel" class="panel"><div class="row between"><div><h2>Shop Basket</h2><p>Buy weapons, skins, and emotes.</p></div><button class="btn danger" id="closeShop">×</button></div><div class="shopTabs"><button class="btn shopTab on" id="shopWeaponsBtn" onclick="setShopTab('weapons')">Weapons</button><button class="btn shopTab" id="shopSkinsBtn" onclick="setShopTab('skins')">Buy Skins</button><button class="btn shopTab" id="shopEmotesBtn" onclick="setShopTab('emotes')">Emotes</button></div><div id="shopItems"></div><div id="shopSkins" style="display:none"></div><div id="shopEmotes" style="display:none"></div></div>
 <div id="codePanel" class="panel"><div class="row between"><div><h2>Gift Code</h2><p>Enter code.</p></div><button class="btn danger" id="closeCode">×</button></div><div class="card"><label>Code</label><input id="codeInput" placeholder="example: &lt;xoxo&gt; or rivals"><button class="btn primary" id="redeemCodeBtn">Redeem</button><div id="codeStatus"></div></div></div>
@@ -145,15 +147,17 @@ while(unlocked.length<10) unlocked.push(false);
 let loadout=JSON.parse(localStorage.getItem("duelStarsLoadout")||'{"primary":0,"secondary":1,"melee":2,"support":3}');
 let currentWeapon=loadout.primary;
 const EMOTES={
- dance:{name:'Victory Dance',cost:10,key:'z',duration:5200,desc:'A goofy win dance.'},
- floss:{name:'Side Shuffle',cost:12,key:'x',duration:5200,desc:'Fast side-to-side dance.'},
- laugh:{name:'Laugh Taunt',cost:9,key:'c',duration:3600,desc:'Laugh at the other player.'},
+ dance:{name:'Victory Dance',cost:10,key:'v',duration:5200,desc:'A goofy win dance.'},
+ floss:{name:'Side Shuffle',cost:12,key:'v',duration:5200,desc:'Fast side-to-side dance.'},
+ laugh:{name:'Laugh Taunt',cost:9,key:'v',duration:3600,desc:'Laugh at the other player.'},
  loser:{name:'L Dance',cost:14,key:'v',duration:4500,desc:'Make a giant L pose and dance.'},
- facepalm:{name:'Facepalm',cost:8,key:'b',duration:3200,desc:'For when they miss badly.'},
- violin:{name:'Tiny Violin',cost:13,key:'n',duration:4200,desc:'Mock them with a sad tiny violin.'}
+ facepalm:{name:'Facepalm',cost:8,key:'v',duration:3200,desc:'For when they miss badly.'},
+ violin:{name:'Tiny Violin',cost:13,key:'v',duration:4200,desc:'Mock them with a sad tiny violin.'}
 };
 let ownedEmotes=JSON.parse(localStorage.getItem("duelStarsOwnedEmotes")||"[]");
 let activeEmote={id:null,start:0,until:0};
+let emoteMenuOpen=false;
+let roundDelayTimerKey=null;
 let chatOpen=false,chatMessages=[];
 let ownedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsWeaponSkins")||'{"arTrueGold":false,"crimsonPrimary":false,"voidSecondary":false,"frostMelee":false,"plasmaSupport":false}');
 let equippedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsEquippedSkins")||'{"assaultRifle":null,"primary":null,"secondary":null,"melee":null,"support":null}');
@@ -244,17 +248,31 @@ function renderTypeSkinControls(type){
 }
 function renderSecondarySkinControls(){return renderTypeSkinControls('secondary');}
 function hasEmote(id){return ownedEmotes.includes(id);}
+function ownedEmoteIds(){return Object.keys(EMOTES).filter(hasEmote);}
 function renderOwnedEmotes(){
- const ids=Object.keys(EMOTES).filter(hasEmote);
+ const ids=ownedEmoteIds();
  if(!ids.length)return '<p>No emotes owned yet. Buy them in the shop.</p><button class="btn primary" onclick="openShop()">Open Shop</button>';
- return `<div class="weaponGrid">${ids.map(id=>`<button class="btn" onclick="playEmote('${id}')">${EMOTES[id].key.toUpperCase()} · ${EMOTES[id].name}</button>`).join('')}</div><p>Hotkeys work in lobby or match: ${ids.map(id=>EMOTES[id].key.toUpperCase()).join(', ')}</p>`;
+ return `<div class="weaponGrid">${ids.map((id,idx)=>`<button class="btn" onclick="playEmote('${id}')">${idx+1} · ${EMOTES[id].name}</button>`).join('')}</div><p>Hold <b>V</b>, then press the number for the emote.</p>`;
 }
 function renderShopEmotes(){
  return Object.entries(EMOTES).map(([id,e])=>{
   const owned=hasEmote(id);
-  return `<div class="card"><div class="row between"><div><b>${e.name}</b><p>${e.desc}</p><small>${owned?'Owned':'Cost: '+e.cost+' shards'} · Hotkey ${e.key.toUpperCase()}</small></div>${owned?`<button class="btn primary" onclick="playEmote('${id}')">Use</button>`:`<button class="btn primary" onclick="buyEmote('${id}')">Buy</button>`}</div></div>`;
+  return `<div class="card"><div class="row between"><div><b>${e.name}</b><p>${e.desc}</p><small>${owned?'Owned':'Cost: '+e.cost+' shards'} · Hold V to use</small></div>${owned?`<button class="btn primary" onclick="playEmote('${id}')">Use</button>`:`<button class="btn primary" onclick="buyEmote('${id}')">Buy</button>`}</div></div>`;
  }).join('');
 }
+function renderEmoteMenu(){
+ const box=$('emoteSlots');if(!box)return;
+ const ids=ownedEmoteIds();
+ box.innerHTML=ids.map((id,idx)=>`<button class="emoteSlot" onclick="selectEmoteSlot(${idx+1})"><b>${idx+1}</b><br>${EMOTES[id].name}</button>`).join('')||'<div class="emoteSlot">No emotes owned</div>';
+}
+function openEmoteMenu(){
+ const ids=ownedEmoteIds();
+ if(!ids.length){setMessage('Buy emotes in the shop first',900);return;}
+ emoteMenuOpen=true;keys={};renderEmoteMenu();const p=$('emoteMenu');if(p)p.style.display='block';document.exitPointerLock?.();
+}
+function closeEmoteMenu(){emoteMenuOpen=false;const p=$('emoteMenu');if(p)p.style.display='none';}
+function selectEmoteSlot(n){const id=ownedEmoteIds()[Number(n)-1];if(id)playEmote(id);closeEmoteMenu();}
+window.selectEmoteSlot=selectEmoteSlot;
 function playEmote(id){
  const e=EMOTES[id];if(!e)return;
  if(!hasEmote(id))return setMessage('Buy '+e.name+' first',900);
@@ -1144,6 +1162,27 @@ function handleMatchState(){
   spawnForRound();
   lastAmmoRoundKey=roundNo;
  }
+ if(s==='rounddelay'){
+  showMapVote(false);
+  showLoadout(false);
+  cancelReload();
+  roundPhase='rounddelay';
+  const nextAt=Number(currentMatch.nextRoundAt||0);
+  const wait=Math.max(0,nextAt-Date.now());
+  const nextRound=currentMatch.pendingRound||((currentMatch.round||1)+1);
+  const winnerName=sideDisplayName(currentMatch.lastRoundWinner);
+  const key='rounddelay_'+matchId+'_'+nextRound+'_'+currentMatch.lastRoundWinner;
+  if(lastRoundAnnounceKey!==nextRound+'_'+currentMatch.lastRoundWinner){
+   lastRoundAnnounceKey=nextRound+'_'+currentMatch.lastRoundWinner;
+   showWinnerOverlay(winnerName+' WON ROUND '+(nextRound-1),'Next round starts in 6 seconds',6000);
+  }
+  setMessage('Next round in '+Math.max(1,Math.ceil(wait/1000))+'...',650);
+  if(roundDelayTimerKey!==key){
+   roundDelayTimerKey=key;
+   setTimeout(()=>{if(!currentMatchRef)return;currentMatchRef.transaction(m=>{if(!m||m.status!=='rounddelay')return m;if(Date.now()<Number(m.nextRoundAt||0)-80)return m;m.status='select';m.round=m.pendingRound||((m.round||1)+1);m.pendingRound=null;m.nextRoundAt=null;m.health={blue:MAX_HEALTH,red:MAX_HEALTH};m.ready={};m.loadouts={};m.fx={};return m;});},wait+80);
+  }
+  return;
+ }
  if(s==='select'){
   showMapVote(false);
   roundPhase='select';
@@ -1261,7 +1300,7 @@ function updatePlayer(dt){
   // Stable movement rebuilt from the original offline version.
   // Movement is ALWAYS based on the camera direction:
   // W = forward, S = backward, D = right, A = left.
-  const controlsAllowed = !menuOpen && !shopOpen && !chatOpen && roundPhase !== 'select' && roundPhase !== 'mapvote' && roundPhase !== 'modevote' && !isTagFrozen();
+  const controlsAllowed = !menuOpen && !shopOpen && !chatOpen && !emoteMenuOpen && roundPhase !== 'select' && roundPhase !== 'mapvote' && roundPhase !== 'modevote' && roundPhase !== 'rounddelay' && !isTagFrozen();
 
   // Update camera rotation before calculating movement so WASD never feels flipped.
   camera.rotation.set(pitch, yaw, 0, 'YXZ');
@@ -1941,7 +1980,7 @@ function finishRound(winnerSide){
   m.scores=m.scores||{blue:0,red:0};m.scores[winnerSide]=(m.scores[winnerSide]||0)+1;
   m.lastRoundWinner=winnerSide;
   if(m.scores[winnerSide]>=5){m.status='finished';m.winner=winnerSide;m.fx={};}
-  else{m.status='select';m.round=(m.round||1)+1;m.health={blue:MAX_HEALTH,red:MAX_HEALTH};m.ready={};m.loadouts={};m.fx={};}
+  else{m.status='rounddelay';m.nextRoundAt=Date.now()+6000;m.pendingRound=(m.round||1)+1;m.fx={};}
   return m;
  });
 }
@@ -2005,9 +2044,9 @@ window.toggleSkinSet=function(type){
 window.toggleVoidSecondarySkin=function(){toggleSkinSet('secondary')};window.saveName=function(){playerName=$('nameInput').value.trim().slice(0,18)||'Player';saveLocal();if(myRef)myRef.update({name:playerName});renderSettings()};window.setSkin=function(c){skinColor=c;avatar.shirt=c;saveLocal();if(myRef)myRef.update({color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
 window.setAvatarColor=function(part,c){if(!['shirt','pants','head'].includes(part))return;avatar[part]=c;if(part==='shirt')skinColor=c;saveLocal();if(myRef)myRef.update({color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
 window.setAccessory=function(a){avatar.accessory=a;saveLocal();if(myRef)myRef.update({shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
-function openSettings(){closeChat();menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('settingsPanel').style.display='block';$('shopPanel').style.display='none';renderSettings();document.exitPointerLock?.()}function closeSettings(){menuOpen=false;$('settingsPanel').style.display='none'}function openShop(){closeChat();shopOpen=true;menuOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('shopPanel').style.display='block';$('settingsPanel').style.display='none';setShopTab('weapons');renderShop();document.exitPointerLock?.()}function closeShop(){shopOpen=false;$('shopPanel').style.display='none'}
+function openSettings(){closeChat();closeEmoteMenu();menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('settingsPanel').style.display='block';$('shopPanel').style.display='none';renderSettings();document.exitPointerLock?.()}function closeSettings(){menuOpen=false;$('settingsPanel').style.display='none'}function toggleSettings(){const p=$('settingsPanel');if(p&&p.style.display==='block')closeSettings();else openSettings();}function openShop(){closeChat();closeEmoteMenu();shopOpen=true;menuOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('shopPanel').style.display='block';$('settingsPanel').style.display='none';setShopTab('weapons');renderShop();document.exitPointerLock?.()}function closeShop(){shopOpen=false;$('shopPanel').style.display='none'}
 function toggleChat(){chatOpen?closeChat():openChat();}
-function openChat(){chatOpen=true;closeSettings();closeShop();closeCodePanel();closeUpdatesPanel();const p=$('chatPanel');if(p)p.style.display='block';document.exitPointerLock?.();setTimeout(()=>{$('chatInput')?.focus()},30);}
+function openChat(){closeEmoteMenu();chatOpen=true;closeSettings();closeShop();closeCodePanel();closeUpdatesPanel();const p=$('chatPanel');if(p)p.style.display='block';document.exitPointerLock?.();setTimeout(()=>{$('chatInput')?.focus()},30);}
 function closeChat(){chatOpen=false;const p=$('chatPanel');if(p)p.style.display='none';}
 function renderChat(){
  const box=$('chatMessages');if(!box)return;
@@ -2231,33 +2270,26 @@ document.addEventListener('keydown',e=>{
   let k=keyName(e);
   const typing = document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName);
   if(typing){
-    if(k==='tab'){
-      e.preventDefault();keys={};closeSettings();closeShop();closeCodePanel();closeUpdatesPanel();closeChat();if(roundPhase!=='select'&&roundPhase!=='mapvote'&&roundPhase!=='modevote')showLoadout(false);
-    }
+    if(k==='/'&&document.activeElement?.id==='chatInput'){e.preventDefault();closeChat();return;}
+    if(k==='tab'){e.preventDefault();keys={};toggleSettings();closeShop();closeCodePanel();closeUpdatesPanel();closeChat();if(roundPhase!=='select'&&roundPhase!=='mapvote'&&roundPhase!=='modevote')showLoadout(false);}
     return;
   }
-  if(['w','a','s','d',' ','shift','ctrl','e','tab','1','2','3','4','r','z','x','c','v','b','n','enter','escape'].includes(k))e.preventDefault();
+  if(['w','a','s','d',' ','shift','ctrl','e','tab','/','1','2','3','4','5','6','r','v','enter','escape'].includes(k))e.preventDefault();
+  if(k==='/'){toggleChat();return;}
+  if(k==='tab'){keys={};closeShop();closeCodePanel();closeUpdatesPanel();closeChat();toggleSettings();if(roundPhase!=='select'&&roundPhase!=='mapvote'&&roundPhase!=='modevote')showLoadout(false);return;}
+  if(emoteMenuOpen&&['1','2','3','4','5','6'].includes(k)){selectEmoteSlot(Number(k));return;}
+  if(k==='v'){openEmoteMenu();return;}
   if(['w','a','s','d',' ','shift','ctrl'].includes(k)) keys[k]=true;
-  const emoteId=Object.keys(EMOTES).find(id=>EMOTES[id].key===k);
-  if(emoteId){playEmote(emoteId);return;}
   if(k==='r')reloadCurrent();
-  if(k==='tab'){
-    keys={};
-    closeSettings();
-    closeShop();
-    closeUpdatesPanel();
-    closeChat();
-    if(roundPhase!=='select'&&roundPhase!=='mapvote'&&roundPhase!=='modevote')showLoadout(false);
-  }
   if(k==='e')interact();
   if(['1','2','3','4'].includes(k)){
     let ids=Object.values(loadout);
     selectWeapon(ids[Number(k)-1]);
   }
 });
-document.addEventListener('keyup',e=>{keys[keyName(e)]=false});
+document.addEventListener('keyup',e=>{const k=keyName(e);keys[k]=false;if(k==='v')closeEmoteMenu();});
 document.addEventListener('wheel',e=>{
- if(menuOpen||shopOpen||(roundPhase==='select'||roundPhase==='mapvote'||roundPhase==='modevote'))return;
+ if(menuOpen||shopOpen||emoteMenuOpen||(roundPhase==='select'||roundPhase==='mapvote'||roundPhase==='modevote'))return;
  e.preventDefault();
  const ids=Object.values(loadout).filter(id=>unlocked[id]);
  if(!ids.length)return;
@@ -2266,7 +2298,7 @@ document.addEventListener('wheel',e=>{
  idx=e.deltaY>0?(idx+1)%ids.length:(idx-1+ids.length)%ids.length;
  selectWeapon(ids[idx]);
 },{passive:false});
-document.addEventListener('mousedown',e=>{if(menuOpen||shopOpen||chatOpen||(roundPhase==='select'||roundPhase==='mapvote'||roundPhase==='modevote'))return;if(document.pointerLockElement!==document.body)document.body.requestPointerLock();if(e.button===0){mouseDown=true;attack();}if(e.button===2)rightSpecial();});
+document.addEventListener('mousedown',e=>{if(menuOpen||shopOpen||chatOpen||emoteMenuOpen||(roundPhase==='select'||roundPhase==='mapvote'||roundPhase==='modevote'))return;if(document.pointerLockElement!==document.body)document.body.requestPointerLock();if(e.button===0){mouseDown=true;attack();}if(e.button===2)rightSpecial();});
 document.addEventListener('mouseup',e=>{if(e.button===0)mouseDown=false;if(e.button===2){stopKatanaBlock(false);stopADS()}});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('blur',()=>{keys={};mouseDown=false;stopADS();});
