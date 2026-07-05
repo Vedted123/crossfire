@@ -311,18 +311,17 @@ function finishDisasterIfNeeded(){if(!currentMatchRef||!isDisasterMode()||roundP
 function enforceTagEquipment(){
  if(!isTagMode())return;
  const tagger=currentMatch?.tagger||null;
+ const changed=tagger!==lastTaggerSeen;
+ lastTaggerSeen=tagger;
  if(tagger===mySide){
   const a=ammo[REVOLVER_INDEX]||(ammo[REVOLVER_INDEX]={mag:6,reserve:999999});
+  if(!Number.isFinite(a.mag)||a.mag<0)a.mag=6;
   a.reserve=999999;
+  if(currentWeapon!==REVOLVER_INDEX){currentWeapon=REVOLVER_INDEX;rebuildWeaponModel();renderWeaponBar();}
+ }else{
+  if(currentWeapon!==2){currentWeapon=2;rebuildWeaponModel();renderWeaponBar();}
  }
- if(tagger!==lastTaggerSeen){
-  lastTaggerSeen=tagger;
-  if(tagger===mySide){ammo[REVOLVER_INDEX]={mag:6,reserve:999999};currentWeapon=REVOLVER_INDEX;}
-  else currentWeapon=2;
-  cancelReload();
-  rebuildWeaponModel();
-  renderWeaponBar();
- }
+ if(changed){cancelReload();updateAmmoHud();}
 }
 function showWinnerOverlay(title,sub,ms=1700){
  const ov=$('winnerOverlay');
@@ -1080,8 +1079,12 @@ function updateRoundDelaySpectate(){
  if(weaponView)weaponView.visible=false;
  return true;
 }
-function sameVisibleSpace(p){
- if(matchId)return p.matchId===matchId;
+function sameVisibleSpace(p,id){
+ if(matchId){
+  if(p.matchId===matchId)return true;
+  if(currentMatch&&(id===currentMatch.blue||id===currentMatch.red))return true;
+  return false;
+ }
  if(currentPrivateCode)return p.mode==='private'&&p.privateCode===currentPrivateCode;
  return p.mode==='lobby'&&!p.privateCode;
 }
@@ -1091,7 +1094,7 @@ function updateRemoteMeshes(){
   let p=remotePlayers[id];
   if(!remoteMeshes[id])remoteMeshes[id]=makePlayerMesh(p.color,p.name,getAvatarData(p));
   let m=remoteMeshes[id];
-  let visible=sameVisibleSpace(p);
+  let visible=sameVisibleSpace(p,id);
   m.visible=visible;
   let groundY=Math.max(0,(Number(p.y)||1.7)-1.7);
   let target=new THREE.Vector3(Number(p.x)||0,groundY,Number(p.z)||LOBBY_Z);
@@ -1113,7 +1116,7 @@ function normalizePlayers(raw){
  const cleaned={};
  for(const [id,p] of Object.entries(raw||{})){
   if(!p)continue;
-  if(p.updated&&now-Number(p.updated)>15000)continue;
+  if(p.updated&&now-Number(p.updated)>45000)continue;
   cleaned[id]=p;
  }
  return cleaned;
@@ -1589,7 +1592,14 @@ function resetAmmo(){
  cancelReload();
  updateAmmoHud();
 }
-function getAmmo(i=currentWeapon){return ammo[i]||null;}
+function getAmmo(i=currentWeapon){
+ if(isTagMode()&&i===REVOLVER_INDEX){
+  const a=ammo[REVOLVER_INDEX]||(ammo[REVOLVER_INDEX]={mag:6,reserve:999999});
+  a.reserve=999999;
+  if(!Number.isFinite(a.mag)||a.mag<0)a.mag=6;
+ }
+ return ammo[i]||null;
+}
 function updateAmmoHud(){
  const el=$('ammoText');if(!el)return;
  if(isTagMode()){el.textContent=isTagger()?((isTagFrozen()?'FROZEN ':'')+(ammo[REVOLVER_INDEX]?.mag??6)+' / ∞'):'RUN';return;}
@@ -1599,14 +1609,15 @@ function updateAmmoHud(){
  el.textContent=(isReloading?'Reloading... ':'')+a.mag+' / '+a.reserve;
 }
 function hasAmmoForCurrent(){const a=getAmmo(currentWeapon);return !weapons[currentWeapon].magSize || (a&&a.mag>0);}
-function consumeAmmo(i=currentWeapon){const a=getAmmo(i);if(!weapons[i].magSize)return true;if(!a||a.mag<=0)return false;a.mag--;updateAmmoHud();return true;}
+function consumeAmmo(i=currentWeapon){const a=getAmmo(i);if(isTagMode()&&i===REVOLVER_INDEX&&a)a.reserve=999999;if(!weapons[i].magSize)return true;if(!a||a.mag<=0)return false;a.mag--;updateAmmoHud();return true;}
 function reloadCurrent(){
  if(menuOpen||shopOpen||(roundPhase==='select'||roundPhase==='mapvote')||gameMode!=='match')return;
+ if(isTagMode())enforceTagEquipment();
  const w=weapons[currentWeapon],a=getAmmo(currentWeapon);
  if(!w.magSize||!a)return;
  if(isReloading)return;
  if(a.mag>=w.magSize){setMessage('Magazine full',650);return;}
- if(a.reserve<=0){setMessage('No reserve ammo',650);return;}
+ if(a.reserve<=0&&!(isTagMode()&&currentWeapon===REVOLVER_INDEX)){setMessage('No reserve ammo',650);return;}
  isReloading=true;stopADS();setMessage('Reloading...',w.reloadTime||1600);updateAmmoHud();
  const reloadingWeapon=currentWeapon;
  clearTimeout(reloadTimer);
@@ -1631,6 +1642,7 @@ function getLookDirection(){return new THREE.Vector3(0,0,-1).applyEuler(new THRE
 function attack(){
  if(menuOpen||shopOpen||chatOpen||(roundPhase==='select'||roundPhase==='mapvote'||roundPhase==='modevote'))return;
  if(gameMode!=='match'||roundPhase!=='playing')return;
+ if(isTagMode())enforceTagEquipment();
  if(!canShoot||isReloading)return;
  if(isDisasterMode())return;
  if(isTagFrozen()){setMessage('Frozen '+Math.ceil(tagFreezeRemaining())+'s',350);return;}
@@ -2297,6 +2309,7 @@ function createPrivateRoom(){
   if(room?.blue!==uid&&room?.red!==uid){setPrivateStatus('privateCreateStatus','Code collision. Try Create again.');return;}
   if(room?.blue===uid)ref.child('blue').onDisconnect().remove();
   if(room?.red===uid)ref.child('red').onDisconnect().remove();
+  ref.child('pads/blue').onDisconnect().remove();ref.child('pads/red').onDisconnect().remove();
   setPrivateStatus('privateCreateStatus','Share code '+code+' with a friend.');
   listenPrivateRoom(code);
  }).catch(e=>setPrivateStatus('privateCreateStatus','Private room error: '+e.message));
@@ -2320,6 +2333,7 @@ function joinPrivateRoom(){
   if(room.blue!==uid&&room.red!==uid){setPrivateStatus('privateJoinStatus','Room is full.');return;}
   if(room.blue===uid)ref.child('blue').onDisconnect().remove();
   if(room.red===uid)ref.child('red').onDisconnect().remove();
+  ref.child('pads/blue').onDisconnect().remove();ref.child('pads/red').onDisconnect().remove();
   setPrivateStatus('privateJoinStatus','Joined room '+code+'.');
   listenPrivateRoom(code);
  }).catch(e=>setPrivateStatus('privateJoinStatus','Join error: '+e.message));
