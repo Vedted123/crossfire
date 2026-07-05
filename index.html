@@ -107,9 +107,9 @@
     <span class="patchTag">LATEST PATCH</span>
     <h3>What just changed</h3>
     <ul>
-      <li>Added new maps</li>
-      <li>Added private server</li>
-      
+      <li>Added skin sets</li>
+      <li>Added more weapons</li>
+      <li>Laser Gun rapidly fires glowing laser bullets.</li>
     </ul>
   </div>
 </div>
@@ -311,9 +311,13 @@ function finishDisasterIfNeeded(){if(!currentMatchRef||!isDisasterMode()||roundP
 function enforceTagEquipment(){
  if(!isTagMode())return;
  const tagger=currentMatch?.tagger||null;
+ if(tagger===mySide){
+  const a=ammo[REVOLVER_INDEX]||(ammo[REVOLVER_INDEX]={mag:6,reserve:999999});
+  a.reserve=999999;
+ }
  if(tagger!==lastTaggerSeen){
   lastTaggerSeen=tagger;
-  if(tagger===mySide){ammo[REVOLVER_INDEX]={mag:6,reserve:0};currentWeapon=REVOLVER_INDEX;}
+  if(tagger===mySide){ammo[REVOLVER_INDEX]={mag:6,reserve:999999};currentWeapon=REVOLVER_INDEX;}
   else currentWeapon=2;
   cancelReload();
   rebuildWeaponModel();
@@ -1059,6 +1063,23 @@ function applyAvatarToMesh(m,p){
  }
  m.userData.avatar={...a};
 }
+function updateRoundDelaySpectate(){
+ if(gameMode!=='match'||roundPhase!=='rounddelay'||!currentMatch?.lastRoundWinner)return false;
+ const winnerSide=currentMatch.lastRoundWinner;
+ const winnerId=currentMatch[winnerSide];
+ let target=null,rot=0;
+ if(winnerId===uid){target=player.pos.clone();rot=yaw;}
+ else{
+  const mesh=remoteMeshes[winnerId];
+  if(mesh){target=mesh.position.clone().add(new THREE.Vector3(0,1.15,0));rot=Number(remotePlayers[winnerId]?.yaw)||0;}
+ }
+ if(!target)return false;
+ const offset=new THREE.Vector3(0,2.4,6.4).applyAxisAngle(new THREE.Vector3(0,1,0),rot);
+ camera.position.copy(target.clone().add(offset));
+ camera.lookAt(target.clone().add(new THREE.Vector3(0,.65,0)));
+ if(weaponView)weaponView.visible=false;
+ return true;
+}
 function sameVisibleSpace(p){
  if(matchId)return p.matchId===matchId;
  if(currentPrivateCode)return p.mode==='private'&&p.privateCode===currentPrivateCode;
@@ -1081,7 +1102,7 @@ function updateRemoteMeshes(){
   updateRemoteWeaponModel(m,p);
   if(m.userData.bomb){m.userData.bomb.visible=!!(currentMatch&&currentMatch.gameType==='tag'&&p.matchId===matchId&&p.side===currentMatch.tagger);m.userData.bomb.rotation.y+=.08;}
   if((p.name||'Player')!==m.userData.name){m.remove(m.userData.label);m.userData.label.material.map.dispose();m.userData.label.material.dispose();m.userData.label=makeNameSprite(p.name);m.add(m.userData.label);m.userData.name=p.name||'Player';}
-  if(m.userData.label){m.userData.label.visible=visible;m.userData.label.quaternion.copy(camera.quaternion);}
+  if(m.userData.label){m.userData.label.visible=visible&&gameMode==='lobby';m.userData.label.quaternion.copy(camera.quaternion);}
  }
  for(const id in remoteMeshes){if(!remotePlayers[id]){let m=remoteMeshes[id];if(m.userData.label){m.userData.label.material.map.dispose();m.userData.label.material.dispose();}scene.remove(m);delete remoteMeshes[id];}}
 }
@@ -1481,6 +1502,7 @@ function updatePlayer(dt){
   camera.fov += (targetFov() - camera.fov) * Math.min(1, dt * 12);
   camera.updateProjectionMatrix();
 
+  if(weaponView)weaponView.visible=true;
   const targetWeaponZ = isReloading ? 0.38 : (slideState.active ? 0.24 : (isADS ? -0.18 : 0));
   weaponBaseZ += (targetWeaponZ - weaponBaseZ) * Math.min(1, dt * 14);
   weaponView.position.set(0,0,weaponBaseZ);
@@ -1563,13 +1585,14 @@ function updateWeaponAnimation(dt){
 function resetAmmo(){
  ammo={};
  weapons.forEach((w,i)=>{if(w.magSize){ammo[i]={mag:w.magSize,reserve:w.reserveSize||0};}});
+ if(isTagMode())ammo[REVOLVER_INDEX]={mag:6,reserve:999999};
  cancelReload();
  updateAmmoHud();
 }
 function getAmmo(i=currentWeapon){return ammo[i]||null;}
 function updateAmmoHud(){
  const el=$('ammoText');if(!el)return;
- if(isTagMode()){el.textContent=isTagger()?((isTagFrozen()?'FROZEN ':'')+(ammo[REVOLVER_INDEX]?.mag??6)+' / 0'):'RUN';return;}
+ if(isTagMode()){el.textContent=isTagger()?((isTagFrozen()?'FROZEN ':'')+(ammo[REVOLVER_INDEX]?.mag??6)+' / ∞'):'RUN';return;}
  if(isDisasterMode()){el.textContent='SURVIVE';return;}
  const w=weapons[currentWeapon],a=getAmmo(currentWeapon);
  if(!w||!w.magSize){el.textContent='∞';return;}
@@ -1590,8 +1613,10 @@ function reloadCurrent(){
  reloadTimer=setTimeout(()=>{
   const rw=weapons[reloadingWeapon],ra=getAmmo(reloadingWeapon);
   if(!ra||gameMode!=='match'||roundPhase!=='playing'&&roundPhase!=='countdown'){isReloading=false;updateAmmoHud();return;}
-  const need=rw.magSize-ra.mag;const take=Math.min(need,ra.reserve);
-  ra.mag+=take;ra.reserve-=take;isReloading=false;updateAmmoHud();setMessage('Reloaded',500);
+  const need=rw.magSize-ra.mag;
+  if(isTagMode()&&reloadingWeapon===REVOLVER_INDEX){ra.mag+=need;ra.reserve=999999;}
+  else{const take=Math.min(need,ra.reserve);ra.mag+=take;ra.reserve-=take;}
+  isReloading=false;updateAmmoHud();setMessage('Reloaded',500);
  },w.reloadTime||1600);
 }
 function cancelReload(){if(reloadTimer)clearTimeout(reloadTimer);reloadTimer=null;isReloading=false;updateAmmoHud();}
@@ -2243,7 +2268,7 @@ function leavePrivateRoom(){
    if(!room)return room;
    if(room.pads){if(room.pads.blue===uid)room.pads.blue=null;if(room.pads.red===uid)room.pads.red=null;}
    if(room.blue===uid&&room.red){room.blue=room.red;room.red=null;room.status='waiting';return room;}
-   if(room.red===uid){room.red=null;room.status='waiting';return room;}
+   if(room.red===uid){room.red=null;room.status=room.blue?'waiting':'empty';return room;}
    if(room.blue===uid&&!room.red)return null;
    return room;
   });
@@ -2270,7 +2295,8 @@ function createPrivateRoom(){
  }).then(res=>{
   const room=res.snapshot.val();
   if(room?.blue!==uid&&room?.red!==uid){setPrivateStatus('privateCreateStatus','Code collision. Try Create again.');return;}
-  ref.onDisconnect().remove();
+  if(room?.blue===uid)ref.child('blue').onDisconnect().remove();
+  if(room?.red===uid)ref.child('red').onDisconnect().remove();
   setPrivateStatus('privateCreateStatus','Share code '+code+' with a friend.');
   listenPrivateRoom(code);
  }).catch(e=>setPrivateStatus('privateCreateStatus','Private room error: '+e.message));
@@ -2285,12 +2311,15 @@ function joinPrivateRoom(){
   const stale=cur?.created&&Date.now()-Number(cur.created)>1000*60*20;
   if(!cur||stale)return cur;
   if(cur.blue===uid||cur.red===uid)return cur;
+  if(!cur.blue){cur.blue=uid;cur.status=cur.red?'full':'waiting';cur.host=playerName;return cur;}
   if(!cur.red){cur.red=uid;cur.status='full';cur.guest=playerName;return cur;}
   return cur;
  }).then(res=>{
   const room=res.snapshot.val();
   if(!room){setPrivateStatus('privateJoinStatus','Room not found. Check the code.');return;}
   if(room.blue!==uid&&room.red!==uid){setPrivateStatus('privateJoinStatus','Room is full.');return;}
+  if(room.blue===uid)ref.child('blue').onDisconnect().remove();
+  if(room.red===uid)ref.child('red').onDisconnect().remove();
   setPrivateStatus('privateJoinStatus','Joined room '+code+'.');
   listenPrivateRoom(code);
  }).catch(e=>setPrivateStatus('privateJoinStatus','Join error: '+e.message));
@@ -2519,6 +2548,7 @@ function animate(t=0){
  updateDisaster(dt);
  updateDamageNumbers(dt);
  updateRemoteMeshes();
+ updateRoundDelaySpectate();
  finishTagIfNeeded();
  finishDisasterIfNeeded();
  networkTick(t);
