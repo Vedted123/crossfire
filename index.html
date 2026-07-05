@@ -24,13 +24,13 @@
   #weaponBar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:8px;z-index:7}
   .slot{min-width:116px;padding:10px 8px;text-align:center;border-radius:12px;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.22);font-weight:900;text-shadow:0 2px 4px #000;font-size:14px}
   .slot small{display:block;color:rgba(255,255,255,.65);font-size:11px;margin-top:2px}.active{border-color:#00e5ff;box-shadow:0 0 16px rgba(0,229,255,.55);color:#8cf7ff}
-  #settingsBtn{position:fixed;right:18px;bottom:18px;z-index:10;border:2px solid rgba(140,247,255,.55);border-radius:999px;padding:12px 18px;background:rgba(0,229,255,.92);color:#061018;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 0 20px rgba(0,229,255,.28)}
+  #settingsBtn{position:fixed;right:18px;bottom:18px;z-index:10;border:2px solid rgba(140,247,255,.55);border-radius:999px;padding:12px 18px;background:rgba(0,229,255,.92);color:#061018;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 0 20px rgba(0,229,255,.28)}#privateBtn{position:fixed;right:158px;bottom:18px;z-index:10;border:2px solid rgba(255,230,109,.55);border-radius:999px;padding:12px 16px;background:rgba(255,230,109,.92);color:#171000;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 0 20px rgba(255,230,109,.24)}#privateCodeBig{font-size:34px;letter-spacing:6px;font-weight:1000;text-align:center;color:#ffe66d;text-shadow:0 2px 6px #000;margin:8px 0}.privateStatus{min-height:20px;color:#8cf7ff;font-weight:900;font-size:13px}
   .panel{display:none;position:fixed;right:18px;top:14px;width:380px;max-height:calc(100vh - 36px);overflow:auto;z-index:12;background:linear-gradient(180deg,rgba(12,18,34,.97),rgba(3,7,14,.95));border:2px solid rgba(140,247,255,.35);border-radius:18px;padding:14px;box-shadow:0 0 30px rgba(0,229,255,.18)}
   .panel h2,.panel h3{margin:0;color:#8cf7ff}.panel p{color:rgba(255,255,255,.74);font-size:13px;margin:5px 0 10px}.row{display:flex;gap:8px;align-items:center}.between{justify-content:space-between}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.shopTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.shopTab.on{background:#00e5ff;color:#061018}.tab,.btn,.card button{border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer;background:rgba(255,255,255,.1);color:white}.tab.on,.btn.primary{background:#00e5ff;color:#061018}.btn.danger{background:#ff4b4b;color:white}.card{border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.06);padding:10px;margin:8px 0}.weaponGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.weaponCard{border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(0,0,0,.22);padding:9px}.weaponCard b{color:#fff}.weaponCard small{display:block;color:#a9dfe8;margin-top:3px}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:rgba(255,255,255,.12);font-size:12px;margin-top:5px}.locked{opacity:.55}.equipped{outline:2px solid #00e5ff}.colorPick{display:flex;gap:8px;flex-wrap:wrap}.colorSwatch{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.35);cursor:pointer}.colorSwatch.sel{border-color:#fff;box-shadow:0 0 12px #fff}input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(0,0,0,.25);color:white;padding:10px;font-weight:700}
 
   #modeVotePanel,#mapVotePanel{display:none;position:fixed;inset:0;z-index:21;background:radial-gradient(circle at center,rgba(40,10,16,.95),rgba(0,0,0,.98));padding:30px;box-sizing:border-box;overflow:auto;text-align:center}
   #modeVotePanel h1,#mapVotePanel h1{margin:8px 0 6px;font-size:44px;letter-spacing:3px;text-transform:uppercase;color:#fff;text-shadow:0 0 18px rgba(255,18,35,.55),0 4px 10px #000}
-  #modeVotePanel p,#mapVotePanel p{color:rgba(255,255,255,.78);font-weight:800}.mapGrid{display:grid;grid-template-columns:repeat(3,minmax(190px,1fr));gap:16px;max-width:1050px;margin:22px auto}.mapCard{position:relative;min-height:230px;border-radius:22px;border:2px solid rgba(255,255,255,.2);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.32));overflow:hidden;color:white;cursor:pointer;font-weight:1000;text-align:left;padding:16px;box-shadow:0 0 25px rgba(0,0,0,.35);transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}.mapCard:hover{transform:translateY(-4px);border-color:#ff2331;box-shadow:0 0 32px rgba(255,0,30,.23)}.mapCard.sel{border-color:#00ff8a;box-shadow:0 0 34px rgba(0,255,138,.34)}.mapTitle{font-size:26px;text-transform:uppercase;letter-spacing:1.5px}.mapDesc{position:absolute;left:16px;right:16px;bottom:14px;color:rgba(255,255,255,.75);font-size:13px;line-height:1.35}.mapPreview{position:absolute;inset:0;opacity:.78;z-index:-1}.mapBase{background:radial-gradient(circle at 50% 50%,#34415f 0 14%,#20283d 15% 42%,#111825 43% 100%)}.mapSchoolyard{background:linear-gradient(145deg,#e9d58a,#77e4dc 45%,#1c63d8 46%,#1743a4 63%,#ffe07a)}.mapLasertag{background-color:#050806;background-image:linear-gradient(#00ff66 2px,transparent 2px),linear-gradient(90deg,#00ff66 2px,transparent 2px);background-size:28px 28px;box-shadow:inset 0 0 70px #001a09}.votePill{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.18);font-size:12px;color:#d9fff0}.voteStatus{font-size:18px;color:#ffe66d;text-shadow:0 2px 6px #000}
+  #modeVotePanel p,#mapVotePanel p{color:rgba(255,255,255,.78);font-weight:800}.mapGrid{display:grid;grid-template-columns:repeat(3,minmax(190px,1fr));gap:16px;max-width:1050px;margin:22px auto}.mapCard{position:relative;min-height:230px;border-radius:22px;border:2px solid rgba(255,255,255,.2);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.32));overflow:hidden;color:white;cursor:pointer;font-weight:1000;text-align:left;padding:16px;box-shadow:0 0 25px rgba(0,0,0,.35);transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}.mapCard:hover{transform:translateY(-4px);border-color:#ff2331;box-shadow:0 0 32px rgba(255,0,30,.23)}.mapCard.sel{border-color:#00ff8a;box-shadow:0 0 34px rgba(0,255,138,.34)}.mapTitle{font-size:26px;text-transform:uppercase;letter-spacing:1.5px}.mapDesc{position:absolute;left:16px;right:16px;bottom:14px;color:rgba(255,255,255,.75);font-size:13px;line-height:1.35}.mapPreview{position:absolute;inset:0;opacity:.78;z-index:-1}.mapBase{background:radial-gradient(circle at 50% 50%,#34415f 0 14%,#20283d 15% 42%,#111825 43% 100%)}.mapSchoolyard{background:linear-gradient(145deg,#e9d58a,#77e4dc 45%,#1c63d8 46%,#1743a4 63%,#ffe07a)}.mapLasertag{background-color:#050806;background-image:linear-gradient(#00ff66 2px,transparent 2px),linear-gradient(90deg,#00ff66 2px,transparent 2px);background-size:28px 28px;box-shadow:inset 0 0 70px #001a09}.mapRooftop{background:linear-gradient(135deg,#151d2f,#39445f 48%,#7e8ea8 49%,#20283d 80%);box-shadow:inset 0 0 65px rgba(140,247,255,.18)}.votePill{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.18);font-size:12px;color:#d9fff0}.voteStatus{font-size:18px;color:#ffe66d;text-shadow:0 2px 6px #000}
   #loadoutPanel{display:none;position:fixed;inset:0;z-index:20;background:radial-gradient(circle,rgba(20,35,70,.94),rgba(0,0,0,.98));padding:28px;box-sizing:border-box;overflow:auto;text-align:center}.loadGrid{display:grid;grid-template-columns:repeat(4,minmax(180px,1fr));gap:12px;max-width:1100px;margin:18px auto}.loadCol{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:12px;text-align:left}.loadCol h3{text-align:center;color:#8cf7ff}.loadOpt{display:block;width:100%;margin:8px 0;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:white;font-weight:900;cursor:pointer}.loadOpt.sel{background:#00e5ff;color:#061018}.loadOpt.locked{cursor:not-allowed;opacity:.4}
   #clickToLock{position:fixed;left:50%;top:54px;transform:translateX(-50%);z-index:30;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:8px 14px;font-weight:800;color:#fff}
   #playerList{position:fixed;right:18px;top:14px;z-index:4;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:10px;min-width:190px;text-shadow:0 2px 4px #000}.tiny{font-size:12px;color:rgba(255,255,255,.65)}
@@ -93,7 +93,8 @@
 <div id="msg"></div><div id="hint"></div><div id="crosshair"></div><div id="scopeOverlay"></div><div id="clickToLock">Click game to control camera</div>
 <div id="playerList"><b>Online Lobby</b><div id="playersOnline" class="tiny">Loading...</div></div>
 
-<div id="weaponBar"></div><button id="chatToggle" title="Chat">💬<span id="chatUnread">0</span></button><div id="chatPanel"><div id="chatHead"><span>Chat</span><button class="btn danger" id="chatClose">×</button></div><div id="chatMessages"><div class="chatLine"><span class="chatText">No messages yet.</span></div></div><div id="chatInputRow"><input id="chatInput" maxlength="120" placeholder="Type message..."><button id="chatSend">Send</button></div></div><div id="emoteMenu"><h3>Hold V · Pick Emote</h3><div id="emoteSlots"></div><div class="emoteHint">Press 1, 2, 3... or click an emote.</div></div><button id="settingsBtn">Settings</button>
+<div id="weaponBar"></div><button id="chatToggle" title="Chat">💬<span id="chatUnread">0</span></button><div id="chatPanel"><div id="chatHead"><span>Chat</span><button class="btn danger" id="chatClose">×</button></div><div id="chatMessages"><div class="chatLine"><span class="chatText">No messages yet.</span></div></div><div id="chatInputRow"><input id="chatInput" maxlength="120" placeholder="Type message..."><button id="chatSend">Send</button></div></div><div id="emoteMenu"><h3>Hold V · Pick Emote</h3><div id="emoteSlots"></div><div class="emoteHint">Press 1, 2, 3... or click an emote.</div></div><button id="privateBtn">Join</button><button id="settingsBtn">Settings</button>
+<div id="privatePanel" class="panel"><div class="row between"><div><h2>Private Match</h2><p>Create a code or join a friend.</p></div><button class="btn danger" id="closePrivate">×</button></div><div class="card"><h3>Your Room Code</h3><div id="privateCodeBig">----</div><button class="btn primary" id="createPrivateBtn">Create Private Room</button><div id="privateCreateStatus" class="privateStatus"></div></div><div class="card"><h3>Join Room</h3><input id="privateJoinInput" maxlength="8" placeholder="Enter code"><button class="btn primary" id="joinPrivateBtn">Join Private Room</button><div id="privateJoinStatus" class="privateStatus"></div></div><div class="card"><button class="btn danger" id="leavePrivateBtn">Leave Private Lobby</button></div></div>
 <div id="settingsPanel" class="panel"><div class="row between"><div><h2>Crossfire Online</h2><p>Settings. Press Tab to close.</p></div><button class="btn danger" id="closeSettings">×</button></div><div class="tabs"><button class="tab on" data-tab="weapons">Weapons</button><button class="tab" data-tab="me">Me</button></div><div id="weaponsTab"></div><div id="meTab" style="display:none"></div></div>
 <div id="shopPanel" class="panel"><div class="row between"><div><h2>Shop Basket</h2><p>Buy weapons, skins, and emotes.</p></div><button class="btn danger" id="closeShop">×</button></div><div class="shopTabs"><button class="btn shopTab on" id="shopWeaponsBtn" onclick="setShopTab('weapons')">Weapons</button><button class="btn shopTab" id="shopSkinsBtn" onclick="setShopTab('skins')">Buy Skins</button><button class="btn shopTab" id="shopEmotesBtn" onclick="setShopTab('emotes')">Emotes</button></div><div id="shopItems"></div><div id="shopSkins" style="display:none"></div><div id="shopEmotes" style="display:none"></div></div>
 <div id="codePanel" class="panel"><div class="row between"><div><h2>Gift Code</h2><p>Enter code.</p></div><button class="btn danger" id="closeCode">×</button></div><div class="card"><label>Code</label><input id="codeInput" placeholder="example: &lt;xoxo&gt; or rivals"><button class="btn primary" id="redeemCodeBtn">Redeem</button><div id="codeStatus"></div></div></div>
@@ -128,10 +129,10 @@ let yaw=0,pitch=0,keys={},mouseDown=false,isADS=false,canShoot=true,gameMode="lo
 let bullets=[],grenades=[],molotovs=[],damageNumbers=[],remotePlayers={},remoteMeshes={},nameSprites=[];let ammo={},isReloading=false,reloadTimer=null,lastAmmoRoundKey=null,lastRoundAnnounceKey=null,lastMatchAnnounceKey=null,winnerOverlayTimer=null,jumpLatch=false;let weaponAnim={name:null,timer:0,duration:0},weaponBaseZ=0;let seenMolotovFx={};let cachedFormalLogoTexture=null,cachedWallStripeTexture=null,cachedFloorLogoTexture=null;let slideState={active:false,timer:0,cooldown:0,dir:new THREE.Vector3(),latch:false};let katanaState={blocking:false,timer:0,cooldown:0};let disasterState={volcanoes:[],fireballs:[],tsunamis:[],cracks:[],palms:[],coconuts:[],nextVolcano:1,nextWave:6,nextCrack:1.5,nextCoconut:4};
 const LOBBY_Z=46,ARENA_Z=0;
 const STARTS={blue:new THREE.Vector3(-14,1.7,24),red:new THREE.Vector3(14,1.7,-24)};
-const MAP_OPTIONS=['base','schoolyard','lasertag'];
-const MAP_LABELS={base:'Base',schoolyard:'Schoolyard',lasertag:'Lasertag',disaster:'Disaster Island'};
-const MAP_DESCS={base:'Classic Crossfire 1v1 arena.',schoolyard:'Bright playground with slides, towers, swings, and open lanes.',lasertag:'Neon green grid maze with tunnels and tight walls.',disaster:'A dangerous tropical island full of natural disasters.'};
-const MAP_SPAWNS={base:STARTS,schoolyard:{blue:new THREE.Vector3(-20,1.7,22),red:new THREE.Vector3(20,1.7,-22)},lasertag:{blue:new THREE.Vector3(-22,1.7,22),red:new THREE.Vector3(22,1.7,-22)},disaster:{blue:new THREE.Vector3(-8,1.7,0),red:new THREE.Vector3(8,1.7,0)}};
+const MAP_OPTIONS=['base','schoolyard','lasertag','rooftop'];
+const MAP_LABELS={base:'Base',schoolyard:'Schoolyard',lasertag:'Lasertag',rooftop:'Rooftop Run',disaster:'Disaster Island'};
+const MAP_DESCS={base:'Classic Crossfire 1v1 arena.',schoolyard:'Bright playground with slides, towers, swings, and open lanes.',lasertag:'Neon green grid maze with tunnels and tight walls.',rooftop:'Clean box-only rooftop map with safe platforms and no glitchy slopes.',disaster:'A dangerous tropical island full of natural disasters.'};
+const MAP_SPAWNS={base:STARTS,schoolyard:{blue:new THREE.Vector3(-20,1.7,22),red:new THREE.Vector3(20,1.7,-22)},lasertag:{blue:new THREE.Vector3(-22,1.7,22),red:new THREE.Vector3(22,1.7,-22)},rooftop:{blue:new THREE.Vector3(-22,1.7,20),red:new THREE.Vector3(22,1.7,-20)},disaster:{blue:new THREE.Vector3(-8,1.7,0),red:new THREE.Vector3(8,1.7,0)}};
 let activeMap='base',builtArenaMap=null,mapVoteChoice=null,modeVoteChoice=null,lastTaggerSeen=null;let arenaObjects=[];let cachedLaserGridTexture=null;
 const MODE_OPTIONS=['duel','tag','disaster'];
 const MODE_LABELS={duel:'1v1',tag:'Tag',disaster:'Disaster Island'};
@@ -158,7 +159,8 @@ let ownedEmotes=JSON.parse(localStorage.getItem("duelStarsOwnedEmotes")||"[]");
 let activeEmote={id:null,start:0,until:0};
 let emoteMenuOpen=false;
 let roundDelayTimerKey=null;
-let chatOpen=false,chatMessages=[],chatUnread=0,chatReady=false,lastChatSeenTime=Number(localStorage.getItem("duelStarsLastReadChatTime")||0);
+let chatOpen=false,chatMessages=[],chatUnread=0,chatReady=false,lastChatSeenTime=0,chatRef=null,chatScope="";
+let privateRoomRef=null,currentPrivateCode=null;
 let ownedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsWeaponSkins")||'{"arTrueGold":false,"crimsonPrimary":false,"voidSecondary":false,"frostMelee":false,"plasmaSupport":false}');
 let equippedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsEquippedSkins")||'{"assaultRifle":null,"primary":null,"secondary":null,"melee":null,"support":null}');
 if(ownedWeaponSkins.arTrueGold==null)ownedWeaponSkins.arTrueGold=false;
@@ -359,7 +361,7 @@ function buildArena(map='base',force=false){
  map=(MAP_OPTIONS.includes(map)||map==='disaster')?map:'base';
  if(!force&&builtArenaMap===map)return;
  clearArena();activeMap=map;builtArenaMap=map;
- if(map==='schoolyard')makeSchoolyardArena();else if(map==='lasertag')makeLasertagArena();else if(map==='disaster')makeDisasterArena();else makeBaseArena();
+ if(map==='schoolyard')makeSchoolyardArena();else if(map==='lasertag')makeLasertagArena();else if(map==='rooftop')makeRooftopArena();else if(map==='disaster')makeDisasterArena();else makeBaseArena();
 }
 function makeBaseArena(){
  const size=60,half=size/2;const floor=new THREE.Mesh(new THREE.BoxGeometry(size,1,size),new THREE.MeshStandardMaterial({color:0x20283d,roughness:.8}));floor.position.y=-.55;floor.receiveShadow=true;arenaMesh(floor);
@@ -377,6 +379,8 @@ function makeSchoolyardArena(){
  const roof2=new THREE.Mesh(new THREE.ConeGeometry(3.2,1.5,4),sky);roof2.position.set(4,4.05,2);roof2.rotation.y=Math.PI/4;arenaMesh(roof2);
  const slide1=new THREE.Mesh(new THREE.BoxGeometry(2.2,.28,9),sky);slide1.position.set(-13,1.55,5.5);slide1.rotation.x=.48;slide1.rotation.z=-.12;arenaMesh(slide1);
  const slide2=new THREE.Mesh(new THREE.BoxGeometry(2.0,.28,8),teal);slide2.position.set(10,1.45,-3.6);slide2.rotation.x=-.42;slide2.rotation.z=.15;arenaMesh(slide2);
+ for(let i=0;i<5;i++){addInvisibleArenaBlock(-13,.25+i*.28,1.8+i*1.55,2.4,.35,1.25);addInvisibleArenaBlock(10,.25+i*.25,.2-i*1.45,2.2,.35,1.2);}
+ addInvisibleArenaBlock(-7,3.25,0,4.8,.35,4.8);addInvisibleArenaBlock(4,3.25,2,4.8,.35,4.8);addInvisibleArenaBlock(-1.5,3.45,1,9.2,.35,2.4);
  // swing set, benches, stepping stones
  addArenaWall(15,2,10,.35,4,9,wood);addArenaWall(21,2,10,.35,4,9,wood);addArenaWall(18,4,10,7,.35,.35,wood);addArenaWall(18,1.1,7,2,.25,1,0x1e5bff);addArenaWall(18,1.1,13,2,.25,1,0x1e5bff);
  addArenaWall(-21,.5,-8,5,1,1.5,0x3a7bd5);addArenaWall(19,.5,-15,5,1,1.5,0x3a7bd5);
@@ -392,7 +396,7 @@ function makeLasertagArena(){
  wallspec.forEach(a=>addArenaWall(...a,mat));
  const tunnelMat=laserGridMat();
  function tunnel(x,z,rot=0){const t=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,7,18,1,true),tunnelMat);t.position.set(x,1.7,z);t.rotation.z=Math.PI/2;t.rotation.y=rot;arenaMesh(t);addArenaWall(x,1.05,z,7,.8,1.2,tunnelMat);}
- tunnel(-21,-6,Math.PI/2);tunnel(9,1,0);tunnel(-1,22,Math.PI/2);
+ tunnel(-21,-6,Math.PI/2);tunnel(9,1,0);tunnel(-1,22,Math.PI/2);addInvisibleArenaBlock(-21,3.95,-6,7.2,.35,4.8);addInvisibleArenaBlock(9,3.95,1,7.2,.35,4.8);addInvisibleArenaBlock(-1,3.95,22,7.2,.35,4.8);
  const neon=new THREE.PointLight(0x10ff68,1.4,34);neon.position.set(0,5,0);arenaMesh(neon);const neon2=new THREE.PointLight(0x10ff68,1,28);neon2.position.set(-18,4,15);arenaMesh(neon2);
 }
 
@@ -400,6 +404,27 @@ function makePalmTree(x,z){
  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.32,.48,4.4,8),new THREE.MeshStandardMaterial({color:0x6b4424,roughness:.75}));trunk.position.set(x,2.2,z);trunk.rotation.z=(Math.random()-.5)*.18;arenaMesh(trunk);
  for(let i=0;i<6;i++){const leaf=new THREE.Mesh(new THREE.BoxGeometry(.22,.08,3.4),new THREE.MeshStandardMaterial({color:0x2e9e45,roughness:.68}));leaf.position.set(x,4.55,z);leaf.rotation.y=(Math.PI*2/6)*i;leaf.rotation.x=.45+Math.random()*.2;arenaMesh(leaf);} 
  disasterState.palms.push({x,z,height:4.9});
+}
+function makeRooftopArena(){
+ const size=64,half=size/2;
+ const floorMat=new THREE.MeshStandardMaterial({color:0x20283d,roughness:.82});
+ const trimMat=new THREE.MeshStandardMaterial({color:0x7e8ea8,roughness:.62});
+ const blueMat=new THREE.MeshStandardMaterial({color:0x00e5ff,roughness:.45,emissive:0x003545,emissiveIntensity:.35});
+ const orangeMat=new THREE.MeshStandardMaterial({color:0xffb84d,roughness:.5,emissive:0x3a1c00,emissiveIntensity:.25});
+ const floor=new THREE.Mesh(new THREE.BoxGeometry(size,1,size),floorMat);floor.position.y=-.55;floor.receiveShadow=true;arenaMesh(floor);
+ addArenaWall(0,2,-half,size,4,1,trimMat);addArenaWall(0,2,half,size,4,1,trimMat);addArenaWall(-half,2,0,1,4,size,trimMat);addArenaWall(half,2,0,1,4,size,trimMat);
+ // clean, box-only platforms with easy cover
+ addArenaWall(-18,.75,14,10,1.5,8,blueMat);addArenaWall(18,.75,-14,10,1.5,8,orangeMat);
+ addArenaWall(0,1.15,0,11,2.3,11,0x39445f);
+ addArenaWall(-10,.5,-7,8,1,3,0x50617d);addArenaWall(10,.5,7,8,1,3,0x50617d);
+ addArenaWall(-3,.35,13,9,.7,3,0x50617d);addArenaWall(3,.35,-13,9,.7,3,0x50617d);
+ addArenaWall(-20,1.4,-7,3,2.8,12,0x2b344a);addArenaWall(20,1.4,7,3,2.8,12,0x2b344a);
+ addArenaWall(0,1.25,21,17,2.5,2.2,0x2b344a);addArenaWall(0,1.25,-21,17,2.5,2.2,0x2b344a);
+ // simple stairs to rooftops so everything is reachable
+ for(let i=0;i<5;i++){addArenaWall(-25+i*2,.15+i*.18,3+i*2,2.2,.3+i*.12,2.2,0x6d7f9d);addArenaWall(25-i*2,.15+i*.18,-3-i*2,2.2,.3+i*.12,2.2,0x6d7f9d);}
+ const light1=new THREE.PointLight(0x8cf7ff,1.2,28);light1.position.set(-14,6,14);arenaMesh(light1);
+ const light2=new THREE.PointLight(0xffb84d,1.1,28);light2.position.set(14,6,-14);arenaMesh(light2);
+ arenaMesh(new THREE.GridHelper(size,size,0x7e8ea8,0x30394d));
 }
 function makeDisasterArena(){
  const ocean=new THREE.Mesh(new THREE.BoxGeometry(92,1,92),new THREE.MeshStandardMaterial({color:0x147aa6,roughness:.72,emissive:0x083049,emissiveIntensity:.45}));ocean.position.y=-1;arenaMesh(ocean);
@@ -1034,13 +1059,18 @@ function applyAvatarToMesh(m,p){
  }
  m.userData.avatar={...a};
 }
+function sameVisibleSpace(p){
+ if(matchId)return p.matchId===matchId;
+ if(currentPrivateCode)return p.mode==='private'&&p.privateCode===currentPrivateCode;
+ return p.mode==='lobby'&&!p.privateCode;
+}
 function updateRemoteMeshes(){
  for(const id in remotePlayers){
   if(id===uid)continue;
   let p=remotePlayers[id];
   if(!remoteMeshes[id])remoteMeshes[id]=makePlayerMesh(p.color,p.name,getAvatarData(p));
   let m=remoteMeshes[id];
-  let visible=p.mode==='lobby'||p.matchId===matchId;
+  let visible=sameVisibleSpace(p);
   m.visible=visible;
   let groundY=Math.max(0,(Number(p.y)||1.7)-1.7);
   let target=new THREE.Vector3(Number(p.x)||0,groundY,Number(p.z)||LOBBY_Z);
@@ -1083,7 +1113,7 @@ function cleanupOwnGhosts(){
  }).catch(()=>{});
 }
 function authStart(){auth.signInAnonymously().then(res=>{authUid=res.user.uid;uid=authUid+'_'+tabId;myRef=db.ref('duelStars/players/'+uid);myRef.onDisconnect().remove();myRef.set({authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,mode:'lobby',matchId:null,weapon:currentWeapon,goldArSkin:isGoldARActive(),updated:firebase.database.ServerValue.TIMESTAMP});cleanupOwnGhosts();listenOnline();listenMyAssignment();listenQueue();listenChat();$('statusText').textContent='Lobby';setMessage('Connected as '+playerName,650);}).catch(e=>{console.error(e);$('statusText').textContent='Firebase error';setMessage('Firebase auth error: '+e.message,0)});}
-function listenOnline(){db.ref('duelStars/players').on('value',snap=>{remotePlayers=normalizePlayers(snap.val()||{});let list=Object.entries(remotePlayers).filter(([id,p])=>p.mode==='lobby').map(([id,p])=>`<div>${p.name||'Player'} ${id===uid?'(you)':''}</div>`).join('')||'<div>No players</div>';$('playersOnline').innerHTML=list;updateRemoteMeshes();});}
+function listenOnline(){db.ref('duelStars/players').on('value',snap=>{remotePlayers=normalizePlayers(snap.val()||{});let rows=Object.entries(remotePlayers).filter(([id,p])=>id===uid||sameVisibleSpace(p));let list=rows.map(([id,p])=>`<div>${p.name||'Player'} ${id===uid?'(you)':''}</div>`).join('')||'<div>No players</div>';const title=currentPrivateCode?'Private Lobby '+currentPrivateCode:'Online Lobby';$('playersOnline').innerHTML='<b>'+title+'</b>'+list;updateRemoteMeshes();});}
 function listenMyAssignment(){
  if(!myRef)return;
  myRef.on('value',snap=>{
@@ -1119,6 +1149,7 @@ function tryCreateMatchFromQueue(blue,red){
   updates['duelStars/players/'+blue+'/mode']='match';
   updates['duelStars/players/'+blue+'/matchId']=id;
   updates['duelStars/players/'+blue+'/side']='blue';
+  updates['duelStars/players/'+blue+'/privateCode']=null;
   updates['duelStars/players/'+red+'/mode']='match';
   updates['duelStars/players/'+red+'/matchId']=id;
   updates['duelStars/players/'+red+'/side']='red';
@@ -1128,8 +1159,8 @@ function tryCreateMatchFromQueue(blue,red){
  }).catch(e=>{console.error('Match create failed',e);setMessage('Match create error: '+e.message,0);});
 }
 function createMatchIfHost(id,blue,red){tryCreateMatchFromQueue(blue,red);}
-function joinMatch(id,side){if(matchId===id)return;if(currentMatchRef)currentMatchRef.off();matchId=id;mySide=side;remoteSide=side==='blue'?'red':'blue';standingPad=null;mapVoteChoice=null;modeVoteChoice=null;lastMatchAnnounceKey=null;lastRoundAnnounceKey=null;seenMolotovFx={};clearMolotovVisuals(false);currentMatchRef=db.ref('duelStars/matches/'+id);currentMatchRef.on('value',snap=>{currentMatch=snap.val();handleMatchState();});remoteId=null;currentMatchRef.once('value').then(s=>{let m=s.val();remoteId=side==='blue'?m.red:m.blue;});gameMode='match';roundPhase='modevote';spawnForRound();lastAmmoRoundKey=null;resetAmmo();lastTaggerSeen=null;showLoadout(false);showMapVote(false);showModeVote(true);}
-function leaveMatch(){clearTimeout(winnerOverlayTimer);$('winnerOverlay').style.display='none';clearMolotovVisuals();if(currentMatchRef)currentMatchRef.off();currentMatchRef=null;currentMatch=null;matchId=null;mySide=null;remoteSide=null;remoteId=null;standingPad=null;mapVoteChoice=null;modeVoteChoice=null;lastTaggerSeen=null;gameMode='lobby';roundPhase='lobby';slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;player.height=STAND_HEIGHT;player.pos.set(0,1.7,LOBBY_Z);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;cancelReload();showLoadout(false);showMapVote(false);showModeVote(false);if(uid)myRef.update({mode:'lobby',matchId:null,side:null});}
+function joinMatch(id,side){if(matchId===id)return;if(currentMatchRef)currentMatchRef.off();matchId=id;mySide=side;remoteSide=side==='blue'?'red':'blue';standingPad=null;mapVoteChoice=null;modeVoteChoice=null;lastMatchAnnounceKey=null;lastRoundAnnounceKey=null;seenMolotovFx={};clearMolotovVisuals(false);currentMatchRef=db.ref('duelStars/matches/'+id);currentMatchRef.on('value',snap=>{currentMatch=snap.val();listenChat();handleMatchState();});remoteId=null;currentMatchRef.once('value').then(s=>{let m=s.val();remoteId=side==='blue'?m.red:m.blue;});gameMode='match';roundPhase='modevote';spawnForRound();lastAmmoRoundKey=null;resetAmmo();lastTaggerSeen=null;showLoadout(false);showMapVote(false);showModeVote(true);}
+function leaveMatch(){stopPrivateRoomListen();clearTimeout(winnerOverlayTimer);$('winnerOverlay').style.display='none';clearMolotovVisuals();if(currentMatchRef)currentMatchRef.off();currentMatchRef=null;currentMatch=null;matchId=null;mySide=null;remoteSide=null;remoteId=null;standingPad=null;mapVoteChoice=null;modeVoteChoice=null;lastTaggerSeen=null;gameMode='lobby';roundPhase='lobby';slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;player.height=STAND_HEIGHT;player.pos.set(0,1.7,LOBBY_Z);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;cancelReload();showLoadout(false);showMapVote(false);showModeVote(false);if(uid)myRef.update({mode:'lobby',privateCode:null,matchId:null,side:null});listenChat(true);}
 function handleMatchState(){
  if(!currentMatch||!mySide)return;
  syncMatchEffects();
@@ -1226,6 +1257,41 @@ function handleMatchState(){
   setTimeout(leaveMatch,3000);
  }
 }
+function unqueuePrivateSide(){
+ if(!uid||!currentPrivateCode)return;
+ db.ref('duelStars/privateRooms/'+currentPrivateCode+'/pads').once('value').then(s=>{
+  const pads=s.val()||{};const updates={};
+  if(pads.blue===uid)updates.blue=null;
+  if(pads.red===uid)updates.red=null;
+  if(Object.keys(updates).length)db.ref('duelStars/privateRooms/'+currentPrivateCode+'/pads').update(updates);
+ });
+ standingPad=null;
+}
+function queuePrivateSide(side){
+ if(!uid||!currentPrivateCode||gameMode!=='lobby')return;
+ if(standingPad===side)return;
+ const other=side==='blue'?'red':'blue';
+ const ref=db.ref('duelStars/privateRooms/'+currentPrivateCode+'/pads');
+ ref.transaction(pads=>{
+  pads=pads||{};
+  if(pads[other]===uid)pads[other]=null;
+  pads[side]=uid;
+  return pads;
+ }).then(res=>{
+  standingPad=side;
+  setMessage('Private '+side.toUpperCase()+' pad ready',700);
+  const pads=res.snapshot.val()||{};
+  if(pads.blue&&pads.red&&pads.blue!==pads.red)tryCreatePrivateMatch(currentPrivateCode,pads.blue,pads.red);
+ }).catch(e=>setMessage('Private pad error: '+e.message,1200));
+}
+function updatePrivateMatchmakingPads(){
+ const dBlue=player.pos.distanceTo(playBluePad.position);
+ const dRed=player.pos.distanceTo(playRedPad.position);
+ const onBlue=dBlue<3.5,onRed=dRed<3.5;
+ if(onBlue&&!onRed){queuePrivateSide('blue');return;}
+ if(onRed&&!onBlue){queuePrivateSide('red');return;}
+ if(!onBlue&&!onRed&&standingPad)unqueuePrivateSide();
+}
 function queueSide(side){
  if(!uid||gameMode!=='lobby')return;
  // Do not spam Firebase every frame while the player is already queued.
@@ -1254,6 +1320,7 @@ function unqueue(){
 }
 function updateMatchmakingPads(){
  if(!uid||gameMode!=='lobby'||menuOpen||shopOpen)return;
+ if(currentPrivateCode){updatePrivateMatchmakingPads();return;}
  const dBlue=player.pos.distanceTo(playBluePad.position);
  const dRed=player.pos.distanceTo(playRedPad.position);
  const onBlue=dBlue<3.5;
@@ -1377,14 +1444,16 @@ function updatePlayer(dt){
   // instead of every wall collision acting like an invisible full-height block.
   player.pos.x += player.vel.x * dt;
   if (collides(player.pos)) {
-    player.pos.x = old.x;
-    player.vel.x = 0;
+    const mantle=findMantleSurface(player.pos);
+    if(mantle!==null&&player.vel.y<4){player.pos.y=mantle+player.height;player.vel.y=0;player.grounded=true;}
+    else{player.pos.x = old.x;player.vel.x = 0;}
   }
 
   player.pos.z += player.vel.z * dt;
   if (collides(player.pos)) {
-    player.pos.z = old.z;
-    player.vel.z = 0;
+    const mantle=findMantleSurface(player.pos);
+    if(mantle!==null&&player.vel.y<4){player.pos.y=mantle+player.height;player.vel.y=0;player.grounded=true;}
+    else{player.pos.z = old.z;player.vel.z = 0;}
   }
 
   const beforeY = player.pos.y;
@@ -1427,9 +1496,21 @@ function findLandingSurface(pos,beforeY){
  let best=null;
  for(const w of walls){
   const b=w.box;
-  const onX=pos.x+player.radius*.72>b.min.x&&pos.x-player.radius*.72<b.max.x;
-  const onZ=pos.z+player.radius*.72>b.min.z&&pos.z-player.radius*.72<b.max.z;
-  if(onX&&onZ&&footBefore>=b.max.y-.08&&footNow<=b.max.y+.18){best=best===null?b.max.y:Math.max(best,b.max.y);}
+  const onX=pos.x+player.radius*.82>b.min.x&&pos.x-player.radius*.82<b.max.x;
+  const onZ=pos.z+player.radius*.82>b.min.z&&pos.z-player.radius*.82<b.max.z;
+  if(onX&&onZ&&footBefore>=b.max.y-.22&&footNow<=b.max.y+.55){best=best===null?b.max.y:Math.max(best,b.max.y);}
+ }
+ return best;
+}
+function findMantleSurface(pos){
+ const foot=pos.y-player.height;
+ let best=null;
+ for(const w of walls){
+  const b=w.box;
+  const onX=pos.x+player.radius*.82>b.min.x&&pos.x-player.radius*.82<b.max.x;
+  const onZ=pos.z+player.radius*.82>b.min.z&&pos.z-player.radius*.82<b.max.z;
+  const climb=b.max.y-foot;
+  if(onX&&onZ&&climb>.05&&climb<2.35&&pos.y>b.min.y+.55){best=best===null?b.max.y:Math.max(best,b.max.y);}
  }
  return best;
 }
@@ -2043,23 +2124,27 @@ window.toggleSkinSet=function(type){
 window.toggleVoidSecondarySkin=function(){toggleSkinSet('secondary')};window.saveName=function(){playerName=$('nameInput').value.trim().slice(0,18)||'Player';saveLocal();if(myRef)myRef.update({name:playerName});renderSettings()};window.setSkin=function(c){skinColor=c;avatar.shirt=c;saveLocal();if(myRef)myRef.update({color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
 window.setAvatarColor=function(part,c){if(!['shirt','pants','head'].includes(part))return;avatar[part]=c;if(part==='shirt')skinColor=c;saveLocal();if(myRef)myRef.update({color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
 window.setAccessory=function(a){avatar.accessory=a;saveLocal();if(myRef)myRef.update({shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
-function openSettings(){closeChat();closeEmoteMenu();menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('settingsPanel').style.display='block';$('shopPanel').style.display='none';renderSettings();document.exitPointerLock?.()}function closeSettings(){menuOpen=false;$('settingsPanel').style.display='none'}function toggleSettings(){const p=$('settingsPanel');if(p&&p.style.display==='block')closeSettings();else openSettings();}function openShop(){closeChat();closeEmoteMenu();shopOpen=true;menuOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('shopPanel').style.display='block';$('settingsPanel').style.display='none';setShopTab('weapons');renderShop();document.exitPointerLock?.()}function closeShop(){shopOpen=false;$('shopPanel').style.display='none'}
+function openSettings(){closeChat();closeEmoteMenu();closePrivatePanel();menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('settingsPanel').style.display='block';$('shopPanel').style.display='none';renderSettings();document.exitPointerLock?.()}function closeSettings(){menuOpen=false;$('settingsPanel').style.display='none'}function toggleSettings(){const p=$('settingsPanel');if(p&&p.style.display==='block')closeSettings();else openSettings();}function openShop(){closeChat();closeEmoteMenu();closePrivatePanel();shopOpen=true;menuOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('shopPanel').style.display='block';$('settingsPanel').style.display='none';setShopTab('weapons');renderShop();document.exitPointerLock?.()}function closeShop(){shopOpen=false;$('shopPanel').style.display='none'}
 function toggleChat(){chatOpen?closeChat():openChat();}
 function updateChatBadge(){
  const b=$('chatUnread');if(!b)return;
  b.textContent=chatUnread>99?'99+':String(chatUnread);
  b.style.display=chatUnread>0?'block':'none';
 }
+function currentChatPrivateCode(){return cleanRoomCode((currentMatch&&currentMatch.privateCode)||currentPrivateCode||'');}
+function chatScopeKey(){const code=currentChatPrivateCode();return code?'private_'+code:'public';}
+function chatStorageKey(){return 'duelStarsLastReadChatTime_'+chatScopeKey();}
+function chatPath(){const code=currentChatPrivateCode();return code?('duelStars/privateChats/'+code):'duelStars/chat';}
 function latestChatTime(){
  return chatMessages.reduce((mx,m)=>Math.max(mx,Number(m.time)||0),lastChatSeenTime||0);
 }
 function markChatRead(){
  chatUnread=0;
  lastChatSeenTime=latestChatTime();
- localStorage.setItem('duelStarsLastReadChatTime',String(lastChatSeenTime));
+ localStorage.setItem(chatStorageKey(),String(lastChatSeenTime));
  updateChatBadge();
 }
-function openChat(){closeEmoteMenu();chatOpen=true;closeSettings();closeShop();closeCodePanel();closeUpdatesPanel();const p=$('chatPanel');if(p)p.style.display='block';renderChat();markChatRead();document.exitPointerLock?.();setTimeout(()=>{$('chatInput')?.focus()},30);}
+function openChat(){listenChat();closeEmoteMenu();closePrivatePanel();chatOpen=true;closeSettings();closeShop();closeCodePanel();closeUpdatesPanel();const p=$('chatPanel');if(p)p.style.display='block';renderChat();markChatRead();document.exitPointerLock?.();setTimeout(()=>{$('chatInput')?.focus()},30);}
 function closeChat(){chatOpen=false;const p=$('chatPanel');if(p)p.style.display='none';}
 function renderChat(){
  const box=$('chatMessages');if(!box)return;
@@ -2073,14 +2158,22 @@ function renderChat(){
  }
  box.scrollTop=box.scrollHeight;
 }
-function listenChat(){
- db.ref('duelStars/chat').limitToLast(40).on('value',snap=>{
+function listenChat(force=false){
+ const scope=chatScopeKey();
+ if(chatRef&&chatScope===scope&&!force)return;
+ if(chatRef){chatRef.off();chatRef=null;}
+ chatScope=scope;
+ chatMessages=[];chatUnread=0;chatReady=false;
+ lastChatSeenTime=Number(localStorage.getItem(chatStorageKey())||0);
+ renderChat();updateChatBadge();
+ chatRef=db.ref(chatPath()).limitToLast(40);
+ chatRef.on('value',snap=>{
   const arr=[];snap.forEach(ch=>{const v=ch.val();if(v&&v.text)arr.push(Object.assign({key:ch.key},v))});
   chatMessages=arr;renderChat();
   const maxTime=latestChatTime();
   if(!chatReady){
    chatReady=true;
-   if(!lastChatSeenTime){lastChatSeenTime=maxTime;localStorage.setItem('duelStarsLastReadChatTime',String(lastChatSeenTime));}
+   if(!lastChatSeenTime){lastChatSeenTime=maxTime;localStorage.setItem(chatStorageKey(),String(lastChatSeenTime));}
   }
   if(chatOpen)markChatRead();
   else{
@@ -2093,12 +2186,155 @@ function sendChat(){
  const input=$('chatInput');if(!input||!uid)return;
  const text=String(input.value||'').replace(/\s+/g,' ').trim().slice(0,120);
  if(!text)return;
- db.ref('duelStars/chat').push({uid,name:playerName||'Player',text,time:firebase.database.ServerValue.TIMESTAMP});
+ db.ref(chatPath()).push({uid,name:playerName||'Player',text,time:firebase.database.ServerValue.TIMESTAMP});
  input.value='';
  if(chatOpen)setTimeout(markChatRead,150);
 }
 window.toggleChat=toggleChat;window.openChat=openChat;window.closeChat=closeChat;window.sendChat=sendChat;
-function openCodePanel(){closeChat();menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('settingsPanel').style.display='none';$('shopPanel').style.display='none';$('codePanel').style.display='block';$('codeStatus').textContent='';$('codeInput').value='';document.exitPointerLock?.()}function closeCodePanel(){menuOpen=false;$('codePanel').style.display='none'}
+function cleanRoomCode(raw){return String(raw||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);}
+function randomRoomCode(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<4;i++)c+=chars[Math.floor(Math.random()*chars.length)];return c;}
+function setPrivateStatus(id,msg){const el=$(id);if(el)el.textContent=msg||'';}
+function openPrivatePanel(){closeChat();closeEmoteMenu();closeSettings();closeShop();closeCodePanel();closeUpdatesPanel();menuOpen=true;const p=$('privatePanel');if(p)p.style.display='block';document.exitPointerLock?.();}
+function closePrivatePanel(){menuOpen=false;const p=$('privatePanel');if(p)p.style.display='none';}
+function enterPrivateLobby(code){
+ currentPrivateCode=code;
+ gameMode='lobby';roundPhase='lobby';standingPad=null;
+ if(myRef)myRef.update({mode:'private',privateCode:code,matchId:null,side:null});
+ listenChat(true);
+ setMessage('Entered private lobby '+code,1100);
+}
+function stopPrivateRoomListen(){if(privateRoomRef){privateRoomRef.off();privateRoomRef=null;}currentPrivateCode=null;}
+function listenPrivateRoom(code){
+ if(privateRoomRef)privateRoomRef.off();
+ enterPrivateLobby(code);
+ privateRoomRef=db.ref('duelStars/privateRooms/'+code);
+ privateRoomRef.on('value',snap=>{
+  const room=snap.val();
+  if(!room)return;
+  const youAreBlue=room.blue===uid,youAreRed=room.red===uid;
+  if(room.pads&&room.pads.blue&&room.pads.red&&room.pads.blue!==room.pads.red){
+   setPrivateStatus('privateCreateStatus','Both pads ready. Starting match...');
+   setPrivateStatus('privateJoinStatus','Both pads ready. Starting match...');
+   tryCreatePrivateMatch(code,room.pads.blue,room.pads.red);
+  }else if(room.blue&&room.red&&room.blue!==room.red){
+   setPrivateStatus('privateCreateStatus','Friend joined. Step on BLUE or RED pad to start.');
+   setPrivateStatus('privateJoinStatus','Both players are in. Step on a pad to start.');
+  }else if(youAreBlue){
+   setPrivateStatus('privateCreateStatus','Waiting for friend to join...');
+  }else if(youAreRed){
+   setPrivateStatus('privateJoinStatus','Joined. Waiting for host...');
+  }
+ });
+}
+function leavePrivateRoom(){
+ const matchCode=(currentMatch&&currentMatch.privateCode)||currentPrivateCode;
+ if(gameMode==='match'&&currentMatchRef){
+  const winner=remoteSide||(mySide==='blue'?'red':'blue');
+  currentMatchRef.transaction(m=>{
+   if(!m||m.status==='finished')return m;
+   m.status='finished';m.winner=winner;m.lastRoundWinner=winner;m.scores=m.scores||{blue:0,red:0};m.scores[winner]=Math.max(5,m.scores[winner]||0);m.fx={};
+   return m;
+  }).finally(()=>{leaveMatch();setMessage('You left. Opponent wins.',1200);});
+  return;
+ }
+ const code=currentPrivateCode||matchCode;
+ if(code&&uid){
+  db.ref('duelStars/privateRooms/'+code).transaction(room=>{
+   if(!room)return room;
+   if(room.pads){if(room.pads.blue===uid)room.pads.blue=null;if(room.pads.red===uid)room.pads.red=null;}
+   if(room.blue===uid&&room.red){room.blue=room.red;room.red=null;room.status='waiting';return room;}
+   if(room.red===uid){room.red=null;room.status='waiting';return room;}
+   if(room.blue===uid&&!room.red)return null;
+   return room;
+  });
+ }
+ stopPrivateRoomListen();
+ if(myRef)myRef.update({mode:'lobby',privateCode:null,matchId:null,side:null});
+ const codeEl=$('privateCodeBig');if(codeEl)codeEl.textContent='----';
+ setPrivateStatus('privateCreateStatus','Left private lobby.');
+ setPrivateStatus('privateJoinStatus','');
+ listenChat(true);
+ setMessage('Returned to public lobby',900);
+}
+function createPrivateRoom(){
+ if(!uid)return setPrivateStatus('privateCreateStatus','Still connecting...');
+ unqueue();
+ let code=randomRoomCode();
+ const codeEl=$('privateCodeBig');if(codeEl)codeEl.textContent=code;
+ const input=$('privateJoinInput');if(input)input.value=code;
+ const ref=db.ref('duelStars/privateRooms/'+code);
+ ref.transaction(cur=>{
+  const stale=cur?.created&&Date.now()-Number(cur.created)>1000*60*20;
+  if(!cur||stale||cur.status==='full')return {blue:uid,red:null,status:'waiting',created:Date.now(),host:playerName};
+  return cur;
+ }).then(res=>{
+  const room=res.snapshot.val();
+  if(room?.blue!==uid&&room?.red!==uid){setPrivateStatus('privateCreateStatus','Code collision. Try Create again.');return;}
+  ref.onDisconnect().remove();
+  setPrivateStatus('privateCreateStatus','Share code '+code+' with a friend.');
+  listenPrivateRoom(code);
+ }).catch(e=>setPrivateStatus('privateCreateStatus','Private room error: '+e.message));
+}
+function joinPrivateRoom(){
+ if(!uid)return setPrivateStatus('privateJoinStatus','Still connecting...');
+ unqueue();
+ const code=cleanRoomCode($('privateJoinInput')?.value||'');
+ if(!code)return setPrivateStatus('privateJoinStatus','Enter a room code.');
+ const ref=db.ref('duelStars/privateRooms/'+code);
+ ref.transaction(cur=>{
+  const stale=cur?.created&&Date.now()-Number(cur.created)>1000*60*20;
+  if(!cur||stale)return cur;
+  if(cur.blue===uid||cur.red===uid)return cur;
+  if(!cur.red){cur.red=uid;cur.status='full';cur.guest=playerName;return cur;}
+  return cur;
+ }).then(res=>{
+  const room=res.snapshot.val();
+  if(!room){setPrivateStatus('privateJoinStatus','Room not found. Check the code.');return;}
+  if(room.blue!==uid&&room.red!==uid){setPrivateStatus('privateJoinStatus','Room is full.');return;}
+  setPrivateStatus('privateJoinStatus','Joined room '+code+'.');
+  listenPrivateRoom(code);
+ }).catch(e=>setPrivateStatus('privateJoinStatus','Join error: '+e.message));
+}
+function startPrivateMatch(){
+ if(!uid||!currentPrivateCode)return setPrivateStatus('privateCreateStatus','Create or join a private lobby first.');
+ const code=currentPrivateCode;
+ db.ref('duelStars/privateRooms/'+code).once('value').then(s=>{
+  const room=s.val();
+  if(!room)return setPrivateStatus('privateCreateStatus','Private room not found.');
+  if(!room.blue||!room.red||room.blue===room.red)return setPrivateStatus('privateCreateStatus','Need 2 players before starting.');
+  setPrivateStatus('privateCreateStatus','Starting match...');
+  tryCreatePrivateMatch(code,room.blue,room.red);
+ }).catch(e=>setPrivateStatus('privateCreateStatus','Start error: '+e.message));
+}
+function tryCreatePrivateMatch(code,blue,red){
+ if(!uid||!blue||!red||blue===red)return;
+ if(uid!==blue&&uid!==red)return;
+ const id='private_'+cleanRoomCode(code);
+ const ref=db.ref('duelStars/matches/'+id);
+ ref.transaction(cur=>{
+  const fresh=()=>({blue,red,privateCode:code,status:'modevote',gameType:null,modeVotes:{},round:1,map:null,mapVotes:{},scores:{blue:0,red:0},health:{blue:MAX_HEALTH,red:MAX_HEALTH},ready:{},loadouts:{},tagger:null,tagEnd:null,disasterEnd:null,freezeUntil:0,winner:null,lastRoundWinner:null,paid:{},fx:{},created:firebase.database.ServerValue.TIMESTAMP});
+  if(!cur)return fresh();
+  const oldFinished=cur.status==='finished'||cur.winner;
+  const veryOld=cur.created&&Date.now()-Number(cur.created)>1000*60*15;
+  if(oldFinished||veryOld)return fresh();
+  return cur;
+ }).then(result=>{
+  if(!result.committed && !result.snapshot.exists())return;
+  const updates={};
+  updates['duelStars/players/'+blue+'/mode']='match';
+  updates['duelStars/players/'+blue+'/matchId']=id;
+  updates['duelStars/players/'+blue+'/side']='blue';
+  updates['duelStars/players/'+blue+'/privateCode']=null;
+  updates['duelStars/players/'+red+'/mode']='match';
+  updates['duelStars/players/'+red+'/matchId']=id;
+  updates['duelStars/players/'+red+'/side']='red';
+  updates['duelStars/players/'+red+'/privateCode']=null;
+  updates['duelStars/privateRooms/'+code]=null;
+  db.ref().update(updates).then(()=>{stopPrivateRoomListen();closePrivatePanel();if(uid===blue)joinMatch(id,'blue');if(uid===red)joinMatch(id,'red');});
+ }).catch(e=>setPrivateStatus('privateJoinStatus','Start error: '+e.message));
+}
+window.openPrivatePanel=openPrivatePanel;window.closePrivatePanel=closePrivatePanel;window.createPrivateRoom=createPrivateRoom;window.joinPrivateRoom=joinPrivateRoom;window.leavePrivateRoom=leavePrivateRoom;
+function openCodePanel(){closeChat();closePrivatePanel();menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('settingsPanel').style.display='none';$('shopPanel').style.display='none';$('codePanel').style.display='block';$('codeStatus').textContent='';$('codeInput').value='';document.exitPointerLock?.()}function closeCodePanel(){menuOpen=false;$('codePanel').style.display='none'}
 function cleanCode(raw){return String(raw||'').trim().toLowerCase().replace(/[<>\s]/g,'');}
 function codeAlreadyRedeemed(code){return localStorage.getItem('duelStarsCode_'+code)==='yes'}
 function markCodeRedeemed(code){localStorage.setItem('duelStarsCode_'+code,'yes')}
@@ -2162,7 +2398,7 @@ function showMapVote(show){const p=$('mapVotePanel');if(!p)return;p.style.displa
 function renderMapVote(){
  const grid=$('mapVoteGrid'),status=$('mapVoteStatus');if(!grid)return;
  const votes=currentMatch?.mapVotes||{};const myVote=votes[mySide]||mapVoteChoice;const voteText=Object.entries(votes).map(([side,map])=>`${side.toUpperCase()}: ${MAP_LABELS[map]||map}`).join(' · ');
- grid.innerHTML=MAP_OPTIONS.map(map=>`<button class="mapCard ${myVote===map?'sel':''}" onclick="voteMap('${map}')"><div class="mapPreview map${map==='base'?'Base':map==='schoolyard'?'Schoolyard':'Lasertag'}"></div><div class="mapTitle">${MAP_LABELS[map]}</div><span class="votePill">${myVote===map?'Your vote':'Vote map'}</span><div class="mapDesc">${MAP_DESCS[map]}</div></button>`).join('');
+ grid.innerHTML=MAP_OPTIONS.map(map=>`<button class="mapCard ${myVote===map?'sel':''}" onclick="voteMap('${map}')"><div class="mapPreview map${map==='base'?'Base':map==='schoolyard'?'Schoolyard':map==='lasertag'?'Lasertag':'Rooftop'}"></div><div class="mapTitle">${MAP_LABELS[map]}</div><span class="votePill">${myVote===map?'Your vote':'Vote map'}</span><div class="mapDesc">${MAP_DESCS[map]}</div></button>`).join('');
  if(status)status.textContent=voteText?('Votes: '+voteText):'Choose a map to vote.';
 }
 window.voteMap=function(map){if(!currentMatchRef||!mySide||!MAP_OPTIONS.includes(map))return;mapVoteChoice=map;currentMatchRef.child('mapVotes/'+mySide).set(map).then(()=>resolveMapVote());renderMapVote();};
@@ -2172,7 +2408,7 @@ function resolveMapVote(){
   if(!m||m.status!=='mapvote')return m;
   const v=m.mapVotes||{};
   if(v.blue&&v.red){
-   const counts={base:0,schoolyard:0,lasertag:0};[v.blue,v.red].forEach(x=>{if(counts[x]!=null)counts[x]++});
+   const counts=Object.fromEntries(MAP_OPTIONS.map(k=>[k,0]));[v.blue,v.red].forEach(x=>{if(counts[x]!=null)counts[x]++});
    const max=Math.max(...Object.values(counts));const top=Object.keys(counts).filter(k=>counts[k]===max);
    const chosen=top.length===1?top[0]:top[Math.floor(Math.random()*top.length)];
    m.map=chosen;m.ready={};m.loadouts={};m.health={blue:MAX_HEALTH,red:MAX_HEALTH};
@@ -2235,7 +2471,8 @@ function networkTick(t){
   lastNet=t;
   let data={authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,emote:activeEmote.id,emoteStart:activeEmote.start||null,emoteUntil:activeEmote.until||null,katanaBlocking:(katanaState.blocking&&currentWeapon===KATANA_INDEX&&roundPhase==='playing'),updated:firebase.database.ServerValue.TIMESTAMP};
   if(matchId){data.mode='match';data.matchId=matchId;data.side=mySide||null;}
-  else if(gameMode==='lobby'){data.mode='lobby';data.matchId=null;data.side=null;}
+  else if(gameMode==='lobby'&&currentPrivateCode){data.mode='private';data.privateCode=currentPrivateCode;data.matchId=null;data.side=null;}
+  else if(gameMode==='lobby'){data.mode='lobby';data.privateCode=null;data.matchId=null;data.side=null;}
   myRef.update(data);
  }
  if(t-lastHeartbeat>1000){lastHeartbeat=t;if(gameMode==='lobby')unqueueIfLeftPads();}
@@ -2246,7 +2483,7 @@ function updateHud(){
  const statusEl=$('statusText');if(statusEl){
   if(isDisasterMode())statusEl.textContent='Disaster Island '+(roundPhase||'');
   else if(isTagMode())statusEl.textContent='Tag '+(roundPhase||'');
-  else statusEl.textContent=gameMode==='lobby'?'Lobby':('1v1 '+(roundPhase||''));
+  else statusEl.textContent=gameMode==='lobby'?(currentPrivateCode?'Private Lobby '+currentPrivateCode:'Lobby'):('1v1 '+(roundPhase||''));
  }
  const hp=Math.max(0,Math.round(player.health));
  const healthText=$('healthBarText');if(healthText)healthText.textContent=isTagMode()?('TAG · '+formatTagTime(tagTimeLeft())):(isDisasterMode()?(hp+' / '+MAX_HEALTH+' · '+formatTagTime(disasterTimeLeft())):(hp+' / '+MAX_HEALTH));
@@ -2258,6 +2495,7 @@ function updateHud(){
  }
  const shardsEl=$('shards');if(shardsEl)shardsEl.textContent=shards;
  const settingsEl=$('settingsBtn');if(settingsEl)settingsEl.style.display=gameMode==='lobby'?'block':'none';
+ const privateEl=$('privateBtn');if(privateEl){privateEl.style.display='block';privateEl.textContent='Join';if(gameMode==='lobby'){privateEl.style.right='190px';privateEl.style.bottom='18px';}else{privateEl.style.right='18px';privateEl.style.bottom='18px';}}
  const playerListEl=$('playerList');if(playerListEl)playerListEl.style.display=gameMode==='lobby'?'block':'none';
  const lobbyBannerEl=$('lobbyBanner');if(lobbyBannerEl)lobbyBannerEl.style.display=gameMode==='lobby'?'block':'none';
  const crosshairEl=$('crosshair');if(crosshairEl)crosshairEl.style.display=(gameMode==='match'&&roundPhase==='playing'&&!isDisasterMode())?'block':'none';
@@ -2298,7 +2536,8 @@ document.addEventListener('keydown',e=>{
     if(k==='tab'){e.preventDefault();keys={};toggleSettings();closeShop();closeCodePanel();closeUpdatesPanel();closeChat();if(roundPhase!=='select'&&roundPhase!=='mapvote'&&roundPhase!=='modevote')showLoadout(false);}
     return;
   }
-  if(['w','a','s','d',' ','shift','ctrl','e','tab','/','1','2','3','4','5','6','r','v','enter','escape'].includes(k))e.preventDefault();
+  if(['w','a','s','d',' ','shift','ctrl','e','tab','/','c','1','2','3','4','5','6','r','v','enter','escape'].includes(k))e.preventDefault();
+  if(k==='c'){openPrivatePanel();setTimeout(()=>{$('privateJoinInput')?.focus()},40);return;}
   if(k==='/'){toggleChat();return;}
   if(k==='tab'){keys={};closeShop();closeCodePanel();closeUpdatesPanel();closeChat();toggleSettings();if(roundPhase!=='select'&&roundPhase!=='mapvote'&&roundPhase!=='modevote')showLoadout(false);return;}
   if(emoteMenuOpen&&['1','2','3','4','5','6'].includes(k)){selectEmoteSlot(Number(k));return;}
@@ -2329,7 +2568,7 @@ window.addEventListener('blur',()=>{keys={};mouseDown=false;stopADS();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){keys={};mouseDown=false;stopADS();}});
 document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement!==document.body){keys={};mouseDown=false;stopADS();}($('clickToLock')&&($('clickToLock').style.display=document.pointerLockElement===document.body?'none':'block'))});
 window.addEventListener('beforeunload',()=>{try{unqueue();}catch(e){}});
-$('chatToggle').onclick=toggleChat;$('chatClose').onclick=closeChat;$('chatSend').onclick=sendChat;$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat()}if(e.key==='Escape'){e.preventDefault();closeChat()}});$('settingsBtn').onclick=openSettings;$('closeSettings').onclick=closeSettings;$('closeShop').onclick=closeShop;$('closeCode').onclick=closeCodePanel;$('closeUpdates').onclick=closeUpdatesPanel;$('redeemCodeBtn').onclick=redeemCode;$('readyBtn').onclick=readyUp;document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('weaponsTab').style.display=b.dataset.tab==='weapons'?'block':'none';$('meTab').style.display=b.dataset.tab==='me'?'block':'none';});
+$('chatToggle').onclick=toggleChat;$('chatClose').onclick=closeChat;$('chatSend').onclick=sendChat;$('privateBtn').onclick=openPrivatePanel;$('closePrivate').onclick=closePrivatePanel;$('createPrivateBtn').onclick=createPrivateRoom;$('joinPrivateBtn').onclick=joinPrivateRoom;$('leavePrivateBtn').onclick=leavePrivateRoom;$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat()}if(e.key==='Escape'){e.preventDefault();closeChat()}});$('privateJoinInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();joinPrivateRoom()}if(e.key==='Escape'){e.preventDefault();closePrivatePanel()}});$('settingsBtn').onclick=openSettings;$('closeSettings').onclick=closeSettings;$('closeShop').onclick=closeShop;$('closeCode').onclick=closeCodePanel;$('closeUpdates').onclick=closeUpdatesPanel;$('redeemCodeBtn').onclick=redeemCode;$('readyBtn').onclick=readyUp;document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('weaponsTab').style.display=b.dataset.tab==='weapons'?'block':'none';$('meTab').style.display=b.dataset.tab==='me'?'block':'none';});
 function startGameAfterLoading(){
  const loading=$('loadingScreen');
  setTimeout(()=>{
