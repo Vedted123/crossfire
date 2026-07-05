@@ -66,7 +66,7 @@
   .modeDisaster{background:radial-gradient(circle at 52% 24%,rgba(255,120,70,.55),transparent 30%),linear-gradient(135deg,#20150f,#3d2413 40%,#0f1722)}
   .tagHud{color:#ffe66d;font-weight:1000;text-shadow:0 2px 5px #000}
 
-  #chatToggle{position:fixed;left:18px;bottom:18px;z-index:10;width:48px;height:48px;border-radius:50%;border:2px solid rgba(140,247,255,.55);background:rgba(0,229,255,.92);color:#061018;font-size:24px;font-weight:1000;cursor:pointer;box-shadow:0 0 20px rgba(0,229,255,.28)}
+  #chatToggle{position:fixed;left:18px;bottom:18px;z-index:10;width:48px;height:48px;border-radius:50%;border:2px solid rgba(140,247,255,.55);background:rgba(0,229,255,.92);color:#061018;font-size:24px;font-weight:1000;cursor:pointer;box-shadow:0 0 20px rgba(0,229,255,.28)}#chatUnread{display:none;position:absolute;right:-7px;top:-8px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#ff3344;color:white;border:2px solid #05070d;font-size:12px;line-height:20px;text-align:center;font-weight:1000;box-shadow:0 0 12px rgba(255,51,68,.6)}
   #chatPanel{display:none;position:fixed;left:14px;bottom:76px;width:310px;max-height:310px;z-index:14;border:2px solid rgba(140,247,255,.35);border-radius:16px;background:linear-gradient(180deg,rgba(8,13,25,.96),rgba(2,5,12,.94));box-shadow:0 0 28px rgba(0,229,255,.16);overflow:hidden}
   #chatHead{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:1000;color:#8cf7ff}
   #chatMessages{height:190px;overflow:auto;padding:8px 10px;font-size:13px;line-height:1.32;text-shadow:0 1px 2px #000}
@@ -93,7 +93,7 @@
 <div id="msg"></div><div id="hint"></div><div id="crosshair"></div><div id="scopeOverlay"></div><div id="clickToLock">Click game to control camera</div>
 <div id="playerList"><b>Online Lobby</b><div id="playersOnline" class="tiny">Loading...</div></div>
 
-<div id="weaponBar"></div><button id="chatToggle" title="Chat">💬</button><div id="chatPanel"><div id="chatHead"><span>Chat</span><button class="btn danger" id="chatClose">×</button></div><div id="chatMessages"><div class="chatLine"><span class="chatText">No messages yet.</span></div></div><div id="chatInputRow"><input id="chatInput" maxlength="120" placeholder="Type message..."><button id="chatSend">Send</button></div></div><div id="emoteMenu"><h3>Hold V · Pick Emote</h3><div id="emoteSlots"></div><div class="emoteHint">Press 1, 2, 3... or click an emote.</div></div><button id="settingsBtn">Settings</button>
+<div id="weaponBar"></div><button id="chatToggle" title="Chat">💬<span id="chatUnread">0</span></button><div id="chatPanel"><div id="chatHead"><span>Chat</span><button class="btn danger" id="chatClose">×</button></div><div id="chatMessages"><div class="chatLine"><span class="chatText">No messages yet.</span></div></div><div id="chatInputRow"><input id="chatInput" maxlength="120" placeholder="Type message..."><button id="chatSend">Send</button></div></div><div id="emoteMenu"><h3>Hold V · Pick Emote</h3><div id="emoteSlots"></div><div class="emoteHint">Press 1, 2, 3... or click an emote.</div></div><button id="settingsBtn">Settings</button>
 <div id="settingsPanel" class="panel"><div class="row between"><div><h2>Crossfire Online</h2><p>Settings. Press Tab to close.</p></div><button class="btn danger" id="closeSettings">×</button></div><div class="tabs"><button class="tab on" data-tab="weapons">Weapons</button><button class="tab" data-tab="me">Me</button></div><div id="weaponsTab"></div><div id="meTab" style="display:none"></div></div>
 <div id="shopPanel" class="panel"><div class="row between"><div><h2>Shop Basket</h2><p>Buy weapons, skins, and emotes.</p></div><button class="btn danger" id="closeShop">×</button></div><div class="shopTabs"><button class="btn shopTab on" id="shopWeaponsBtn" onclick="setShopTab('weapons')">Weapons</button><button class="btn shopTab" id="shopSkinsBtn" onclick="setShopTab('skins')">Buy Skins</button><button class="btn shopTab" id="shopEmotesBtn" onclick="setShopTab('emotes')">Emotes</button></div><div id="shopItems"></div><div id="shopSkins" style="display:none"></div><div id="shopEmotes" style="display:none"></div></div>
 <div id="codePanel" class="panel"><div class="row between"><div><h2>Gift Code</h2><p>Enter code.</p></div><button class="btn danger" id="closeCode">×</button></div><div class="card"><label>Code</label><input id="codeInput" placeholder="example: &lt;xoxo&gt; or rivals"><button class="btn primary" id="redeemCodeBtn">Redeem</button><div id="codeStatus"></div></div></div>
@@ -158,7 +158,7 @@ let ownedEmotes=JSON.parse(localStorage.getItem("duelStarsOwnedEmotes")||"[]");
 let activeEmote={id:null,start:0,until:0};
 let emoteMenuOpen=false;
 let roundDelayTimerKey=null;
-let chatOpen=false,chatMessages=[];
+let chatOpen=false,chatMessages=[],chatUnread=0,chatReady=false,lastChatSeenTime=Number(localStorage.getItem("duelStarsLastReadChatTime")||0);
 let ownedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsWeaponSkins")||'{"arTrueGold":false,"crimsonPrimary":false,"voidSecondary":false,"frostMelee":false,"plasmaSupport":false}');
 let equippedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsEquippedSkins")||'{"assaultRifle":null,"primary":null,"secondary":null,"melee":null,"support":null}');
 if(ownedWeaponSkins.arTrueGold==null)ownedWeaponSkins.arTrueGold=false;
@@ -1174,9 +1174,8 @@ function handleMatchState(){
   const key='rounddelay_'+matchId+'_'+nextRound+'_'+currentMatch.lastRoundWinner;
   if(lastRoundAnnounceKey!==nextRound+'_'+currentMatch.lastRoundWinner){
    lastRoundAnnounceKey=nextRound+'_'+currentMatch.lastRoundWinner;
-   showWinnerOverlay(winnerName+' WON ROUND '+(nextRound-1),'Next round starts in 6 seconds',6000);
+   showWinnerOverlay(winnerName+' WON ROUND '+(nextRound-1),'',1650);
   }
-  setMessage('Next round in '+Math.max(1,Math.ceil(wait/1000))+'...',650);
   if(roundDelayTimerKey!==key){
    roundDelayTimerKey=key;
    setTimeout(()=>{if(!currentMatchRef)return;currentMatchRef.transaction(m=>{if(!m||m.status!=='rounddelay')return m;if(Date.now()<Number(m.nextRoundAt||0)-80)return m;m.status='select';m.round=m.pendingRound||((m.round||1)+1);m.pendingRound=null;m.nextRoundAt=null;m.health={blue:MAX_HEALTH,red:MAX_HEALTH};m.ready={};m.loadouts={};m.fx={};return m;});},wait+80);
@@ -2046,7 +2045,21 @@ window.setAvatarColor=function(part,c){if(!['shirt','pants','head'].includes(par
 window.setAccessory=function(a){avatar.accessory=a;saveLocal();if(myRef)myRef.update({shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory});renderSettings()};
 function openSettings(){closeChat();closeEmoteMenu();menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('settingsPanel').style.display='block';$('shopPanel').style.display='none';renderSettings();document.exitPointerLock?.()}function closeSettings(){menuOpen=false;$('settingsPanel').style.display='none'}function toggleSettings(){const p=$('settingsPanel');if(p&&p.style.display==='block')closeSettings();else openSettings();}function openShop(){closeChat();closeEmoteMenu();shopOpen=true;menuOpen=false;$('updatesPanel').style.display='none';$('codePanel').style.display='none';$('shopPanel').style.display='block';$('settingsPanel').style.display='none';setShopTab('weapons');renderShop();document.exitPointerLock?.()}function closeShop(){shopOpen=false;$('shopPanel').style.display='none'}
 function toggleChat(){chatOpen?closeChat():openChat();}
-function openChat(){closeEmoteMenu();chatOpen=true;closeSettings();closeShop();closeCodePanel();closeUpdatesPanel();const p=$('chatPanel');if(p)p.style.display='block';document.exitPointerLock?.();setTimeout(()=>{$('chatInput')?.focus()},30);}
+function updateChatBadge(){
+ const b=$('chatUnread');if(!b)return;
+ b.textContent=chatUnread>99?'99+':String(chatUnread);
+ b.style.display=chatUnread>0?'block':'none';
+}
+function latestChatTime(){
+ return chatMessages.reduce((mx,m)=>Math.max(mx,Number(m.time)||0),lastChatSeenTime||0);
+}
+function markChatRead(){
+ chatUnread=0;
+ lastChatSeenTime=latestChatTime();
+ localStorage.setItem('duelStarsLastReadChatTime',String(lastChatSeenTime));
+ updateChatBadge();
+}
+function openChat(){closeEmoteMenu();chatOpen=true;closeSettings();closeShop();closeCodePanel();closeUpdatesPanel();const p=$('chatPanel');if(p)p.style.display='block';renderChat();markChatRead();document.exitPointerLock?.();setTimeout(()=>{$('chatInput')?.focus()},30);}
 function closeChat(){chatOpen=false;const p=$('chatPanel');if(p)p.style.display='none';}
 function renderChat(){
  const box=$('chatMessages');if(!box)return;
@@ -2062,8 +2075,18 @@ function renderChat(){
 }
 function listenChat(){
  db.ref('duelStars/chat').limitToLast(40).on('value',snap=>{
-  const arr=[];snap.forEach(ch=>{const v=ch.val();if(v&&v.text)arr.push(v)});
+  const arr=[];snap.forEach(ch=>{const v=ch.val();if(v&&v.text)arr.push(Object.assign({key:ch.key},v))});
   chatMessages=arr;renderChat();
+  const maxTime=latestChatTime();
+  if(!chatReady){
+   chatReady=true;
+   if(!lastChatSeenTime){lastChatSeenTime=maxTime;localStorage.setItem('duelStarsLastReadChatTime',String(lastChatSeenTime));}
+  }
+  if(chatOpen)markChatRead();
+  else{
+   chatUnread=chatMessages.filter(m=>(Number(m.time)||0)>lastChatSeenTime&&m.uid!==uid).length;
+   updateChatBadge();
+  }
  });
 }
 function sendChat(){
@@ -2072,6 +2095,7 @@ function sendChat(){
  if(!text)return;
  db.ref('duelStars/chat').push({uid,name:playerName||'Player',text,time:firebase.database.ServerValue.TIMESTAMP});
  input.value='';
+ if(chatOpen)setTimeout(markChatRead,150);
 }
 window.toggleChat=toggleChat;window.openChat=openChat;window.closeChat=closeChat;window.sendChat=sendChat;
 function openCodePanel(){closeChat();menuOpen=true;shopOpen=false;$('updatesPanel').style.display='none';$('settingsPanel').style.display='none';$('shopPanel').style.display='none';$('codePanel').style.display='block';$('codeStatus').textContent='';$('codeInput').value='';document.exitPointerLock?.()}function closeCodePanel(){menuOpen=false;$('codePanel').style.display='none'}
