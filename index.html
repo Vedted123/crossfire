@@ -114,7 +114,7 @@
       <li>Added more weapons</li>
       <li>Gravity Hammer now has right-click Gravity Slam.</li>
       <li>Warpstone support teleports once per round.</li>
-      <li>Added Grappling Hook, Invisibility Potion, Shorty, Railgun, Crossbow, Scythe, and Slingshot.</li><li>Improved Scythe model/dash and locked Slingshot balls inside the arena.</li>
+      <li>Added Grappling Hook, Invisibility Potion, Shorty, Railgun, Crossbow, Scythe, Slingshot, Energy Spear, and Magic Staff.</li><li>Improved Scythe model/dash and locked Slingshot balls inside the arena.</li>
       <li>Laser Gun rapidly fires glowing laser bullets.</li>
     </ul>
   </div>
@@ -132,7 +132,7 @@ firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=fireb
 const tabId=sessionStorage.getItem("duelStarsTabId")||Math.random().toString(36).slice(2,10);sessionStorage.setItem("duelStarsTabId",tabId);
 let scene,camera,renderer,clock=new THREE.Clock();let authUid=null,uid=null,myRef=null,queueRef=null,currentMatchRef=null,currentMatch=null,matchId=null,mySide=null,remoteId=null,remoteSide=null;
 let yaw=0,pitch=0,keys={},mouseDown=false,isADS=false,canShoot=true,gameMode="lobby",roundPhase="lobby",menuOpen=false,shopOpen=false,ready=false,lastNet=0,lastHeartbeat=0,standingPad=null;
-let bullets=[],grenades=[],molotovs=[],damageNumbers=[],remotePlayers={},remoteMeshes={},nameSprites=[];let pendingPelletDamage={};let ammo={},isReloading=false,reloadTimer=null,lastAmmoRoundKey=null,lastRoundAnnounceKey=null,lastMatchAnnounceKey=null,winnerOverlayTimer=null,jumpLatch=false;let weaponAnim={name:null,timer:0,duration:0},weaponBaseZ=0;let seenMolotovFx={},seenHammerFx={},gravityHammerLastSlam=0,scytheLastDash=0;let cachedFormalLogoTexture=null,cachedWallStripeTexture=null,cachedFloorLogoTexture=null;let slideState={active:false,timer:0,cooldown:0,dir:new THREE.Vector3(),latch:false};let katanaState={blocking:false,timer:0,cooldown:0};let invisState={drinking:false,drinkUntil:0,invisibleUntil:0,drinkTimer:null,endedNotified:false};let grappleState={active:false,target:null,rope:null,life:0};let railgunState={charging:false,timer:null,started:0};let disasterState={volcanoes:[],fireballs:[],tsunamis:[],cracks:[],palms:[],coconuts:[],nextVolcano:1,nextWave:6,nextCrack:1.5,nextCoconut:4};
+let bullets=[],grenades=[],molotovs=[],damageNumbers=[],remotePlayers={},remoteMeshes={},nameSprites=[];let pendingPelletDamage={};let ammo={},isReloading=false,reloadTimer=null,lastAmmoRoundKey=null,lastRoundAnnounceKey=null,lastMatchAnnounceKey=null,winnerOverlayTimer=null,jumpLatch=false;let weaponAnim={name:null,timer:0,duration:0},weaponBaseZ=0;let seenMolotovFx={},seenHammerFx={},gravityHammerLastSlam=0,scytheLastDash=0,spearLastThrow=0,staffLastBlink=0;let cachedFormalLogoTexture=null,cachedWallStripeTexture=null,cachedFloorLogoTexture=null;let slideState={active:false,timer:0,cooldown:0,dir:new THREE.Vector3(),latch:false};let katanaState={blocking:false,timer:0,cooldown:0};let invisState={drinking:false,drinkUntil:0,invisibleUntil:0,drinkTimer:null,endedNotified:false};let grappleState={active:false,target:null,rope:null,life:0};let railgunState={charging:false,timer:null,started:0};let disasterState={volcanoes:[],fireballs:[],tsunamis:[],cracks:[],palms:[],coconuts:[],nextVolcano:1,nextWave:6,nextCrack:1.5,nextCoconut:4};
 const LOBBY_Z=46,ARENA_Z=0;
 const STARTS={blue:new THREE.Vector3(-14,1.7,24),red:new THREE.Vector3(14,1.7,-24)};
 const MAP_OPTIONS=['base','schoolyard','lasertag','rooftop','trampoline'];
@@ -201,10 +201,12 @@ const RAILGUN_INDEX=23;
 const CROSSBOW_INDEX=24;
 const SCYTHE_INDEX=25;
 const SLINGSHOT_INDEX=26;
+const ENERGY_SPEAR_INDEX=27;
+const MAGIC_STAFF_INDEX=28;
 const KATANA_BLOCK_DURATION=4;
 const KATANA_BLOCK_COOLDOWN=5;
 const GIFT_CODES={xoxo:{shards:20,message:"+20 shards"},rivals:{shards:20,message:"+20 shards"},goat:{shards:20,message:"+20 shards"},crowisthebestbrawler:{message:"Unlocked True Gold Assault Rifle skin!",unlockSkin:"arTrueGold"},
-ebulaecho:{shards:25,message:"+25 shards"},rimsonowl:{shards:25,message:"+25 shards"},ilentorbit:{shards:25,message:"+25 shards"},lunarforge:{shards:25,message:"+25 shards"},ghostplasma:{shards:25,message:"+25 shards"},midnightgear:{shards:25,message:"+25 shards"}};
+nebulaecho:{shards:25,message:"+25 shards"},crimsonowl:{shards:25,message:"+25 shards"},silentorbit:{shards:25,message:"+25 shards"},lunarforge:{shards:25,message:"+25 shards"},ghostplasma:{shards:25,message:"+25 shards"},midnightgear:{shards:25,message:"+25 shards"}};
 const weapons=[
 {name:"Assault Rifle",short:"AR",type:"primary",damage:16,cooldown:95,speed:95,spread:.018,pellets:1,head:1.6,scope:1.35,magSize:30,reserveSize:120,reloadTime:2000},
 {name:"Handgun",short:"Handgun",type:"secondary",damage:32,cooldown:310,speed:86,spread:.014,pellets:1,head:1.7,magSize:12,reserveSize:60,reloadTime:1600},
@@ -232,7 +234,9 @@ const weapons=[
 {name:"Railgun",short:"Railgun",type:"primary",damage:85,cooldown:1100,speed:170,spread:.002,pellets:1,head:1,headDamage:150,scope:2.1,mediumScope:true,cost:30,magSize:1,reserveSize:20,reloadTime:3000,railgun:true,chargeTime:2000},
 {name:"Crossbow",short:"Crossbow",type:"primary",damage:35,cooldown:650,speed:92,spread:.003,pellets:1,head:1,headDamage:75,scope:1.8,mediumScope:true,cost:25,magSize:1,reserveSize:200,reloadTime:1150,crossbow:true},
 {name:"Scythe",short:"Scythe",type:"melee",damage:35,cooldown:700,range:3.25,head:1,cost:30,dashCooldown:4000,dashSpeed:62,dashDistance:9.25},
-{name:"Slingshot",short:"Sling",type:"secondary",damage:8,cooldown:75,speed:58,spread:.012,pellets:1,head:1.2,cost:20,magSize:99,reserveSize:0,reloadTime:1600,slingshot:true,bounces:2,life:2.4}
+{name:"Slingshot",short:"Sling",type:"secondary",damage:8,cooldown:75,speed:58,spread:.012,pellets:1,head:1.2,cost:20,magSize:99,reserveSize:0,reloadTime:1600,slingshot:true,bounces:2,life:2.4},
+{name:"Energy Spear",short:"Spear",type:"melee",damage:40,cooldown:850,range:3.8,head:1,cost:25,throwDamage:55,throwCooldown:7000,throwSpeed:76},
+{name:"Magic Staff",short:"Staff",type:"melee",damage:20,cooldown:520,range:3.0,head:1,cost:30,blinkCooldown:10000}
 ];
 while(unlocked.length<weapons.length) unlocked.push(false);
 unlocked[MOLOTOV_INDEX]=true;unlocked[RPG_INDEX]=true;unlocked[KATANA_INDEX]=true;unlocked[WARPSTONE_INDEX]=true;
@@ -312,7 +316,7 @@ function stopEmote(){
 window.playEmote=playEmote;
 function setMessage(t,ms=1200){msg.textContent=t;if(ms)setTimeout(()=>{if(msg.textContent===t)msg.textContent=""},ms)}
 function getRoundSpawn(side){const spawns=MAP_SPAWNS[activeMap]||STARTS;return (spawns[side]||STARTS[side]||STARTS.blue).clone();}
-function spawnForRound(){if(!mySide)return;slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;gravityHammerLastSlam=0;scytheLastDash=0;player.height=STAND_HEIGHT;player.pos.copy(getRoundSpawn(mySide));player.vel.set(0,0,0);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;stopADS();}
+function spawnForRound(){if(!mySide)return;slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;gravityHammerLastSlam=0;scytheLastDash=0;spearLastThrow=0;staffLastBlink=0;player.height=STAND_HEIGHT;player.pos.copy(getRoundSpawn(mySide));player.vel.set(0,0,0);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;stopADS();}
 function sideDisplayName(side){
  const id=currentMatch?.[side];
  if(!id)return (side||'Player').toUpperCase();
@@ -698,6 +702,53 @@ function addScytheModel(parent,x=.34,y=-.25,z=-.72,scale=1,remote=false,pal=null
  const wrap1=new THREE.Mesh(new THREE.CylinderGeometry(.038,.038,.16,10),matGold);wrap1.position.set(.08,.25,-.7);wrap1.rotation.set(Math.PI/2,.2,.1);wrap1.castShadow=true;holder.add(wrap1);
  return holder;
 }
+
+function addEnergySpearModel(parent,x=.34,y=-.25,z=-.72,scale=1,remote=false,pal=null){
+ const holder=new THREE.Group();
+ holder.position.set(x,y,z);
+ holder.rotation.set(remote?.18:.08,remote?-.12:.03,remote?.04:.08);
+ holder.scale.setScalar(scale);
+ parent.add(holder);
+ const dark=pal?.dark||0x0b0f16,shaftCol=pal?.main||0x202a3c,glow=pal?.glow||0x58e7ff,blade=pal?.accent||0xe7f5ff,gold=pal?.trim||0xcaa25b;
+ const matDark=new THREE.MeshStandardMaterial({color:dark,roughness:.38,metalness:.35});
+ const matShaft=new THREE.MeshStandardMaterial({color:shaftCol,roughness:.28,metalness:.52});
+ const matBlade=new THREE.MeshStandardMaterial({color:blade,roughness:.14,metalness:.82,emissive:0x083846,emissiveIntensity:.18});
+ const matGlow=new THREE.MeshStandardMaterial({color:glow,roughness:.1,metalness:.18,emissive:glow,emissiveIntensity:.78});
+ const matGold=new THREE.MeshStandardMaterial({color:gold,roughness:.3,metalness:.42});
+ const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.03,.036,1.42,12),matShaft);shaft.position.set(0,-.1,-.08);shaft.rotation.x=Math.PI/2;shaft.castShadow=true;holder.add(shaft);
+ const grip=new THREE.Mesh(new THREE.CylinderGeometry(.043,.043,.34,10),matDark);grip.position.set(0,-.19,.28);grip.rotation.x=Math.PI/2;grip.castShadow=true;holder.add(grip);
+ const pommel=new THREE.Mesh(new THREE.ConeGeometry(.05,.16,10),matGold);pommel.position.set(0,-.19,.97);pommel.rotation.x=-Math.PI/2;pommel.castShadow=true;holder.add(pommel);
+ const collar=new THREE.Mesh(new THREE.TorusGeometry(.055,.012,8,20),matGlow);collar.position.set(0,-.08,-.58);collar.rotation.x=Math.PI/2;holder.add(collar);
+ const head=new THREE.Mesh(new THREE.ConeGeometry(.08,.34,12),matBlade);head.position.set(0,-.08,-.9);head.rotation.x=Math.PI/2;head.castShadow=true;holder.add(head);
+ const wingL=new THREE.Mesh(new THREE.BoxGeometry(.16,.028,.22),matBlade);wingL.position.set(-.085,-.08,-.76);wingL.rotation.set(0,.24,.42);wingL.castShadow=true;holder.add(wingL);
+ const wingR=wingL.clone();wingR.position.x=.085;wingR.rotation.set(0,-.24,-.42);holder.add(wingR);
+ const crystal=new THREE.Mesh(new THREE.OctahedronGeometry(.052,0),matGlow);crystal.position.set(0,-.08,-.64);holder.add(crystal);
+ return holder;
+}
+function addMagicStaffModel(parent,x=.34,y=-.25,z=-.72,scale=1,remote=false,pal=null){
+ const holder=new THREE.Group();
+ holder.position.set(x,y,z);
+ holder.rotation.set(remote?.12:.06,remote?.1:.03,remote?-.05:.06);
+ holder.scale.setScalar(scale);
+ parent.add(holder);
+ const wood=pal?.wood||0x24160d,metal=pal?.metal||0x2b213c,glow=pal?.glow||0xc77dff,glow2=pal?.glow2||0x8cf7ff,gold=pal?.gold||0xf2c66d;
+ const matWood=new THREE.MeshStandardMaterial({color:wood,roughness:.56,metalness:.08});
+ const matMetal=new THREE.MeshStandardMaterial({color:metal,roughness:.24,metalness:.52});
+ const matGold=new THREE.MeshStandardMaterial({color:gold,roughness:.3,metalness:.44});
+ const matGlow=new THREE.MeshStandardMaterial({color:glow,roughness:.08,metalness:.16,emissive:glow,emissiveIntensity:.82});
+ const matGlow2=new THREE.MeshStandardMaterial({color:glow2,roughness:.08,metalness:.16,emissive:glow2,emissiveIntensity:.72});
+ const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.032,.042,1.22,12),matWood);shaft.position.set(0,-.1,-.06);shaft.rotation.x=Math.PI/2;shaft.castShadow=true;holder.add(shaft);
+ const grip=new THREE.Mesh(new THREE.CylinderGeometry(.047,.047,.28,10),matMetal);grip.position.set(0,-.2,.34);grip.rotation.x=Math.PI/2;grip.castShadow=true;holder.add(grip);
+ const pommel=new THREE.Mesh(new THREE.SphereGeometry(.05,12,12),matGold);pommel.position.set(0,-.2,.62);pommel.castShadow=true;holder.add(pommel);
+ const crown=new THREE.Mesh(new THREE.TorusGeometry(.13,.018,10,28,Math.PI),matGold);crown.position.set(0,-.06,-.54);crown.rotation.set(Math.PI/2,0,0);holder.add(crown);
+ const crown2=new THREE.Mesh(new THREE.TorusGeometry(.13,.018,10,28,Math.PI),matGold);crown2.position.set(0,.06,-.54);crown2.rotation.set(-Math.PI/2,0,0);holder.add(crown2);
+ const orb=new THREE.Mesh(new THREE.SphereGeometry(.09,16,16),matGlow);orb.position.set(0,0,-.54);holder.add(orb);
+ const inner=new THREE.Mesh(new THREE.OctahedronGeometry(.05,0),matGlow2);inner.position.set(0,0,-.54);holder.add(inner);
+ const prongL=new THREE.Mesh(new THREE.ConeGeometry(.035,.18,10),matGold);prongL.position.set(-.11,.02,-.54);prongL.rotation.z=.85;holder.add(prongL);
+ const prongR=prongL.clone();prongR.position.x=.11;prongR.rotation.z=-.85;holder.add(prongR);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.17,.012,8,26),matGlow2);ring.position.set(0,0,-.54);ring.rotation.x=Math.PI/2;holder.add(ring);
+ return holder;
+}
 function addSlingshotModel(parent,x=.34,y=-.28,z=-.62,scale=1,remote=false,pal=null){
  const holder=new THREE.Group();holder.position.set(x,y,z);holder.rotation.set(.12,0,.05);holder.scale.setScalar(scale);parent.add(holder);
  const part=remote?remotePart:addViewPart;
@@ -902,6 +953,14 @@ function rebuildWeaponModel(){
  else if(currentWeapon===SCYTHE_INDEX){
   const pal={dark:frostMelee?0x3e5c66:0x7a4b24,main:frostMelee?0x57d9ff:0x6f7890,accent:frostMelee?0xb8f7ff:0xaeb7c9,glow:frostMelee?0x8cf7ff:0xc77dff};
   addScytheModel(g,.34,-.24,-.55,1.05,false,pal);
+ }
+ else if(currentWeapon===ENERGY_SPEAR_INDEX){
+  const pal={dark:frostMelee?0x06222c:0x09101a,main:frostMelee?0x214959:0x1b2435,accent:frostMelee?0xc8fbff:0xe8f5ff,glow:frostMelee?0x8cf7ff:0x58e7ff,trim:frostMelee?0xb8f7ff:0xcaa25b};
+  addEnergySpearModel(g,.34,-.23,-.58,1.04,false,pal);
+ }
+ else if(currentWeapon===MAGIC_STAFF_INDEX){
+  const pal={wood:frostMelee?0x0f2030:0x24160d,metal:frostMelee?0x133949:0x2b213c,gold:frostMelee?0x8cf7ff:0xf2c66d,glow:frostMelee?0xb8f7ff:0xc77dff,glow2:frostMelee?0x57d9ff:0x8cf7ff};
+  addMagicStaffModel(g,.34,-.23,-.55,1.02,false,pal);
  }
  else if(currentWeapon===SHOCK_BOMB_INDEX){
   addViewPart(g,new THREE.SphereGeometry(.18,18,18),plasmaSupport?0x06120a:0x111827,.34,-.26,-.7,0,0,0,{metalness:.28,roughness:.34});
@@ -1126,6 +1185,10 @@ function makeRemoteWeaponModel(i,p={}){
    remotePart(g,new THREE.SphereGeometry(.08,12,12),pal.accent,.22,.02,-.82,0,0,0,{emissive:pal.emissive});
   }else if(i===SCYTHE_INDEX){
    addScytheModel(g,0,-.03,-.2,.72,true,pal);
+  }else if(i===ENERGY_SPEAR_INDEX){
+   addEnergySpearModel(g,0,-.02,-.16,.7,true,{dark:pal.dark,main:pal.main,accent:pal.accent,glow:pal.glow,trim:0xcaa25b});
+  }else if(i===MAGIC_STAFF_INDEX){
+   addMagicStaffModel(g,0,-.02,-.14,.72,true,{wood:pal.dark,metal:pal.main,gold:pal.accent,glow:pal.glow,glow2:pal.main});
   }
  }else if(type==='support'){
   if(i===3){
@@ -1393,7 +1456,7 @@ function tryCreateMatchFromQueue(blue,red){
 }
 function createMatchIfHost(id,blue,red){tryCreateMatchFromQueue(blue,red);}
 function joinMatch(id,side){if(matchId===id)return;if(currentMatchRef)currentMatchRef.off();matchId=id;mySide=side;remoteSide=side==='blue'?'red':'blue';standingPad=null;mapVoteChoice=null;modeVoteChoice=null;lastMatchAnnounceKey=null;lastRoundAnnounceKey=null;seenMolotovFx={};seenHammerFx={};clearMolotovVisuals(false);currentMatchRef=db.ref('duelStars/matches/'+id);currentMatchRef.on('value',snap=>{currentMatch=snap.val();listenChat();handleMatchState();});remoteId=null;currentMatchRef.once('value').then(s=>{let m=s.val();remoteId=side==='blue'?m.red:m.blue;});gameMode='match';roundPhase='modevote';spawnForRound();lastAmmoRoundKey=null;resetAmmo();lastTaggerSeen=null;showLoadout(false);showMapVote(false);showModeVote(true);}
-function leaveMatch(){stopPrivateRoomListen();clearTimeout(winnerOverlayTimer);$('winnerOverlay').style.display='none';clearMolotovVisuals();if(currentMatchRef)currentMatchRef.off();currentMatchRef=null;currentMatch=null;matchId=null;mySide=null;remoteSide=null;remoteId=null;standingPad=null;mapVoteChoice=null;modeVoteChoice=null;lastTaggerSeen=null;gameMode='lobby';roundPhase='lobby';slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;resetSpecialStates();player.height=STAND_HEIGHT;player.pos.set(0,1.7,LOBBY_Z);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;cancelReload();showLoadout(false);showMapVote(false);showModeVote(false);if(uid)myRef.update({mode:'lobby',privateCode:null,matchId:null,side:null});listenChat(true);}
+function leaveMatch(){stopPrivateRoomListen();clearTimeout(winnerOverlayTimer);$('winnerOverlay').style.display='none';clearMolotovVisuals();if(currentMatchRef)currentMatchRef.off();currentMatchRef=null;currentMatch=null;matchId=null;mySide=null;remoteSide=null;remoteId=null;standingPad=null;mapVoteChoice=null;modeVoteChoice=null;lastTaggerSeen=null;gameMode='lobby';roundPhase='lobby';slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;spearLastThrow=0;staffLastBlink=0;resetSpecialStates();player.height=STAND_HEIGHT;player.pos.set(0,1.7,LOBBY_Z);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;cancelReload();showLoadout(false);showMapVote(false);showModeVote(false);if(uid)myRef.update({mode:'lobby',privateCode:null,matchId:null,side:null});listenChat(true);}
 function handleMatchState(){
  if(!currentMatch||!mySide)return;
  syncMatchEffects();
@@ -2022,6 +2085,8 @@ function attack(){
   if(currentWeapon===7){playWeaponAnimation('knifeStab',.3);meleeAttack(false);return}
   if(currentWeapon===KATANA_INDEX){playWeaponAnimation('katanaSlash',.34);meleeAttack(false);return}
   if(currentWeapon===SCYTHE_INDEX){playWeaponAnimation('scytheSlash',.34);meleeAttack(false);return}
+  if(currentWeapon===ENERGY_SPEAR_INDEX){playWeaponAnimation('meleeSwing',.3);meleeAttack(false);return}
+  if(currentWeapon===MAGIC_STAFF_INDEX){playWeaponAnimation('meleeSwing',.28);meleeAttack(false);return}
   playWeaponAnimation('meleeSwing',.28);meleeAttack(false);return
  }
  if(!consumeAmmo())return;
@@ -2362,7 +2427,68 @@ function scytheDash(){
  playWeaponAnimation('scytheDash',.32);setMessage('SCYTHE DASH!',500);
  canShoot=false;setTimeout(()=>canShoot=true,300);
 }
-function rightSpecial(){let w=weapons[currentWeapon];if(isReloading)return;if(invisState.drinking||isInvisibleActive()){setMessage('Invisible - weapons disabled',450);return;}if(currentWeapon===GRAVITY_HAMMER_INDEX){gravityHammerSlam();return}if(currentWeapon===SCYTHE_INDEX){scytheDash();return}if(currentWeapon===KATANA_INDEX){startKatanaBlock();return}if(currentWeapon===7&&gameMode==='match'&&roundPhase==='playing'&&canShoot){canShoot=false;setTimeout(()=>canShoot=true,w.cooldown);playWeaponAnimation('knifeBackstab',.38);meleeAttack(true);return}if(w.scope){isADS=true;const so=$('scopeOverlay');so.classList.toggle('mediumScope',!!w.mediumScope);so.style.display='block'}}
+
+function makeSpearProjectile(dir){
+ const g=new THREE.Group();
+ const shaftMat=new THREE.MeshStandardMaterial({color:0x1a2435,roughness:.28,metalness:.48});
+ const headMat=new THREE.MeshStandardMaterial({color:0xe9f6ff,roughness:.12,metalness:.84,emissive:0x0b3340,emissiveIntensity:.18});
+ const glowMat=new THREE.MeshBasicMaterial({color:0x58e7ff,transparent:true,opacity:.95});
+ const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.018,.022,.72,10),shaftMat);shaft.rotation.x=Math.PI/2;g.add(shaft);
+ const head=new THREE.Mesh(new THREE.ConeGeometry(.06,.24,10),headMat);head.position.z=-.47;head.rotation.x=Math.PI/2;g.add(head);
+ const wingL=new THREE.Mesh(new THREE.BoxGeometry(.12,.018,.14),headMat);wingL.position.set(-.06,0,-.32);wingL.rotation.z=.42;g.add(wingL);
+ const wingR=wingL.clone();wingR.position.x=.06;wingR.rotation.z=-.42;g.add(wingR);
+ const trail=new THREE.Mesh(new THREE.CylinderGeometry(.028,.028,.18,10),glowMat);trail.position.z=.34;trail.rotation.x=Math.PI/2;g.add(trail);
+ if(dir)g.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),dir.clone().normalize());
+ scene.add(g);return g;
+}
+function spawnBlinkFx(pos,color=0xc77dff){
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.42,.03,10,30),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.78}));
+ ring.position.copy(pos);ring.position.y=Math.max(ring.position.y,.35);ring.rotation.x=Math.PI/2;scene.add(ring);
+ const flash=new THREE.Mesh(new THREE.SphereGeometry(.18,12,12),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.6}));
+ flash.position.copy(ring.position);scene.add(flash);
+ let t=0;const iv=setInterval(()=>{t++;ring.scale.multiplyScalar(1.18);flash.scale.multiplyScalar(1.22);ring.material.opacity-=.08;flash.material.opacity-=.09;if(t>9||ring.material.opacity<=0){clearInterval(iv);scene.remove(ring);scene.remove(flash);ring.geometry.dispose?.();ring.material.dispose?.();flash.geometry.dispose?.();flash.material.dispose?.();}},20);
+}
+function throwEnergySpear(){
+ const w=weapons[ENERGY_SPEAR_INDEX];
+ if(currentWeapon!==ENERGY_SPEAR_INDEX||gameMode!=='match'||roundPhase!=='playing'||isReloading||isDisasterMode())return;
+ const now=Date.now(),cd=w.throwCooldown||7000,left=cd-(now-spearLastThrow);
+ if(left>0){setMessage('Spear throw cooldown '+Math.ceil(left/1000)+'s',650);return;}
+ spearLastThrow=now;
+ const dir=getLookDirection();
+ playWeaponAnimation('meleeSwing',.24);
+ bullets.push({type:'spear',pos:player.pos.clone().add(dir.clone().multiplyScalar(.95)),origin:player.pos.clone(),vel:dir.clone().multiplyScalar(w.throwSpeed||76),damage:w.throwDamage||55,life:1.35,mesh:makeSpearProjectile(dir),weapon:ENERGY_SPEAR_INDEX,axis:'z'});
+ setMessage('SPEAR THROW!',500);
+ canShoot=false;setTimeout(()=>canShoot=true,320);
+}
+function magicStaffBlink(){
+ const w=weapons[MAGIC_STAFF_INDEX];
+ if(currentWeapon!==MAGIC_STAFF_INDEX||gameMode!=='match'||roundPhase!=='playing'||isReloading||isDisasterMode())return;
+ const now=Date.now(),cd=w.blinkCooldown||10000,left=cd-(now-staffLastBlink);
+ if(left>0){setMessage('Staff blink cooldown '+Math.ceil(left/1000)+'s',650);return;}
+ const op=getRemoteOpponent();
+ if(!op){setMessage('No opponent to blink behind',700);return;}
+ const opPos=new THREE.Vector3(op.x||0,Math.max(1.7,player.pos.y),op.z||0);
+ const forward=new THREE.Vector3(Math.sin(op.yaw||0),0,-Math.cos(op.yaw||0));
+ if(forward.lengthSq()<.0001)forward.set(0,0,-1);forward.normalize();
+ const right=new THREE.Vector3(-forward.z,0,forward.x).normalize();
+ const candidates=[
+  opPos.clone().addScaledVector(forward,-1.65),
+  opPos.clone().addScaledVector(forward,-2.05),
+  opPos.clone().addScaledVector(forward,-1.55).addScaledVector(right,.7),
+  opPos.clone().addScaledVector(forward,-1.55).addScaledVector(right,-.7)
+ ];
+ let dest=null;
+ for(const c of candidates){c.y=player.pos.y;if(!collides(c)&&c.distanceTo(opPos)>1.0){dest=c;break;}}
+ if(!dest){setMessage('No space behind opponent',700);return;}
+ staffLastBlink=now;
+ spawnBlinkFx(player.pos.clone(),0xc77dff);spawnBlinkFx(dest.clone(),0x8cf7ff);
+ player.pos.copy(dest);player.vel.set(0,0,0);player.grounded=false;camera.position.copy(player.pos);
+ const toOpp=opPos.clone().sub(player.pos);yaw=Math.atan2(toOpp.x,-toOpp.z);
+ playWeaponAnimation('meleeSwing',.22);
+ setMessage('STAFF BLINK!',550);
+ canShoot=false;setTimeout(()=>canShoot=true,260);
+}
+function rightSpecial(){let w=weapons[currentWeapon];if(isReloading)return;if(invisState.drinking||isInvisibleActive()){setMessage('Invisible - weapons disabled',450);return;}if(currentWeapon===GRAVITY_HAMMER_INDEX){gravityHammerSlam();return}if(currentWeapon===SCYTHE_INDEX){scytheDash();return}if(currentWeapon===ENERGY_SPEAR_INDEX){throwEnergySpear();return}if(currentWeapon===MAGIC_STAFF_INDEX){magicStaffBlink();return}if(currentWeapon===KATANA_INDEX){startKatanaBlock();return}if(currentWeapon===7&&gameMode==='match'&&roundPhase==='playing'&&canShoot){canShoot=false;setTimeout(()=>canShoot=true,w.cooldown);playWeaponAnimation('knifeBackstab',.38);meleeAttack(true);return}if(w.scope){isADS=true;const so=$('scopeOverlay');so.classList.toggle('mediumScope',!!w.mediumScope);so.style.display='block'}}
 function stopADS(){isADS=false;const so=$('scopeOverlay');so.style.display='none';so.classList.remove('mediumScope')}
 function startKatanaBlock(){
  if(currentWeapon!==KATANA_INDEX||gameMode!=='match'||roundPhase!=='playing'||isReloading)return;
@@ -2676,6 +2802,10 @@ function updateProjectiles(dt){
    let hit=checkHitOpponent(b.pos,b.weapon,b);
    if(hit){applyDamage(hit.damage,hit.head);b.dead=true;continue;}
    if(bounceSlingshotBall(b,prevPos))continue;
+  }else if(b.type==='spear'){
+   let hit=checkHitOpponent(b.pos,b.weapon,b);
+   if(hit){applyDamage(hit.damage,hit.head);b.dead=true;continue;}
+   if(bulletHitsWall(b.pos)||b.pos.y<=.15)b.dead=true;
   }else if(b.type==='rocket'){
    let direct=checkHitOpponent(b.pos,b.weapon,b);
    if(direct){explodeRPG(b.pos,true);b.dead=true;continue;}
