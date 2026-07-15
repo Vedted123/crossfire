@@ -122,7 +122,7 @@
       <li>Gravity Hammer now has right-click Gravity Slam.</li>
       <li>Warpstone support teleports once per round.</li>
       <li>Added Grappling Hook, Invisibility Potion, Shorty, Railgun, Crossbow, Scythe, Slingshot, Energy Spear, and Magic Staff.</li><li>Improved Scythe model/dash and locked Slingshot balls inside the arena.</li>
-      <li>Laser Gun rapidly fires glowing laser bullets.</li><li>Added the Frost Shotgun: 7 shells, 100 reserve ammo, and a final cryo shell that deals bonus damage and freezes opponents for 3 seconds.</li><li>Fixed the Vedted123 NPC reward and moved the Minimalist RPG skin to the RPG weapon card in Settings → Weapons.</li>
+      <li>Laser Gun rapidly fires glowing laser bullets.</li><li>Added the Frost Shotgun: 7 shells, 100 reserve ammo, and a final cryo shell that deals bonus damage and freezes opponents for 3 seconds.</li><li>Fixed the Vedted123 NPC reward and moved the Minimalist RPG skin to the RPG weapon card in Settings → Weapons.</li><li>Weapons are hidden in the lobby, Gravity Slam knockback is stronger, and the Frost Shotgun now costs 25 shards.</li>
     </ul>
   </div>
 </div>
@@ -236,7 +236,7 @@ const weapons=[
 {name:"Revolver",short:"Revolver",type:"secondary",damage:0,cooldown:520,speed:112,spread:.008,pellets:1,head:1,tagOnly:true,magSize:6,reserveSize:999999,reloadTime:1200},
 {name:"Pulse Rifle",short:"Pulse",type:"primary",damage:18,cooldown:115,speed:112,spread:.016,pellets:1,head:1.55,cost:18,magSize:32,reserveSize:128,reloadTime:2100},
 {name:"Burst Pistol",short:"Burst",type:"secondary",damage:18,cooldown:520,speed:96,spread:.02,pellets:1,head:1.55,cost:14,magSize:18,reserveSize:72,reloadTime:1700,burst:3},
-{name:"Gravity Hammer",short:"Hammer",type:"melee",damage:70,cooldown:820,range:3.1,head:1,cost:16,slamDamage:45,slamRadius:6,slamForce:22,slamCooldown:11000},
+{name:"Gravity Hammer",short:"Hammer",type:"melee",damage:70,cooldown:820,range:3.1,head:1,cost:16,slamDamage:45,slamRadius:6,slamForce:40,slamCooldown:11000},
 {name:"Shock Bomb",short:"Shock",type:"support",damage:45,cooldown:900,speed:22,explosion:6.2,head:1,cost:15,magSize:1,reserveSize:4,reloadTime:2300,shock:true},
 {name:"Warpstone",short:"Warp",type:"support",cooldown:650,head:1,magSize:1,reserveSize:0,reloadTime:999999,warp:true},
 {name:"Shorty",short:"Shorty",type:"secondary",damage:12.5,cooldown:720,speed:74,spread:.16,pellets:8,head:1,shorty:true,cost:5,magSize:2,reserveSize:100,reloadTime:2100,maxDamage:100,minDamage:12,falloffNear:3,falloffFar:18},
@@ -248,10 +248,10 @@ const weapons=[
 {name:"Slingshot",short:"Sling",type:"secondary",damage:8,cooldown:75,speed:58,spread:.012,pellets:1,head:1.2,cost:20,magSize:99,reserveSize:0,reloadTime:1600,slingshot:true,bounces:2,life:2.4},
 {name:"Energy Spear",short:"Spear",type:"melee",damage:40,cooldown:850,range:3.8,head:1,cost:25,throwDamage:55,throwCooldown:7000,throwSpeed:76},
 {name:"Magic Staff",short:"Staff",type:"melee",damage:20,cooldown:520,range:3.0,head:1,cost:30,blinkCooldown:10000},
-{name:"Frost Shotgun",short:"Frost SG",type:"primary",damage:13,cooldown:720,speed:78,spread:.105,pellets:7,head:1.35,magSize:7,reserveSize:100,reloadTime:2900,frostShotgun:true,lastShotBonus:35,freezeDuration:3000}
+{name:"Frost Shotgun",short:"Frost SG",type:"primary",damage:13,cooldown:720,speed:78,spread:.105,pellets:7,head:1.35,cost:25,magSize:7,reserveSize:100,reloadTime:2900,frostShotgun:true,lastShotBonus:35,freezeDuration:3000}
 ];
 while(unlocked.length<weapons.length) unlocked.push(false);
-unlocked[MOLOTOV_INDEX]=true;unlocked[RPG_INDEX]=true;unlocked[KATANA_INDEX]=true;unlocked[WARPSTONE_INDEX]=true;unlocked[FROST_SHOTGUN_INDEX]=true;
+unlocked[MOLOTOV_INDEX]=true;unlocked[RPG_INDEX]=true;unlocked[KATANA_INDEX]=true;unlocked[WARPSTONE_INDEX]=true;unlocked[FROST_SHOTGUN_INDEX]=localStorage.getItem("duelStarsFrostShotgunPurchased")==="yes";
 const player={pos:new THREE.Vector3(0,1.7,LOBBY_Z),vel:new THREE.Vector3(),health:MAX_HEALTH,grounded:false,radius:.55,height:1.7,jumpCount:0};
 const STAND_HEIGHT=1.7,SLIDE_HEIGHT=1.05,SLIDE_SPEED=19.5,SLIDE_DURATION=.68,SLIDE_COOLDOWN=.85;
 const walls=[];let playBluePad,playRedPad,shopBasket,presentBox,blackboard,secretLaserSpot,weaponView;
@@ -1444,6 +1444,7 @@ function updateRemoteMeshes(){
   applyAvatarToMesh(m,p);
   applyEmotePose(m,p.emote,p.emoteStart,p.emoteUntil);
   updateRemoteWeaponModel(m,p);
+  if(gameMode==='lobby'&&m.userData.gun)m.userData.gun.visible=false;
   const frozenRemote=!!(currentMatch&&p.matchId===matchId&&Number(currentMatch.frozenUntil?.[p.side]||0)>Date.now());
   if(frozenRemote&&!m.userData.iceShell){const ice=new THREE.Group();const mat=new THREE.MeshStandardMaterial({color:0x9eeaff,transparent:true,opacity:.34,roughness:.12,metalness:.05,emissive:0x123f55,emissiveIntensity:.35});const shell=new THREE.Mesh(new THREE.BoxGeometry(1.25,2.7,1.05),mat);shell.position.y=1.35;ice.add(shell);for(let q=0;q<7;q++){const shard=new THREE.Mesh(new THREE.ConeGeometry(.08+.02*(q%2),.5+.08*(q%3),5),mat.clone());shard.position.set((q%3-1)*.34,.25+(q%4)*.55,(q%2?-.48:.48));shard.rotation.z=(q-3)*.16;ice.add(shard);}m.userData.iceShell=ice;m.add(ice);}
   if(m.userData.iceShell)m.userData.iceShell.visible=frozenRemote;
@@ -1857,7 +1858,7 @@ function updatePlayer(dt){
   camera.fov += (targetFov() - camera.fov) * Math.min(1, dt * 12);
   camera.updateProjectionMatrix();
 
-  if(weaponView)weaponView.visible=!isInvisibleActive();
+  if(weaponView)weaponView.visible=gameMode!=='lobby'&&!isInvisibleActive();
   const targetWeaponZ = isReloading ? 0.38 : (slideState.active ? 0.24 : (isADS ? -0.18 : 0));
   weaponBaseZ += (targetWeaponZ - weaponBaseZ) * Math.min(1, dt * 14);
   weaponView.position.set(0,0,weaponBaseZ);
@@ -2282,7 +2283,7 @@ function makeGravitySlamFx(pos,radius=6){
  group.add(ring,ring2,pulse);group.position.copy(pos);group.position.y=.08;scene.add(group);
  let s=.25;let iv=setInterval(()=>{s+=.42;group.scale.set(s,s,s);ring.material.opacity-=.055;ring2.material.opacity-=.046;pulse.material.opacity-=.011;if(s>=radius||ring.material.opacity<=0){clearInterval(iv);scene.remove(group);}},25);
 }
-function applyGravityImpulse(pos,radius=6,force=22){
+function applyGravityImpulse(pos,radius=6,force=40){
  if(gameMode!=='match'||roundPhase!=='playing')return;
  const flat=new THREE.Vector3(pos.x,player.pos.y,pos.z);
  const dist=player.pos.distanceTo(flat);
@@ -2294,7 +2295,7 @@ function applyGravityImpulse(pos,radius=6,force=22){
  away.normalize();
  player.vel.x+=away.x*force*power;
  player.vel.z+=away.z*force*power;
- player.vel.y=Math.max(player.vel.y,6.5+8.5*power);
+ player.vel.y=Math.max(player.vel.y,8.5+11.5*power);
  player.grounded=false;
  setMessage('Gravity Slam!',650);
 }
@@ -2308,7 +2309,7 @@ function gravityHammerSlam(){
  canShoot=false;setTimeout(()=>canShoot=true,w.cooldown||820);
  playWeaponAnimation('gravitySlam',.46);
  const pos=player.pos.clone();pos.y=0;
- const radius=w.slamRadius||6,force=w.slamForce||22;
+ const radius=w.slamRadius||6,force=w.slamForce||40;
  makeGravitySlamFx(pos,radius);
  const op=getRemoteOpponent();
  if(op){
@@ -2939,7 +2940,7 @@ function syncMatchEffects(){
   seenHammerFx[id]=true;
   const pos=new THREE.Vector3(Number(data.x)||0,Number(data.y)||0,Number(data.z)||0);
   makeGravitySlamFx(pos,Number(data.radius)||6);
-  if(data.owner!==uid)applyGravityImpulse(pos,Number(data.radius)||6,Number(data.force)||22);
+  if(data.owner!==uid)applyGravityImpulse(pos,Number(data.radius)||6,Number(data.force)||40);
  }
 }
 function updateMolotovs(dt){
@@ -3324,7 +3325,7 @@ function renderShop(){
  const emoteEl=$('shopEmotes');if(emoteEl)emoteEl.innerHTML=renderShopEmotes();
 }
 window.buyEmote=function(id){const e=EMOTES[id];if(!e)return;if(hasEmote(id))return setMessage('Already owned',700);if(shards<e.cost)return setMessage('Need '+e.cost+' shards',900);shards-=e.cost;ownedEmotes.push(id);saveLocal();$('shards').textContent=shards;renderShop();renderSettings();setMessage('Bought '+e.name,900)};
-window.buyWeapon=function(i){let w=weapons[i];if(unlocked[i])return setMessage('Already owned',700);if(shards<w.cost)return setMessage('Need '+w.cost+' shards',900);shards-=w.cost;unlocked[i]=true;saveLocal();$('shards').textContent=shards;renderShop();renderSettings();setMessage('Bought '+w.name,900)};
+window.buyWeapon=function(i){let w=weapons[i];if(unlocked[i])return setMessage('Already owned',700);if(shards<w.cost)return setMessage('Need '+w.cost+' shards',900);shards-=w.cost;unlocked[i]=true;if(i===FROST_SHOTGUN_INDEX)localStorage.setItem('duelStarsFrostShotgunPurchased','yes');saveLocal();$('shards').textContent=shards;renderShop();renderSettings();setMessage('Bought '+w.name,900)};
 window.buySkinSet=function(type){const s=SKIN_SETS[type];if(!s)return;if(hasSkinSet(type))return setMessage(s.label+' set already owned',800);if(shards<SKIN_SET_COST)return setMessage('Need '+SKIN_SET_COST+' shards',900);shards-=SKIN_SET_COST;ownedWeaponSkins[s.key]=true;equippedWeaponSkins[s.equip]=s.value;saveLocal();$('shards').textContent=shards;renderShop();renderSettings();if(weapons[currentWeapon]?.type===type)rebuildWeaponModel();setMessage('Bought '+s.name,1100)};
 window.buyVoidSecondarySkin=function(){buySkinSet('secondary')};
 function showModeVote(show){const p=$('modeVotePanel');if(!p)return;p.style.display=show?'block':'none';if(show){ready=false;renderModeVote();document.exitPointerLock?.()}}
