@@ -143,7 +143,7 @@ const MAP_LIMITS={base:26,schoolyard:28,lasertag:28,rooftop:27,trampoline:28,dis
 let activeMap='base',builtArenaMap=null,mapVoteChoice=null,modeVoteChoice=null,lastTaggerSeen=null;let arenaObjects=[],trampolineZones=[];let cachedLaserGridTexture=null;
 const MODE_OPTIONS=['duel','tag','disaster'];
 const MODE_LABELS={duel:'1v1',tag:'Tag',disaster:'Disaster Island'};
-const MODE_DESCS={duel:'Classic first-to-5 duel with weapon loadouts.',tag:'Two-minute chase. Whoever is IT at the end loses.',disaster:'Survive a deadly island for two minutes. Lowest health or first death loses.'};
+const MODE_DESCS={duel:'First to five wins. shoot each other.',tag:'dont be it by the end of two inutes',disaster:'whoever dies first loses.'};
 
 let shards=Number(localStorage.getItem("duelStarsShards")||0);
 let playerName=localStorage.getItem("duelStarsName")||("Player"+Math.floor(Math.random()*999));
@@ -155,12 +155,12 @@ while(unlocked.length<10) unlocked.push(false);
 let loadout=JSON.parse(localStorage.getItem("duelStarsLoadout")||'{"primary":0,"secondary":1,"melee":2,"support":3}');
 let currentWeapon=loadout.primary;
 const EMOTES={
- dance:{name:'Victory Dance',cost:10,key:'v',duration:5200,desc:'A goofy win dance.'},
- floss:{name:'Side Shuffle',cost:12,key:'v',duration:5200,desc:'Fast side-to-side dance.'},
- laugh:{name:'Laugh Taunt',cost:9,key:'v',duration:3600,desc:'Laugh at the other player.'},
- loser:{name:'L Dance',cost:14,key:'v',duration:4500,desc:'Make a giant L pose and dance.'},
- facepalm:{name:'Facepalm',cost:8,key:'v',duration:3200,desc:'For when they miss badly.'},
- violin:{name:'Tiny Violin',cost:13,key:'v',duration:4200,desc:'Mock them with a sad tiny violin.'}
+ dance:{name:'Victory Dance',cost:10,key:'v',duration:5200,desc:'chat gpt made this'},
+ floss:{name:'Side Shuffle',cost:12,key:'v',duration:5200,desc:'chatgpt made this'},
+ laugh:{name:'Laugh Taunt',cost:9,key:'v',duration:3600,desc:'chatgpt made this'},
+ loser:{name:'L Dance',cost:14,key:'v',duration:4500,desc:'chatgpt made this'},
+ facepalm:{name:'Facepalm',cost:8,key:'v',duration:3200,desc:'chatgpt'},
+ violin:{name:'Tiny Violin',cost:13,key:'v',duration:4200,desc:'chatgpt made this'}
 };
 let ownedEmotes=JSON.parse(localStorage.getItem("duelStarsOwnedEmotes")||"[]");
 let activeEmote={id:null,start:0,until:0};
