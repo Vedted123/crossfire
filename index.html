@@ -79,12 +79,14 @@
   #emoteMenu h3{margin:0 0 8px;color:#ffe66d}#emoteSlots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.emoteSlot{border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(255,255,255,.08);color:white;padding:9px;font-weight:1000;cursor:pointer}.emoteSlot b{color:#8cf7ff}.emoteHint{font-size:12px;color:rgba(255,255,255,.65);margin-top:8px}
 
   #npcDialog{display:none;position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:40;width:min(520px,88vw);padding:18px;border-radius:18px;background:rgba(4,8,16,.96);border:2px solid rgba(255,255,255,.5);box-shadow:0 0 34px rgba(255,255,255,.18);text-align:center}
+  #frozenOverlay{display:none;position:fixed;inset:0;z-index:35;pointer-events:none;background:radial-gradient(circle at center,rgba(180,245,255,.05) 0 28%,rgba(70,180,235,.32) 60%,rgba(210,250,255,.72) 100%);box-shadow:inset 0 0 80px rgba(220,255,255,.9),inset 0 0 22px rgba(0,135,210,.9);backdrop-filter:blur(1.5px)}#frozenOverlay:before{content:'FROZEN';position:absolute;left:50%;top:18%;transform:translateX(-50%);font-size:54px;font-weight:1000;letter-spacing:7px;color:#eaffff;text-shadow:0 0 8px #006da8,0 0 22px #8cf7ff}#frozenOverlay:after{content:'';position:absolute;inset:0;background:linear-gradient(125deg,transparent 20%,rgba(255,255,255,.42) 21%,transparent 22%,transparent 48%,rgba(255,255,255,.28) 49%,transparent 50%);opacity:.65}
   #npcDialogName{font-size:21px;font-weight:1000;color:#fff;margin-bottom:8px}#npcDialogText{font-size:18px;font-weight:800;line-height:1.35;margin-bottom:14px}
   #npcDialogOptions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.npcOption{border:0;border-radius:12px;padding:11px 18px;background:#fff;color:#071018;font-size:15px;font-weight:1000;cursor:pointer}.npcOption:hover{transform:translateY(-1px)}
 </style>
 </head>
 <body>
 
+<div id="frozenOverlay"></div>
 <div id="npcDialog"><div id="npcDialogName">Vedted123</div><div id="npcDialogText"></div><div id="npcDialogOptions"></div></div>
 <div id="loadingScreen">
   <div id="loadingCard">
@@ -120,7 +122,7 @@
       <li>Gravity Hammer now has right-click Gravity Slam.</li>
       <li>Warpstone support teleports once per round.</li>
       <li>Added Grappling Hook, Invisibility Potion, Shorty, Railgun, Crossbow, Scythe, Slingshot, Energy Spear, and Magic Staff.</li><li>Improved Scythe model/dash and locked Slingshot balls inside the arena.</li>
-      <li>Laser Gun rapidly fires glowing laser bullets.</li>
+      <li>Laser Gun rapidly fires glowing laser bullets.</li><li>Added the Frost Shotgun: 7 shells, 100 reserve ammo, and a final cryo shell that deals bonus damage and freezes opponents for 3 seconds.</li><li>Fixed the Vedted123 NPC reward and moved the Minimalist RPG skin to the RPG weapon card in Settings → Weapons.</li>
     </ul>
   </div>
 </div>
@@ -154,7 +156,7 @@ let shards=Number(localStorage.getItem("duelStarsShards")||0);
 let playerName=localStorage.getItem("duelStarsName")||("Player"+Math.floor(Math.random()*999));
 let skinColor=localStorage.getItem("duelStarsSkin")||"#4fd3ff";
 let avatar=JSON.parse(localStorage.getItem("duelStarsAvatar")||'{"shirt":"#4fd3ff","pants":"#111827","head":"#ffcc99","accessory":"none"}');
-if(!avatar.shirt)avatar.shirt=skinColor;if(!avatar.pants)avatar.pants="#111827";if(!avatar.head)avatar.head="#ffcc99";if(!avatar.accessory)avatar.accessory="none";if(avatar.rpgSkin==null)avatar.rpgSkin=false;
+if(!avatar.shirt)avatar.shirt=skinColor;if(!avatar.pants)avatar.pants="#111827";if(!avatar.head)avatar.head="#ffcc99";if(!avatar.accessory)avatar.accessory="none";avatar.rpgSkin=false;avatar.rpgSkinOwned=false;
 let unlocked=JSON.parse(localStorage.getItem("duelStarsUnlocked")||"[true,true,true,true,false,false,false,false,false,false,true]");
 while(unlocked.length<10) unlocked.push(false);
 let loadout=JSON.parse(localStorage.getItem("duelStarsLoadout")||'{"primary":0,"secondary":1,"melee":2,"support":3}');
@@ -173,18 +175,21 @@ let emoteMenuOpen=false;
 let roundDelayTimerKey=null;
 let chatOpen=false,chatMessages=[],chatUnread=0,chatReady=false,lastChatSeenTime=0,chatRef=null,chatScope="";
 let privateRoomRef=null,currentPrivateCode=null;
-let ownedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsWeaponSkins")||'{"arTrueGold":false,"crimsonPrimary":false,"voidSecondary":false,"frostMelee":false,"plasmaSupport":false}');
-let equippedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsEquippedSkins")||'{"assaultRifle":null,"primary":null,"secondary":null,"melee":null,"support":null}');
+let ownedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsWeaponSkins")||'{"arTrueGold":false,"crimsonPrimary":false,"voidSecondary":false,"frostMelee":false,"plasmaSupport":false,"minimalistRpg":false}');
+let equippedWeaponSkins=JSON.parse(localStorage.getItem("duelStarsEquippedSkins")||'{"assaultRifle":null,"primary":null,"secondary":null,"melee":null,"support":null,"rpg":null}');
 if(ownedWeaponSkins.arTrueGold==null)ownedWeaponSkins.arTrueGold=false;
 if(ownedWeaponSkins.crimsonPrimary==null)ownedWeaponSkins.crimsonPrimary=false;
 if(ownedWeaponSkins.voidSecondary==null)ownedWeaponSkins.voidSecondary=false;
 if(ownedWeaponSkins.frostMelee==null)ownedWeaponSkins.frostMelee=false;
 if(ownedWeaponSkins.plasmaSupport==null)ownedWeaponSkins.plasmaSupport=false;
+if(ownedWeaponSkins.minimalistRpg==null)ownedWeaponSkins.minimalistRpg=!!avatar.rpgSkinOwned;
 if(equippedWeaponSkins.assaultRifle===undefined)equippedWeaponSkins.assaultRifle=null;
 if(equippedWeaponSkins.primary===undefined)equippedWeaponSkins.primary=null;
 if(equippedWeaponSkins.secondary===undefined)equippedWeaponSkins.secondary=null;
 if(equippedWeaponSkins.melee===undefined)equippedWeaponSkins.melee=null;
 if(equippedWeaponSkins.support===undefined)equippedWeaponSkins.support=null;
+if(equippedWeaponSkins.rpg===undefined)equippedWeaponSkins.rpg=avatar.rpgSkin?'minimalist':null;
+avatar.rpgSkin=false;avatar.rpgSkinOwned=false;
 const SKIN_SET_COST=25;
 const VOID_SECONDARY_SKIN_COST=25;
 const MAX_HEALTH=150;
@@ -208,6 +213,7 @@ const SCYTHE_INDEX=25;
 const SLINGSHOT_INDEX=26;
 const ENERGY_SPEAR_INDEX=27;
 const MAGIC_STAFF_INDEX=28;
+const FROST_SHOTGUN_INDEX=29;
 const KATANA_BLOCK_DURATION=4;
 const KATANA_BLOCK_COOLDOWN=5;
 const GIFT_CODES={xoxo:{shards:20,message:"+20 shards"},rivals:{shards:20,message:"+20 shards"},goat:{shards:20,message:"+20 shards"},crowisthebestbrawler:{message:"Unlocked True Gold Assault Rifle skin!",unlockSkin:"arTrueGold"},
@@ -241,10 +247,11 @@ const weapons=[
 {name:"Scythe",short:"Scythe",type:"melee",damage:35,cooldown:700,range:3.25,head:1,cost:30,dashCooldown:4000,dashSpeed:62,dashDistance:9.25},
 {name:"Slingshot",short:"Sling",type:"secondary",damage:8,cooldown:75,speed:58,spread:.012,pellets:1,head:1.2,cost:20,magSize:99,reserveSize:0,reloadTime:1600,slingshot:true,bounces:2,life:2.4},
 {name:"Energy Spear",short:"Spear",type:"melee",damage:40,cooldown:850,range:3.8,head:1,cost:25,throwDamage:55,throwCooldown:7000,throwSpeed:76},
-{name:"Magic Staff",short:"Staff",type:"melee",damage:20,cooldown:520,range:3.0,head:1,cost:30,blinkCooldown:10000}
+{name:"Magic Staff",short:"Staff",type:"melee",damage:20,cooldown:520,range:3.0,head:1,cost:30,blinkCooldown:10000},
+{name:"Frost Shotgun",short:"Frost SG",type:"primary",damage:13,cooldown:720,speed:78,spread:.105,pellets:7,head:1.35,magSize:7,reserveSize:100,reloadTime:2900,frostShotgun:true,lastShotBonus:35,freezeDuration:3000}
 ];
 while(unlocked.length<weapons.length) unlocked.push(false);
-unlocked[MOLOTOV_INDEX]=true;unlocked[RPG_INDEX]=true;unlocked[KATANA_INDEX]=true;unlocked[WARPSTONE_INDEX]=true;
+unlocked[MOLOTOV_INDEX]=true;unlocked[RPG_INDEX]=true;unlocked[KATANA_INDEX]=true;unlocked[WARPSTONE_INDEX]=true;unlocked[FROST_SHOTGUN_INDEX]=true;
 const player={pos:new THREE.Vector3(0,1.7,LOBBY_Z),vel:new THREE.Vector3(),health:MAX_HEALTH,grounded:false,radius:.55,height:1.7,jumpCount:0};
 const STAND_HEIGHT=1.7,SLIDE_HEIGHT=1.05,SLIDE_SPEED=19.5,SLIDE_DURATION=.68,SLIDE_COOLDOWN=.85;
 const walls=[];let playBluePad,playRedPad,shopBasket,presentBox,blackboard,secretLaserSpot,weaponView;
@@ -254,6 +261,8 @@ function hasTrueGoldAR(){return !!ownedWeaponSkins.arTrueGold;}
 function isGoldARActive(){return equippedWeaponSkins.assaultRifle==='truegold'&&hasTrueGoldAR();}
 function hasVoidSecondarySkin(){return !!ownedWeaponSkins.voidSecondary;}
 function isVoidSecondaryActiveFor(i=currentWeapon){return !!(hasVoidSecondarySkin()&&equippedWeaponSkins.secondary==='void'&&weapons[i]?.type==='secondary');}
+function hasMinimalistRpgSkin(){return !!ownedWeaponSkins.minimalistRpg;}
+function isMinimalistRpgActive(){return !!(hasMinimalistRpgSkin()&&equippedWeaponSkins.rpg==='minimalist');}
 const SKIN_SETS={
  primary:{key:'crimsonPrimary',equip:'primary',value:'crimson',name:'Crimson Primary Skin Set',label:'Crimson',desc:'Red and black energy style for every primary weapon.'},
  secondary:{key:'voidSecondary',equip:'secondary',value:'void',name:'Void Secondary Skin Set',label:'Void',desc:'Black and purple Void style for every secondary weapon.'},
@@ -281,6 +290,11 @@ function renderTypeSkinControls(type){
  return `<div class="skinBox"><small>${type} skin set: <b>${s.label}</b></small><br><button onclick="toggleSkinSet('${type}')">${equipped?'Unequip '+s.label+' Set':'Equip '+s.label+' Set'}</button></div>`;
 }
 function renderSecondarySkinControls(){return renderTypeSkinControls('secondary');}
+function renderMinimalistRpgSkinControls(){
+ const owned=hasMinimalistRpgSkin(),equipped=isMinimalistRpgActive();
+ if(!owned)return '<div class="skinBox"><small>Special skin: Locked — talk to Vedted123.</small></div>';
+ return `<div class="skinBox"><small>Special skin: <b>Minimalist RPG</b></small><br><button onclick="toggleMinimalistRpgWeaponSkin()">${equipped?'Unequip Minimalist RPG':'Equip Minimalist RPG'}</button></div>`;
+}
 function hasEmote(id){return ownedEmotes.includes(id);}
 function ownedEmoteIds(){return Object.keys(EMOTES).filter(hasEmote);}
 function renderOwnedEmotes(){
@@ -331,6 +345,8 @@ function sideDisplayName(side){
 function isTagMode(){return !!(currentMatch&&currentMatch.gameType==='tag');}
 function isTagger(){return isTagMode()&&currentMatch.tagger===mySide;}
 function tagFreezeRemaining(){return Math.max(0,((currentMatch?.freezeUntil||0)-Date.now())/1000);}
+function combatFreezeRemaining(side=mySide){return Math.max(0,((currentMatch?.frozenUntil?.[side]||0)-Date.now())/1000);}
+function isCombatFrozen(side=mySide){return combatFreezeRemaining(side)>0;}
 function isTagFrozen(){return isTagger()&&tagFreezeRemaining()>0;}
 function tagTimeLeft(){return Math.max(0,Math.ceil(((currentMatch?.tagEnd||0)-Date.now())/1000));}
 function formatTagTime(sec){sec=Math.max(0,Number(sec)||0);return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');}
@@ -905,13 +921,36 @@ function rebuildWeaponModel(){
   addViewPart(g,new THREE.BoxGeometry(.08,.16,.06),purple,.45,-.45,-.48,0,0,.22);
  }
  else if(currentWeapon===RPG_INDEX){
-  addViewPart(g,new THREE.CylinderGeometry(.16,.16,1.02,18),dark,.34,-.22,-.78,Math.PI/2,0,0,{metalness:.22,roughness:.34});
-  addViewPart(g,new THREE.CylinderGeometry(.2,.2,.16,18),purple,.34,-.22,-.25,Math.PI/2,0,0,{metalness:.18});
-  addViewPart(g,new THREE.CylinderGeometry(.18,.12,.18,18),0x223040,.34,-.22,-1.33,Math.PI/2,0,0,{metalness:.18});
-  addViewPart(g,new THREE.BoxGeometry(.12,.28,.18),dark,.34,-.42,-.62,0,0,.22);
-  addViewPart(g,new THREE.BoxGeometry(.1,.18,.13),blue,.39,-.41,-.46,0,0,.22);
-  addViewPart(g,new THREE.BoxGeometry(.28,.06,.18),lime,.34,-.04,-.72);
-  addViewPart(g,new THREE.BoxGeometry(.06,.16,.06),orange,.34,-.06,-1.12,0,0,0,{emissive:0x331200});
+  const minimalist=isMinimalistRpgActive();
+  const tubeCol=minimalist?0xfafafa:dark,bandCol=minimalist?0xffffff:purple,capCol=minimalist?0xe9edf2:0x223040,gripCol=minimalist?0x232833:dark,detailCol=minimalist?0xd61f1f:lime,muzzleGlow=minimalist?0xc9d2dc:orange;
+  addViewPart(g,new THREE.CylinderGeometry(.16,.16,1.02,18),tubeCol,.34,-.22,-.78,Math.PI/2,0,0,{metalness:minimalist ? .08 : .22,roughness:minimalist ? .22 : .34});
+  addViewPart(g,new THREE.CylinderGeometry(.2,.2,.16,18),bandCol,.34,-.22,-.25,Math.PI/2,0,0,{metalness:.12,roughness:.18});
+  addViewPart(g,new THREE.CylinderGeometry(.18,.12,.18,18),capCol,.34,-.22,-1.33,Math.PI/2,0,0,{metalness:.15,roughness:.2});
+  addViewPart(g,new THREE.BoxGeometry(.12,.28,.18),gripCol,.34,-.42,-.62,0,0,.22);
+  addViewPart(g,new THREE.BoxGeometry(.1,.18,.13),minimalist?0x434b57:blue,.39,-.41,-.46,0,0,.22);
+  addViewPart(g,new THREE.BoxGeometry(.28,.06,.18),detailCol,.34,-.04,-.72,0,0,0,minimalist?{emissive:0x280204}:{emissive:0x173200});
+  addViewPart(g,new THREE.BoxGeometry(.06,.16,.06),muzzleGlow,.34,-.06,-1.12,0,0,0,{emissive:minimalist?0x2a0000:0x331200});
+  if(minimalist){
+   const ved=makeTextDecalMesh('VED',.34,.13,'#d61f1f',-.11);ved.position.set(.16,-.15,-.74);ved.rotation.y=-Math.PI/2;g.add(ved);
+   const stripe=makeTextDecalMesh('VED',.22,.08,'#d61f1f',-.08);stripe.position.set(.52,-.17,-.46);stripe.rotation.z=.03;g.add(stripe);
+  }
+ }
+ else if(currentWeapon===FROST_SHOTGUN_INDEX){
+  const ice=0xbdf5ff,body=0x78c7df,darkIce=0x31586b,black=0x1d242d,pump=0x0f9fd6,stock=0x3c4652;
+  addViewPart(g,new THREE.CylinderGeometry(.046,.046,1.18,14),black,.27,-.22,-.92,Math.PI/2,0,0,{metalness:.4,roughness:.22});
+  addViewPart(g,new THREE.CylinderGeometry(.046,.046,1.18,14),darkIce,.40,-.22,-.92,Math.PI/2,0,0,{metalness:.34,roughness:.22});
+  addViewPart(g,new THREE.BoxGeometry(.46,.22,.82),body,.35,-.21,-.56,0,0,0,{metalness:.18,roughness:.22,emissive:0x073545});
+  addViewPart(g,new THREE.BoxGeometry(.3,.06,.22),darkIce,.28,-.05,-.69,0,0,0,{metalness:.22});
+  addViewPart(g,new THREE.BoxGeometry(.3,.18,.28),pump,.2,-.22,-.18,0,0,0,{metalness:.12,roughness:.18,emissive:0x053a5a});
+  addViewPart(g,new THREE.BoxGeometry(.13,.33,.16),black,.34,-.44,-.37,0,0,.28);
+  addViewPart(g,new THREE.BoxGeometry(.38,.18,.28),stock,.56,-.2,.05,0,0,0,{metalness:.16,roughness:.3});
+  addViewPart(g,new THREE.BoxGeometry(.3,.25,.12),stock,.69,-.2,.2,0,0,.16,{metalness:.16,roughness:.32});
+  addViewPart(g,new THREE.BoxGeometry(.16,.12,.16),ice,.37,-.04,-1.42,0,0,0,{emissive:0x1b5e75,transparent:true,opacity:.92});
+  const title=makeTextDecalMesh('Frost Shotgun',.44,.11,'#133f5a',0);title.position.set(.12,-.16,-.58);title.rotation.y=-Math.PI/2;g.add(title);
+  const flake=makeTextDecalMesh('❄',.12,.12,'#1e6f8f',0);flake.position.set(.12,-.17,-.32);flake.rotation.y=-Math.PI/2;g.add(flake);
+  addViewPart(g,new THREE.OctahedronGeometry(.12,0),ice,.39,.09,-.55,0,0,0,{transparent:true,opacity:.95,emissive:0x1b5e75});
+  addViewPart(g,new THREE.OctahedronGeometry(.08,0),ice,.31,.18,-.5,.2,.1,.1,{transparent:true,opacity:.92,emissive:0x1b5e75});
+  addViewPart(g,new THREE.OctahedronGeometry(.07,0),ice,.45,.17,-.48,-.15,.1,-.1,{transparent:true,opacity:.92,emissive:0x1b5e75});
  }
  else if(currentWeapon===KATANA_INDEX){
   // Clean connected katana: same style, much longer triangular blade.
@@ -1033,13 +1072,14 @@ function rebuildWeaponModel(){
 }
 function makeNameSprite(name){const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,512,128);ctx.font='bold 48px Arial';ctx.textAlign='center';ctx.textBaseline='middle';const safe=(name||'Player').slice(0,18);const w=Math.min(470,ctx.measureText(safe).width+46);ctx.fillStyle='rgba(0,0,0,.62)';ctx.strokeStyle='rgba(140,247,255,.95)';ctx.lineWidth=4;roundRect(ctx,(512-w)/2,25,w,78,22);ctx.fill();ctx.stroke();ctx.fillStyle='white';ctx.fillText(safe,256,64);const tex=new THREE.CanvasTexture(canvas);tex.needsUpdate=true;const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));spr.scale.set(2.7,.68,1);spr.position.y=2.7;spr.userData.labelName=safe;return spr;}
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+function makeTextDecalMesh(text,width=.42,height=.14,color='#d61f1f',tilt=-.12){const c=document.createElement('canvas');c.width=512;c.height=160;const x=c.getContext('2d');x.clearRect(0,0,512,160);x.save();x.translate(256,82);x.rotate(tilt);x.font='bold 88px Arial';x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.lineCap='round';x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=9;x.strokeText(text,0,0);x.fillStyle=color;x.fillText(text,0,0);x.restore();const tex=new THREE.CanvasTexture(c);tex.needsUpdate=true;return new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,side:THREE.DoubleSide}));}
 function getAvatarData(p={}){
  return {
   shirt:p.shirtColor||p.avatar?.shirt||p.color||'#4fd3ff',
   pants:p.pantsColor||p.avatar?.pants||'#111827',
   head:p.headColor||p.avatar?.head||'#ffcc99',
   accessory:p.accessory||p.avatar?.accessory||'none',
-  rpgSkin:!!(p.rpgSkin||p.avatar?.rpgSkin)
+  rpgSkin:false
  };
 }
 function makeBlockPart(w,h,d,color,x,y,z){
@@ -1102,10 +1142,23 @@ function makeRemoteWeaponModel(i,p={}){
  const type=w.type;
  if(type==='primary'){
   if(i===RPG_INDEX){
-   remotePart(g,new THREE.CylinderGeometry(.13,.13,.9,18),pal.dark,0,0,-.3,Math.PI/2,0,0,{metalness:.3});
-   remotePart(g,new THREE.CylinderGeometry(.17,.17,.16,18),pal.main,0,0,.18,Math.PI/2,0,0,{metalness:.24});
-   remotePart(g,new THREE.ConeGeometry(.15,.24,18),pal.accent,0,0,-.82,Math.PI/2,0,0,{emissive:pal.emissive});
-   remotePart(g,new THREE.BoxGeometry(.16,.24,.14),pal.dark,0,-.23,-.15,.1,0,.2);
+   const minimalist=!!p.minimalistRpgSkin;
+   remotePart(g,new THREE.CylinderGeometry(.13,.13,.9,18),minimalist?0xfafafa:pal.dark,0,0,-.3,Math.PI/2,0,0,{metalness:minimalist ? .1 : .3,roughness:minimalist ? .2 : .34});
+   remotePart(g,new THREE.CylinderGeometry(.17,.17,.16,18),minimalist?0xffffff:pal.main,0,0,.18,Math.PI/2,0,0,{metalness:.16,roughness:.2});
+   remotePart(g,new THREE.ConeGeometry(.15,.24,18),minimalist?0xe9edf2:pal.accent,0,0,-.82,Math.PI/2,0,0,{emissive:minimalist?0x2a0000:pal.emissive});
+   remotePart(g,new THREE.BoxGeometry(.16,.24,.14),minimalist?0x232833:pal.dark,0,-.23,-.15,.1,0,.2);
+   remotePart(g,new THREE.BoxGeometry(.28,.05,.14),minimalist?0xd61f1f:pal.accent,0,.1,-.34,0,0,0,{emissive:minimalist?0x300000:pal.emissive});
+   if(minimalist){const ved=makeTextDecalMesh('VED',.3,.12,'#d61f1f',-.12);ved.position.set(-.17,.02,-.28);ved.rotation.y=Math.PI/2;g.add(ved);}
+  }else if(i===FROST_SHOTGUN_INDEX){
+   remotePart(g,new THREE.BoxGeometry(.4,.18,.76),0x78c7df,0,0,-.22,0,0,0,{emissive:0x073545,metalness:.16,roughness:.22});
+   remotePart(g,new THREE.CylinderGeometry(.04,.04,1.02,12),0x1d242d,-.07,0,-.75,Math.PI/2,0,0,{metalness:.32,roughness:.22});
+   remotePart(g,new THREE.CylinderGeometry(.04,.04,1.02,12),0x31586b,.07,0,-.75,Math.PI/2,0,0,{metalness:.28,roughness:.22});
+   remotePart(g,new THREE.BoxGeometry(.22,.16,.22),0x0f9fd6,-.12,0,.06,0,0,0,{emissive:0x053a5a,roughness:.18});
+   remotePart(g,new THREE.BoxGeometry(.14,.29,.16),0x1d242d,0,-.24,-.02,0,0,.2);
+   remotePart(g,new THREE.BoxGeometry(.32,.18,.26),0x3c4652,0,0,.22);
+   remotePart(g,new THREE.BoxGeometry(.24,.22,.1),0x3c4652,0,0,.39,0,0,.16);
+   remotePart(g,new THREE.OctahedronGeometry(.09,0),0xbdf5ff,.04,.14,-.22,0,0,0,{transparent:true,opacity:.92,emissive:0x1b5e75});
+   const frostWord=makeTextDecalMesh('Frost',.24,.08,'#133f5a',0);frostWord.position.set(-.2,.02,-.23);frostWord.rotation.y=Math.PI/2;g.add(frostWord);
   }else if(i===5){
    remotePart(g,new THREE.BoxGeometry(.2,.16,.62),pal.main,0,0,-.18);
    remotePart(g,new THREE.CylinderGeometry(.035,.035,1.15,14),pal.dark,0,.02,-.8,Math.PI/2,0,0,{metalness:.32});
@@ -1236,7 +1289,7 @@ function makeRemoteWeaponModel(i,p={}){
 function updateRemoteWeaponModel(m,p){
  if(!m.userData.gun)return;
  const i=Number(p.weapon)||0;
- const sig=[i,!!p.goldArSkin,!!p.voidSecondarySkin,p.skinSet||''].join('|');
+ const sig=[i,!!p.goldArSkin,!!p.voidSecondarySkin,p.skinSet||'',!!p.minimalistRpgSkin].join('|');
  if(m.userData.weaponSig===sig)return;
  while(m.userData.gun.children.length)m.userData.gun.remove(m.userData.gun.children[0]);
  const model=makeRemoteWeaponModel(i,p);
@@ -1391,6 +1444,9 @@ function updateRemoteMeshes(){
   applyAvatarToMesh(m,p);
   applyEmotePose(m,p.emote,p.emoteStart,p.emoteUntil);
   updateRemoteWeaponModel(m,p);
+  const frozenRemote=!!(currentMatch&&p.matchId===matchId&&Number(currentMatch.frozenUntil?.[p.side]||0)>Date.now());
+  if(frozenRemote&&!m.userData.iceShell){const ice=new THREE.Group();const mat=new THREE.MeshStandardMaterial({color:0x9eeaff,transparent:true,opacity:.34,roughness:.12,metalness:.05,emissive:0x123f55,emissiveIntensity:.35});const shell=new THREE.Mesh(new THREE.BoxGeometry(1.25,2.7,1.05),mat);shell.position.y=1.35;ice.add(shell);for(let q=0;q<7;q++){const shard=new THREE.Mesh(new THREE.ConeGeometry(.08+.02*(q%2),.5+.08*(q%3),5),mat.clone());shard.position.set((q%3-1)*.34,.25+(q%4)*.55,(q%2?-.48:.48));shard.rotation.z=(q-3)*.16;ice.add(shard);}m.userData.iceShell=ice;m.add(ice);}
+  if(m.userData.iceShell)m.userData.iceShell.visible=frozenRemote;
   if(m.userData.bomb){m.userData.bomb.visible=!!(currentMatch&&currentMatch.gameType==='tag'&&p.matchId===matchId&&p.side===currentMatch.tagger);m.userData.bomb.rotation.y+=.08;}
   if((p.name||'Player')!==m.userData.name){m.remove(m.userData.label);m.userData.label.material.map.dispose();m.userData.label.material.dispose();m.userData.label=makeNameSprite(p.name);m.add(m.userData.label);m.userData.name=p.name||'Player';}
   if(m.userData.label){m.userData.label.visible=visible&&!remoteInvisible&&gameMode==='lobby';m.userData.label.quaternion.copy(camera.quaternion);}
@@ -1424,7 +1480,7 @@ function cleanupOwnGhosts(){
   if(Object.keys(updates).length)db.ref().update(updates);
  }).catch(()=>{});
 }
-function authStart(){auth.signInAnonymously().then(res=>{authUid=res.user.uid;uid=authUid+'_'+tabId;myRef=db.ref('duelStars/players/'+uid);myRef.onDisconnect().remove();myRef.set({authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,rpgSkin:!!avatar.rpgSkin,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,mode:'lobby',matchId:null,weapon:currentWeapon,goldArSkin:isGoldARActive(),invisibleUntil:null,updated:firebase.database.ServerValue.TIMESTAMP});cleanupOwnGhosts();listenOnline();listenMyAssignment();listenQueue();listenChat();$('statusText').textContent='Lobby';setMessage('Connected as '+playerName,650);}).catch(e=>{console.error(e);$('statusText').textContent='Firebase error';setMessage('Firebase auth error: '+e.message,0)});}
+function authStart(){auth.signInAnonymously().then(res=>{authUid=res.user.uid;uid=authUid+'_'+tabId;myRef=db.ref('duelStars/players/'+uid);myRef.onDisconnect().remove();myRef.set({authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,rpgSkin:false,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,mode:'lobby',matchId:null,weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,minimalistRpgSkin:isMinimalistRpgActive(),invisibleUntil:null,updated:firebase.database.ServerValue.TIMESTAMP});cleanupOwnGhosts();listenOnline();listenMyAssignment();listenQueue();listenChat();$('statusText').textContent='Lobby';setMessage('Connected as '+playerName,650);}).catch(e=>{console.error(e);$('statusText').textContent='Firebase error';setMessage('Firebase auth error: '+e.message,0)});}
 function listenOnline(){db.ref('duelStars/players').on('value',snap=>{remotePlayers=normalizePlayers(snap.val()||{});let rows=Object.entries(remotePlayers).filter(([id,p])=>id===uid||sameVisibleSpace(p));let list=rows.map(([id,p])=>`<div>${p.name||'Player'} ${id===uid?'(you)':''}</div>`).join('')||'<div>No players</div>';const title=currentPrivateCode?'Private Lobby '+currentPrivateCode:'Online Lobby';$('playersOnline').innerHTML='<b>'+title+'</b>'+list;updateRemoteMeshes();});}
 function listenMyAssignment(){
  if(!myRef)return;
@@ -1448,7 +1504,7 @@ function tryCreateMatchFromQueue(blue,red){
  const id=safeKey(blue,red);
  const ref=db.ref('duelStars/matches/'+id);
  ref.transaction(cur=>{
-  const fresh=()=>({blue,red,status:'modevote',gameType:null,modeVotes:{},round:1,map:null,mapVotes:{},scores:{blue:0,red:0},health:{blue:MAX_HEALTH,red:MAX_HEALTH},ready:{},loadouts:{},tagger:null,tagEnd:null,disasterEnd:null,freezeUntil:0,winner:null,lastRoundWinner:null,paid:{},fx:{},created:firebase.database.ServerValue.TIMESTAMP});
+  const fresh=()=>({blue,red,status:'modevote',gameType:null,modeVotes:{},round:1,map:null,mapVotes:{},scores:{blue:0,red:0},health:{blue:MAX_HEALTH,red:MAX_HEALTH},ready:{},loadouts:{},tagger:null,tagEnd:null,disasterEnd:null,freezeUntil:0,frozenUntil:{blue:0,red:0},winner:null,lastRoundWinner:null,paid:{},fx:{},created:firebase.database.ServerValue.TIMESTAMP});
   if(!cur)return fresh();
   const oldFinished=cur.status==='finished'||cur.winner;
   const veryOld=cur.created&&Date.now()-Number(cur.created)>1000*60*15;
@@ -1678,7 +1734,7 @@ function updatePlayer(dt){
   // Stable movement rebuilt from the original offline version.
   // Movement is ALWAYS based on the camera direction:
   // W = forward, S = backward, D = right, A = left.
-  const controlsAllowed = !menuOpen && !shopOpen && !chatOpen && !emoteMenuOpen && roundPhase !== 'select' && roundPhase !== 'mapvote' && roundPhase !== 'modevote' && roundPhase !== 'rounddelay' && !isTagFrozen();
+  const controlsAllowed = !menuOpen && !shopOpen && !chatOpen && !emoteMenuOpen && roundPhase !== 'select' && roundPhase !== 'mapvote' && roundPhase !== 'modevote' && roundPhase !== 'rounddelay' && !isTagFrozen() && !isCombatFrozen();
 
   // Update camera rotation before calculating movement so WASD never feels flipped.
   camera.rotation.set(pitch, yaw, 0, 'YXZ');
@@ -2053,6 +2109,7 @@ function attack(){
  if(invisState.drinking){setMessage('Drinking potion...',350);return;}
  if(isInvisibleActive()){setMessage('Invisible - weapons disabled',450);return;}
  if(isTagFrozen()){setMessage('Frozen '+Math.ceil(tagFreezeRemaining())+'s',350);return;}
+ if(isCombatFrozen()){setMessage('FROZEN '+Math.ceil(combatFreezeRemaining())+'s',350);return;}
  let w=weapons[currentWeapon];
  if(currentWeapon===KATANA_INDEX&&katanaState.blocking){setMessage('Katana blocking',350);return;}
  if(isTagMode()&&currentWeapon===REVOLVER_INDEX&&!hasAmmoForCurrent()){reloadCurrent();return;}
@@ -2082,6 +2139,7 @@ function attack(){
  if(currentWeapon===SHOCK_BOMB_INDEX){if(!consumeAmmo())return;throwShockBomb();return}
  if(currentWeapon===DAGGERS_INDEX){throwDaggers();return}
  if(currentWeapon===RPG_INDEX){if(!consumeAmmo())return;fireRPG();return}
+ if(currentWeapon===FROST_SHOTGUN_INDEX){const a=getAmmo(FROST_SHOTGUN_INDEX);const frostFinal=!!(a&&a.mag===1);if(!consumeAmmo())return;fireFrostShotgun(frostFinal);return}
  if(currentWeapon===BURST_PISTOL_INDEX){burstPistolFire();return}
  if(currentWeapon===LASER_INDEX){
   if(!consumeAmmo())return;
@@ -2130,6 +2188,20 @@ function makeRocketProjectile(dir){
  for(let i=0;i<4;i++){const fin=new THREE.Mesh(new THREE.BoxGeometry(.035,.16,.18),finMat);fin.position.set(Math.cos(i*Math.PI/2)*.12,-.36,Math.sin(i*Math.PI/2)*.12);fin.rotation.y=i*Math.PI/2;g.add(fin);}
  const flame=new THREE.Mesh(new THREE.ConeGeometry(.1,.34,12),new THREE.MeshBasicMaterial({color:0xff8a00,transparent:true,opacity:.9}));flame.position.y=-.52;flame.rotation.x=Math.PI;g.add(body,nose,flame);
  if(dir)g.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());scene.add(g);return g;
+}
+function fireFrostShotgun(finalShot){
+ const w=weapons[FROST_SHOTGUN_INDEX],shotId='frost_'+Date.now()+'_'+Math.random().toString(36).slice(2),origin=player.pos.clone();
+ for(let n=0;n<w.pellets;n++){
+  let dir=getLookDirection();const spread=isADS?w.spread*.55:w.spread;
+  dir.x+=(Math.random()-.5)*spread;dir.y+=(Math.random()-.5)*spread;dir.z+=(Math.random()-.5)*spread;dir.normalize();
+  bullets.push({pos:origin.clone().add(dir.clone().multiplyScalar(.8)),origin:origin.clone(),vel:dir.clone().multiplyScalar(w.speed),damage:w.damage,life:1.05,mesh:makeBullet(finalShot?0xeaffff:0x8cf7ff,dir),weapon:FROST_SHOTGUN_INDEX,shotId,frostFinal:!!finalShot});
+ }
+ playWeaponAnimation('recoil',.18);setMessage(finalShot?'CRYO ROUND FIRED!':'Frost Shotgun',500);
+}
+function freezeOpponent(duration=3000){
+ if(!currentMatchRef||!remoteSide||roundPhase!=='playing')return;
+ currentMatchRef.child('frozenUntil/'+remoteSide).set(Date.now()+duration);
+ setMessage('OPPONENT FROZEN FOR 3 SECONDS!',1000);
 }
 function fireRPG(){
  let dir=getLookDirection();
@@ -2899,17 +2971,17 @@ function queuePelletDamage(hit,projectile){
  if(!w||!(w.pellets>1)||!projectile.shotId){applyDamage(hit.damage,hit.head);return;}
  const key=projectile.shotId;
  if(!pendingPelletDamage[key]){
-  pendingPelletDamage[key]={damage:0,head:false,timer:null};
+  pendingPelletDamage[key]={damage:0,head:false,frostFinal:!!projectile.frostFinal,timer:null};
   pendingPelletDamage[key].timer=setTimeout(()=>{
    const p=pendingPelletDamage[key];
    if(!p)return;
    const total=Math.round(p.damage);
    delete pendingPelletDamage[key];
-   if(total>0)applyDamage(total,p.head);
+   if(total>0){if(p.frostFinal){applyDamage(total+(weapons[FROST_SHOTGUN_INDEX].lastShotBonus||35),p.head);freezeOpponent(weapons[FROST_SHOTGUN_INDEX].freezeDuration||3000);}else applyDamage(total,p.head);}
   },45);
  }
  pendingPelletDamage[key].damage+=Number(hit.damage)||0;
- pendingPelletDamage[key].head=pendingPelletDamage[key].head||!!hit.head;
+ pendingPelletDamage[key].head=pendingPelletDamage[key].head||!!hit.head;pendingPelletDamage[key].frostFinal=pendingPelletDamage[key].frostFinal||!!projectile.frostFinal;
 }
 function meleeAttack(backstab){let op=getRemoteOpponent();if(!op)return;let opPos=new THREE.Vector3(op.x||0,op.y||1.7,op.z||0);let dist=player.pos.distanceTo(opPos);let w=weapons[currentWeapon];if(dist>(w.range||2.2))return;let dirToOpp=opPos.clone().sub(player.pos).normalize();let aim=getLookDirection();if(aim.dot(dirToOpp)<.55)return;let dmg=w.damage;if(backstab&&currentWeapon===7){let oppForward=new THREE.Vector3(Math.sin(op.yaw||0),0,-Math.cos(op.yaw||0));let fromOpp=player.pos.clone().sub(opPos).setY(0).normalize();let behind=oppForward.dot(fromOpp)<-.35;dmg=behind?999:40;setMessage(behind?'BACKSTAB!':'Knife hit',700)}applyDamage(dmg,false)}
 function healSelf(){let newH=Math.min(MAX_HEALTH,player.health+50);if(currentMatchRef)currentMatchRef.child('health/'+mySide).set(newH);setMessage('Medkit +50 HP',700)}
@@ -2963,32 +3035,41 @@ function makeFlameCircle(pos,radius){const g=new THREE.Group();const disk=new TH
 function createMolotovZone(pos,effectId=null,ownerId=null){const w=weapons[MOLOTOV_INDEX];const groundPos=pos.clone();groundPos.y=0;molotovs.push({id:effectId||('local_'+Date.now()),owner:ownerId||uid||null,pos:groundPos,radius:w.radius||4.5,damage:w.damage||10,life:w.duration||7,tick:0,group:makeFlameCircle(groundPos,w.radius||4.5)});}
 function igniteMolotov(pos,broadcast=true){const groundPos=pos.clone();groundPos.y=0;let effectId='molotov_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);seenMolotovFx[effectId]=true;createMolotovZone(groundPos,effectId,uid||null);if(broadcast&&currentMatchRef){currentMatchRef.child('fx/molotovs/'+effectId).set({x:Number(groundPos.x.toFixed(3)),z:Number(groundPos.z.toFixed(3)),owner:uid||null,time:firebase.database.ServerValue.TIMESTAMP});}setMessage('Flames active: 7 seconds',650);}
 function explode(pos){let boom=new THREE.Mesh(new THREE.SphereGeometry(1,20,20),new THREE.MeshBasicMaterial({color:0xffaa00,transparent:true,opacity:.7}));boom.position.copy(pos);scene.add(boom);let s=0;let iv=setInterval(()=>{s+=.35;boom.scale.set(s,s,s);boom.material.opacity-=.08;if(boom.material.opacity<=0){clearInterval(iv);scene.remove(boom)}},25);let op=getRemoteOpponent();if(op&&pos.distanceTo(new THREE.Vector3(op.x||0,op.y||1.7,op.z||0))<weapons[3].explosion)applyDamage(weapons[3].damage,false);if(pos.distanceTo(player.pos)<weapons[3].explosion){let nh=Math.max(0,player.health-28);if(currentMatchRef)currentMatchRef.child('health/'+mySide).set(nh);if(nh<=0)finishRound(remoteSide)}}
-function selectWeapon(i){if(currentWeapon===KATANA_INDEX&&i!==KATANA_INDEX)stopKatanaBlock(false);if(railgunState.charging&&i!==RAILGUN_INDEX)cancelRailgunCharge(true);if(!weapons[i]||!unlocked[i])return;let allowed=Object.values(loadout).includes(i);if(gameMode==='match'&&!allowed)return;cancelReload();currentWeapon=i;rebuildWeaponModel();renderWeaponBar();if(myRef)myRef.update({weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null});}
-function renderWeaponBar(){let bar=$('weaponBar');if(!bar){updateAmmoHud();return;}if(isTagMode()){let a=ammo[REVOLVER_INDEX]||{mag:0,reserve:0};bar.innerHTML=isTagger()?`<div class="slot active">IT · Revolver<small>${isTagFrozen()?'Frozen '+Math.ceil(tagFreezeRemaining())+'s':a.mag+' / 0'}</small></div>`:`<div class="slot active">Runner<small>Do not get tagged</small></div>`;updateAmmoHud();return;}if(isDisasterMode()){bar.innerHTML=`<div class="slot active">Disaster Island<small>Survive for ${formatTagTime(disasterTimeLeft())}</small></div>`;updateAmmoHud();return;}let ids=gameMode==='match'?Object.values(loadout):[loadout.primary,loadout.secondary,loadout.melee,loadout.support];bar.innerHTML=ids.map((id,idx)=>{let a=ammo[id];let ammoTxt=a?` · ${a.mag}/${a.reserve}`:' · ∞';return `<div class="slot ${id===currentWeapon?'active':''}">${idx+1} ${weapons[id].short}${id===0&&isGoldARActive()?'<span style="color:#ffd54a"> ★</span>':(isVoidSecondaryActiveFor(id)?'<span style="color:#c77dff"> ✦</span>':(activeSkinLabelForWeapon(id)?'<span style="color:#8cf7ff"> ✦</span>':''))}<small>${weapons[id].type}${ammoTxt}</small></div>`}).join('');updateAmmoHud();}
+function selectWeapon(i){if(currentWeapon===KATANA_INDEX&&i!==KATANA_INDEX)stopKatanaBlock(false);if(railgunState.charging&&i!==RAILGUN_INDEX)cancelRailgunCharge(true);if(!weapons[i]||!unlocked[i])return;let allowed=Object.values(loadout).includes(i);if(gameMode==='match'&&!allowed)return;cancelReload();currentWeapon=i;rebuildWeaponModel();renderWeaponBar();if(myRef)myRef.update({weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,minimalistRpgSkin:isMinimalistRpgActive()});}
+function renderWeaponBar(){let bar=$('weaponBar');if(!bar){updateAmmoHud();return;}if(isTagMode()){let a=ammo[REVOLVER_INDEX]||{mag:0,reserve:0};bar.innerHTML=isTagger()?`<div class="slot active">IT · Revolver<small>${isTagFrozen()?'Frozen '+Math.ceil(tagFreezeRemaining())+'s':a.mag+' / 0'}</small></div>`:`<div class="slot active">Runner<small>Do not get tagged</small></div>`;updateAmmoHud();return;}if(isDisasterMode()){bar.innerHTML=`<div class="slot active">Disaster Island<small>Survive for ${formatTagTime(disasterTimeLeft())}</small></div>`;updateAmmoHud();return;}let ids=gameMode==='match'?Object.values(loadout):[loadout.primary,loadout.secondary,loadout.melee,loadout.support];bar.innerHTML=ids.map((id,idx)=>{let a=ammo[id];let ammoTxt=a?` · ${a.mag}/${a.reserve}`:' · ∞';return `<div class="slot ${id===currentWeapon?'active':''}">${idx+1} ${weapons[id].short}${id===0&&isGoldARActive()?'<span style="color:#ffd54a"> ★</span>':(id===RPG_INDEX&&isMinimalistRpgActive()?'<span style="color:#d61f1f"> V</span>':(isVoidSecondaryActiveFor(id)?'<span style="color:#c77dff"> ✦</span>':(activeSkinLabelForWeapon(id)?'<span style="color:#8cf7ff"> ✦</span>':'')))}<small>${weapons[id].type}${ammoTxt}</small></div>`}).join('');updateAmmoHud();}
 function renderSettings(){
  let tabW=$('weaponsTab');
  let byType={primary:[],secondary:[],melee:[],support:[]};
  weapons.forEach((w,i)=>{if(!w.tagOnly)byType[w.type].push([w,i])});
  const actionFor=(w,i)=>unlocked[i]?`<button onclick="equipWeapon(${i})">Equip</button>`:(i===LASER_INDEX?`<button disabled>Find secret corner</button>`:`<button onclick="openShop()">Shop</button>`);
- tabW.innerHTML=Object.entries(byType).map(([type,arr])=>`<div class="card"><h3>${type.toUpperCase()}</h3><p>You can equip only one ${type} at a time.</p>${SKIN_SETS[type]?renderTypeSkinControls(type):''}<div class="weaponGrid">${arr.map(([w,i])=>`<div class="weaponCard ${!unlocked[i]?'locked':''} ${loadout[type]===i?'equipped':''}"><b>${w.name}</b><small>${unlocked[i]?'Owned':(i===LASER_INDEX?'Secret locked':'Locked')} ${w.cost?'· '+w.cost+' shards':''}</small><span class="pill">${type}</span><br>${actionFor(w,i)}${i===0?renderAssaultRifleSkinControls():''}</div>`).join('')}</div></div>`).join('');
+ tabW.innerHTML=Object.entries(byType).map(([type,arr])=>`<div class="card"><h3>${type.toUpperCase()}</h3><p>You can equip only one ${type} at a time.</p>${SKIN_SETS[type]?renderTypeSkinControls(type):''}<div class="weaponGrid">${arr.map(([w,i])=>`<div class="weaponCard ${!unlocked[i]?'locked':''} ${loadout[type]===i?'equipped':''}"><b>${w.name}</b><small>${unlocked[i]?'Owned':(i===LASER_INDEX?'Secret locked':'Locked')} ${w.cost?'· '+w.cost+' shards':''}</small><span class="pill">${type}</span><br>${actionFor(w,i)}${i===0?renderAssaultRifleSkinControls():''}${i===RPG_INDEX?renderMinimalistRpgSkinControls():''}</div>`).join('')}</div></div>`).join('');
  const colors=['#4fd3ff','#ff4b4b','#66ff99','#ffe66d','#b46cff','#ff8c33','#ffffff','#111111','#c1121f','#8cf7ff','#ffcc99','#6d2cff'];
  const swatches=(part,val)=>`<div class="colorPick">${colors.map(c=>`<div class="colorSwatch ${val===c?'sel':''}" title="${c}" style="background:${c}" onclick="setAvatarColor('${part}','${c}')"></div>`).join('')}</div>`;
  $('meTab').innerHTML=`<div class="card"><h3>Me</h3><p>Other players now see a blocky Roblox-style avatar.</p><label>Display name</label><input id="nameInput" value="${playerName.replace(/"/g,'&quot;')}"><button class="btn primary" onclick="saveName()">Save Name</button></div>
- <div class="card"><h3>Shirt Color</h3>${avatar.rpgSkin?'<p><b>Minimalist RPG skin equipped</b> — white outfit with “ved” in red.</p>':''}${swatches('shirt',avatar.shirt)}</div>
+ <div class="card"><h3>Shirt Color</h3>${swatches('shirt',avatar.shirt)}</div>
  <div class="card"><h3>Pants Color</h3>${swatches('pants',avatar.pants)}</div>
  <div class="card"><h3>Head / Hands Color</h3>${swatches('head',avatar.head)}</div>
  <div class="card"><h3>Accessory</h3><div class="weaponGrid">${['none','cap','crown','horns','headphones'].map(a=>`<button class="${avatar.accessory===a?'btn primary':'btn'}" onclick="setAccessory('${a}')">${a==='none'?'None':a[0].toUpperCase()+a.slice(1)}</button>`).join('')}</div></div>
  <div class="card"><h3>Emotes</h3><p>Use these to dance or taunt. You have to buy them first.</p>${renderOwnedEmotes()}</div>`;
 }
 
+window.toggleMinimalistRpgWeaponSkin=function(){
+ if(!hasMinimalistRpgSkin())return;
+ equippedWeaponSkins.rpg=isMinimalistRpgActive()?null:'minimalist';
+ saveLocal();
+ if(currentWeapon===RPG_INDEX)rebuildWeaponModel();
+ if(myRef)myRef.update({weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,minimalistRpgSkin:isMinimalistRpgActive()});
+ renderSettings();renderWeaponBar();
+ setMessage(isMinimalistRpgActive()?'Minimalist RPG equipped':'Minimalist RPG unequipped',900);
+};
 window.equipWeapon=function(i){let t=weapons[i].type;if(!unlocked[i])return;loadout[t]=i;saveLocal();renderSettings();renderWeaponBar();setMessage('Equipped '+weapons[i].name,650)};
-window.equipWeapon=function(i){let t=weapons[i].type;if(!unlocked[i])return;loadout[t]=i;saveLocal();renderSettings();renderWeaponBar();setMessage('Equipped '+weapons[i].name,650)};window.toggleAssaultRifleSkin=function(){if(!hasTrueGoldAR())return;equippedWeaponSkins.assaultRifle=isGoldARActive()?null:'truegold';saveLocal();if(currentWeapon===0)rebuildWeaponModel();if(myRef)myRef.update({goldArSkin:isGoldARActive(),weapon:currentWeapon});renderSettings();renderWeaponBar();setMessage(isGoldARActive()?'True Gold equipped':'True Gold unequipped',800)};
+window.equipWeapon=function(i){let t=weapons[i].type;if(!unlocked[i])return;loadout[t]=i;saveLocal();renderSettings();renderWeaponBar();setMessage('Equipped '+weapons[i].name,650)};window.toggleAssaultRifleSkin=function(){if(!hasTrueGoldAR())return;equippedWeaponSkins.assaultRifle=isGoldARActive()?null:'truegold';saveLocal();if(currentWeapon===0)rebuildWeaponModel();if(myRef)myRef.update({goldArSkin:isGoldARActive(),weapon:currentWeapon,minimalistRpgSkin:isMinimalistRpgActive()});renderSettings();renderWeaponBar();setMessage(isGoldARActive()?'True Gold equipped':'True Gold unequipped',800)};
 window.toggleSkinSet=function(type){
  const s=SKIN_SETS[type];if(!s||!hasSkinSet(type))return;
  equippedWeaponSkins[s.equip]=(equippedWeaponSkins[s.equip]===s.value?null:s.value);
  saveLocal();
  if(weapons[currentWeapon]?.type===type)rebuildWeaponModel();
- if(myRef)myRef.update({weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null});
+ if(myRef)myRef.update({weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,minimalistRpgSkin:isMinimalistRpgActive()});
  renderSettings();renderWeaponBar();
  setMessage(equippedWeaponSkins[s.equip]===s.value?s.label+' set equipped':s.label+' set unequipped',900);
 };
@@ -3189,7 +3270,7 @@ function tryCreatePrivateMatch(code,blue,red){
  const id='private_'+cleanRoomCode(code);
  const ref=db.ref('duelStars/matches/'+id);
  ref.transaction(cur=>{
-  const fresh=()=>({blue,red,privateCode:code,status:'modevote',gameType:null,modeVotes:{},round:1,map:null,mapVotes:{},scores:{blue:0,red:0},health:{blue:MAX_HEALTH,red:MAX_HEALTH},ready:{},loadouts:{},tagger:null,tagEnd:null,disasterEnd:null,freezeUntil:0,winner:null,lastRoundWinner:null,paid:{},fx:{},created:firebase.database.ServerValue.TIMESTAMP});
+  const fresh=()=>({blue,red,privateCode:code,status:'modevote',gameType:null,modeVotes:{},round:1,map:null,mapVotes:{},scores:{blue:0,red:0},health:{blue:MAX_HEALTH,red:MAX_HEALTH},ready:{},loadouts:{},tagger:null,tagEnd:null,disasterEnd:null,freezeUntil:0,frozenUntil:{blue:0,red:0},winner:null,lastRoundWinner:null,paid:{},fx:{},created:firebase.database.ServerValue.TIMESTAMP});
   if(!cur)return fresh();
   const oldFinished=cur.status==='finished'||cur.winner;
   const veryOld=cur.created&&Date.now()-Number(cur.created)>1000*60*15;
@@ -3317,7 +3398,7 @@ function unlockLaserGun(){
 function closeNpcDialog(){npcDialogOpen=false;npcDialogStep=0;const d=$('npcDialog');if(d)d.style.display='none';menuOpen=false;}
 function showNpcDialog(text,options){npcDialogOpen=true;menuOpen=true;document.exitPointerLock?.();$('npcDialog').style.display='block';$('npcDialogText').textContent=text;$('npcDialogOptions').innerHTML='';options.forEach(o=>{const b=document.createElement('button');b.className='npcOption';b.textContent=o.label;b.onclick=o.action;$('npcDialogOptions').appendChild(b);});}
 function startNpcDialog(){npcDialogStep=1;showNpcDialog("Hi, what's your name?",[{label:playerName,action:()=>{npcDialogStep=2;showNpcDialog('Do you want a free skin?',[{label:'Yes',action:giveVedRpgSkin},{label:'No',action:()=>showNpcDialog('Oh ok 😔',[{label:'Close',action:closeNpcDialog}])}])}}]);}
-function giveVedRpgSkin(){avatar.shirt='#ffffff';avatar.pants='#ffffff';avatar.head='#ffffff';avatar.accessory='none';avatar.rpgSkin=true;skinColor='#ffffff';saveLocal();if(myRef)myRef.update({color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,rpgSkin:true});renderSettings();showNpcDialog('You got the Minimalist RPG skin!',[{label:'Equip and close',action:()=>{closeNpcDialog();setMessage('MINIMALIST RPG SKIN EQUIPPED!',1400)}}]);}
+function giveVedRpgSkin(){ownedWeaponSkins.minimalistRpg=true;if(equippedWeaponSkins.rpg==null)equippedWeaponSkins.rpg='minimalist';avatar.rpgSkin=false;avatar.rpgSkinOwned=false;saveLocal();renderSettings();renderWeaponBar();if(currentWeapon===RPG_INDEX)rebuildWeaponModel();if(myRef)myRef.update({weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,minimalistRpgSkin:isMinimalistRpgActive()});showNpcDialog('You got the Minimalist RPG skin for the RPG weapon! Open Settings → Weapons and look at the RPG card to equip it.',[{label:'Equip now',action:()=>{equippedWeaponSkins.rpg='minimalist';saveLocal();renderSettings();renderWeaponBar();if(currentWeapon===RPG_INDEX)rebuildWeaponModel();if(myRef)myRef.update({weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,minimalistRpgSkin:isMinimalistRpgActive()});closeNpcDialog();}},{label:'Close',action:closeNpcDialog}]);}
 function interact(){if(gameMode==='lobby'){
  let dBlue=player.pos.distanceTo(playBluePad.position),dRed=player.pos.distanceTo(playRedPad.position),dShop=player.pos.distanceTo(shopBasket.position),dGift=presentBox?player.pos.distanceTo(presentBox.position):999,dBoard=blackboard?player.pos.distanceTo(blackboard.position):999,dNpc=lobbyNpc?player.pos.distanceTo(lobbyNpc.position):999,dSecret=secretLaserSpot?player.pos.distanceTo(secretLaserSpot.position):999;
  if(dNpc<3.2){startNpcDialog();return}
@@ -3352,7 +3433,7 @@ function networkTick(t){
  if(activeEmote.id&&Date.now()>activeEmote.until)stopEmote();
  if(t-lastNet>50){
   lastNet=t;
-  let data={authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,rpgSkin:!!avatar.rpgSkin,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,emote:activeEmote.id,emoteStart:activeEmote.start||null,emoteUntil:activeEmote.until||null,invisibleUntil:isInvisibleActive()?invisState.invisibleUntil:null,katanaBlocking:(katanaState.blocking&&currentWeapon===KATANA_INDEX&&roundPhase==='playing'),updated:firebase.database.ServerValue.TIMESTAMP};
+  let data={authUid:authUid,tabId:tabId,name:playerName,color:skinColor,shirtColor:avatar.shirt,pantsColor:avatar.pants,headColor:avatar.head,accessory:avatar.accessory,rpgSkin:false,x:player.pos.x,y:player.pos.y,z:player.pos.z,yaw,weapon:currentWeapon,goldArSkin:isGoldARActive(),voidSecondarySkin:isVoidSecondaryActiveFor(currentWeapon),skinSet:activeSkinLabelForWeapon(currentWeapon)||null,minimalistRpgSkin:isMinimalistRpgActive(),emote:activeEmote.id,emoteStart:activeEmote.start||null,emoteUntil:activeEmote.until||null,invisibleUntil:isInvisibleActive()?invisState.invisibleUntil:null,katanaBlocking:(katanaState.blocking&&currentWeapon===KATANA_INDEX&&roundPhase==='playing'),updated:firebase.database.ServerValue.TIMESTAMP};
   if(matchId){data.mode='match';data.matchId=matchId;data.side=mySide||null;}
   else if(gameMode==='lobby'&&currentPrivateCode){data.mode='private';data.privateCode=currentPrivateCode;data.matchId=null;data.side=null;}
   else if(gameMode==='lobby'){data.mode='lobby';data.privateCode=null;data.matchId=null;data.side=null;}
@@ -3381,6 +3462,7 @@ function updateHud(){
  const privateEl=$('privateBtn');if(privateEl){privateEl.style.display='block';privateEl.textContent='Join';if(gameMode==='lobby'){privateEl.style.right='190px';privateEl.style.bottom='18px';}else{privateEl.style.right='18px';privateEl.style.bottom='18px';}}
  const playerListEl=$('playerList');if(playerListEl)playerListEl.style.display=gameMode==='lobby'?'block':'none';
  const lobbyBannerEl=$('lobbyBanner');if(lobbyBannerEl)lobbyBannerEl.style.display=gameMode==='lobby'?'block':'none';
+ const frozenEl=$('frozenOverlay');if(frozenEl)frozenEl.style.display=isCombatFrozen()?'block':'none';
  const crosshairEl=$('crosshair');if(crosshairEl)crosshairEl.style.display=(gameMode==='match'&&roundPhase==='playing'&&!isDisasterMode())?'block':'none';
  if(performance.now()-lastHudRender>120){lastHudRender=performance.now();renderWeaponBar();}
 }
@@ -3398,7 +3480,7 @@ function animate(t=0){
  }else{
   hint.textContent=isDisasterMode()?'Survive the island — avoid fireballs, tsunamis, cracks, and coconuts!':(isTagMode()?(isTagger()?(isTagFrozen()?'You are IT but frozen!':'You are IT — shoot the runner!'):'RUN — do not get shot!'):(roundPhase==='playing'?'First to 5 wins':(roundPhase==='modevote'?'Vote for a gamemode':(roundPhase==='mapvote'?'Vote for a map':'Choose your loadout'))));
  }
- if(mouseDown&&supportsHoldFire()&&document.pointerLockElement===document.body&&!menuOpen&&!shopOpen&&roundPhase==='playing'&&gameMode==='match'&&!isReloading&&!isDisasterMode()&&hasAmmoForCurrent()){attack();}
+ if(mouseDown&&!isCombatFrozen()&&supportsHoldFire()&&document.pointerLockElement===document.body&&!menuOpen&&!shopOpen&&roundPhase==='playing'&&gameMode==='match'&&!isReloading&&!isDisasterMode()&&hasAmmoForCurrent()){attack();}
  updateProjectiles(dt);
  updateMolotovs(dt);
  updateDisaster(dt);
