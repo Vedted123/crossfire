@@ -122,7 +122,7 @@
       <li>Gravity Hammer now has right-click Gravity Slam.</li>
       <li>Warpstone support teleports once per round.</li>
       <li>Added Grappling Hook, Invisibility Potion, Shorty, Railgun, Crossbow, Scythe, Slingshot, Energy Spear, and Magic Staff.</li><li>Improved Scythe model/dash and locked Slingshot balls inside the arena.</li>
-      <li>Laser Gun rapidly fires glowing laser bullets.</li><li>Added the Frost Shotgun: 7 shells, 100 reserve ammo, and a final cryo shell that deals bonus damage and freezes opponents for 3 seconds.</li><li>Fixed the Vedted123 NPC reward and moved the Minimalist RPG skin to the RPG weapon card in Settings → Weapons.</li><li>Weapons are hidden in the lobby, Gravity Slam knockback is stronger, and the Frost Shotgun now costs 25 shards.</li>
+      <li>Laser Gun rapidly fires glowing laser bullets.</li><li>Added the Frost Shotgun: 7 shells, 100 reserve ammo, and a final cryo shell that deals bonus damage and freezes opponents for 3 seconds.</li><li>Fixed the Vedted123 NPC reward and moved the Minimalist RPG skin to the RPG weapon card in Settings → Weapons.</li><li>Weapons are hidden in the lobby, Gravity Slam knockback is stronger, and the Frost Shotgun now costs 25 shards.</li><li>Added H weapon inspection and Lightning Gauntlets: 20-damage punches, a 50-damage Thunder Dash, and a 25-shard price.</li>
     </ul>
   </div>
 </div>
@@ -139,7 +139,7 @@ firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=fireb
 const tabId=sessionStorage.getItem("duelStarsTabId")||Math.random().toString(36).slice(2,10);sessionStorage.setItem("duelStarsTabId",tabId);
 let scene,camera,renderer,clock=new THREE.Clock();let authUid=null,uid=null,myRef=null,queueRef=null,currentMatchRef=null,currentMatch=null,matchId=null,mySide=null,remoteId=null,remoteSide=null;
 let yaw=0,pitch=0,keys={},mouseDown=false,isADS=false,canShoot=true,gameMode="lobby",roundPhase="lobby",menuOpen=false,shopOpen=false,ready=false,lastNet=0,lastHeartbeat=0,standingPad=null;
-let bullets=[],grenades=[],molotovs=[],damageNumbers=[],remotePlayers={},remoteMeshes={},nameSprites=[];let pendingPelletDamage={};let ammo={},isReloading=false,reloadTimer=null,lastAmmoRoundKey=null,lastRoundAnnounceKey=null,lastMatchAnnounceKey=null,winnerOverlayTimer=null,jumpLatch=false;let weaponAnim={name:null,timer:0,duration:0},weaponBaseZ=0;let seenMolotovFx={},seenHammerFx={},gravityHammerLastSlam=0,scytheLastDash=0,spearLastThrow=0,staffLastBlink=0;let cachedFormalLogoTexture=null,cachedWallStripeTexture=null,cachedFloorLogoTexture=null;let lobbyNpc=null,npcDialogOpen=false,npcDialogStep=0,lastHudRender=0;let slideState={active:false,timer:0,cooldown:0,dir:new THREE.Vector3(),latch:false};let katanaState={blocking:false,timer:0,cooldown:0};let invisState={drinking:false,drinkUntil:0,invisibleUntil:0,drinkTimer:null,endedNotified:false};let grappleState={active:false,target:null,rope:null,life:0};let railgunState={charging:false,timer:null,started:0};let disasterState={volcanoes:[],fireballs:[],tsunamis:[],cracks:[],palms:[],coconuts:[],nextVolcano:1,nextWave:6,nextCrack:1.5,nextCoconut:4};
+let bullets=[],grenades=[],molotovs=[],damageNumbers=[],remotePlayers={},remoteMeshes={},nameSprites=[];let pendingPelletDamage={};let ammo={},isReloading=false,reloadTimer=null,lastAmmoRoundKey=null,lastRoundAnnounceKey=null,lastMatchAnnounceKey=null,winnerOverlayTimer=null,jumpLatch=false;let weaponAnim={name:null,timer:0,duration:0},weaponBaseZ=0;let seenMolotovFx={},seenHammerFx={},gravityHammerLastSlam=0,scytheLastDash=0,spearLastThrow=0,staffLastBlink=0,lightningDashLast=0;let cachedFormalLogoTexture=null,cachedWallStripeTexture=null,cachedFloorLogoTexture=null;let lobbyNpc=null,npcDialogOpen=false,npcDialogStep=0,lastHudRender=0;let slideState={active:false,timer:0,cooldown:0,dir:new THREE.Vector3(),latch:false};let katanaState={blocking:false,timer:0,cooldown:0};let invisState={drinking:false,drinkUntil:0,invisibleUntil:0,drinkTimer:null,endedNotified:false};let grappleState={active:false,target:null,rope:null,life:0};let railgunState={charging:false,timer:null,started:0};let disasterState={volcanoes:[],fireballs:[],tsunamis:[],cracks:[],palms:[],coconuts:[],nextVolcano:1,nextWave:6,nextCrack:1.5,nextCoconut:4};
 const LOBBY_Z=46,ARENA_Z=0;
 const STARTS={blue:new THREE.Vector3(-14,1.7,24),red:new THREE.Vector3(14,1.7,-24)};
 const MAP_OPTIONS=['base','schoolyard','lasertag','rooftop','trampoline'];
@@ -214,6 +214,7 @@ const SLINGSHOT_INDEX=26;
 const ENERGY_SPEAR_INDEX=27;
 const MAGIC_STAFF_INDEX=28;
 const FROST_SHOTGUN_INDEX=29;
+const LIGHTNING_GAUNTLETS_INDEX=30;
 const KATANA_BLOCK_DURATION=4;
 const KATANA_BLOCK_COOLDOWN=5;
 const GIFT_CODES={xoxo:{shards:20,message:"+20 shards"},rivals:{shards:20,message:"+20 shards"},goat:{shards:20,message:"+20 shards"},crowisthebestbrawler:{message:"Unlocked True Gold Assault Rifle skin!",unlockSkin:"arTrueGold"},
@@ -248,7 +249,8 @@ const weapons=[
 {name:"Slingshot",short:"Sling",type:"secondary",damage:8,cooldown:75,speed:58,spread:.012,pellets:1,head:1.2,cost:20,magSize:99,reserveSize:0,reloadTime:1600,slingshot:true,bounces:2,life:2.4},
 {name:"Energy Spear",short:"Spear",type:"melee",damage:40,cooldown:850,range:3.8,head:1,cost:25,throwDamage:55,throwCooldown:7000,throwSpeed:76},
 {name:"Magic Staff",short:"Staff",type:"melee",damage:20,cooldown:520,range:3.0,head:1,cost:30,blinkCooldown:10000},
-{name:"Frost Shotgun",short:"Frost SG",type:"primary",damage:13,cooldown:720,speed:78,spread:.105,pellets:7,head:1.35,cost:25,magSize:7,reserveSize:100,reloadTime:2900,frostShotgun:true,lastShotBonus:35,freezeDuration:3000}
+{name:"Frost Shotgun",short:"Frost SG",type:"primary",damage:13,cooldown:720,speed:78,spread:.105,pellets:7,head:1.35,cost:25,magSize:7,reserveSize:100,reloadTime:2900,frostShotgun:true,lastShotBonus:35,freezeDuration:3000},
+{name:"Lightning Gauntlets",short:"Lightning",type:"melee",damage:20,cooldown:360,range:2.35,head:1,cost:25,thunderDashDamage:50,thunderDashCooldown:7000,thunderDashSpeed:70,thunderDashDistance:10,stunDuration:600}
 ];
 while(unlocked.length<weapons.length) unlocked.push(false);
 unlocked[MOLOTOV_INDEX]=true;unlocked[RPG_INDEX]=true;unlocked[KATANA_INDEX]=true;unlocked[WARPSTONE_INDEX]=true;unlocked[FROST_SHOTGUN_INDEX]=localStorage.getItem("duelStarsFrostShotgunPurchased")==="yes";
@@ -335,7 +337,7 @@ function stopEmote(){
 window.playEmote=playEmote;
 function setMessage(t,ms=1200){msg.textContent=t;if(ms)setTimeout(()=>{if(msg.textContent===t)msg.textContent=""},ms)}
 function getRoundSpawn(side){const spawns=MAP_SPAWNS[activeMap]||STARTS;return (spawns[side]||STARTS[side]||STARTS.blue).clone();}
-function spawnForRound(){if(!mySide)return;slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;gravityHammerLastSlam=0;scytheLastDash=0;spearLastThrow=0;staffLastBlink=0;player.height=STAND_HEIGHT;player.pos.copy(getRoundSpawn(mySide));player.vel.set(0,0,0);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;stopADS();}
+function spawnForRound(){if(!mySide)return;slideState.active=false;slideState.timer=0;slideState.cooldown=0;slideState.latch=false;katanaState.blocking=false;katanaState.timer=0;katanaState.cooldown=0;gravityHammerLastSlam=0;scytheLastDash=0;spearLastThrow=0;staffLastBlink=0;lightningDashLast=0;player.height=STAND_HEIGHT;player.pos.copy(getRoundSpawn(mySide));player.vel.set(0,0,0);player.health=MAX_HEALTH;player.jumpCount=0;jumpLatch=false;stopADS();}
 function sideDisplayName(side){
  const id=currentMatch?.[side];
  if(!id)return (side||'Player').toUpperCase();
@@ -952,6 +954,21 @@ function rebuildWeaponModel(){
   addViewPart(g,new THREE.OctahedronGeometry(.08,0),ice,.31,.18,-.5,.2,.1,.1,{transparent:true,opacity:.92,emissive:0x1b5e75});
   addViewPart(g,new THREE.OctahedronGeometry(.07,0),ice,.45,.17,-.48,-.15,.1,-.1,{transparent:true,opacity:.92,emissive:0x1b5e75});
  }
+ else if(currentWeapon===LIGHTNING_GAUNTLETS_INDEX){
+  const glove=0x141922,plate=0x2c3442,bolt=0xc8fbff,arc=0x63ddff,core=0xffffff;
+  // left gauntlet
+  addViewPart(g,new THREE.BoxGeometry(.23,.2,.34),glove,.18,-.25,-.46,0,0,.08,{metalness:.32,roughness:.28});
+  addViewPart(g,new THREE.BoxGeometry(.25,.12,.25),plate,.18,-.16,-.56,0,0,.08,{metalness:.48,roughness:.2});
+  for(let k=0;k<4;k++)addViewPart(g,new THREE.BoxGeometry(.045,.08,.13),bolt,.095+k*.055,-.12,-.68,0,0,.08,{emissive:0x2a7899,metalness:.15,roughness:.12});
+  // right gauntlet
+  addViewPart(g,new THREE.BoxGeometry(.23,.2,.34),glove,.5,-.28,-.44,0,0,-.08,{metalness:.32,roughness:.28});
+  addViewPart(g,new THREE.BoxGeometry(.25,.12,.25),plate,.5,-.19,-.54,0,0,-.08,{metalness:.48,roughness:.2});
+  for(let k=0;k<4;k++)addViewPart(g,new THREE.BoxGeometry(.045,.08,.13),bolt,.415+k*.055,-.15,-.66,0,0,-.08,{emissive:0x2a7899,metalness:.15,roughness:.12});
+  addViewPart(g,new THREE.SphereGeometry(.055,12,12),core,.18,-.13,-.53,0,0,0,{emissive:0x66ddff});
+  addViewPart(g,new THREE.SphereGeometry(.055,12,12),core,.5,-.16,-.51,0,0,0,{emissive:0x66ddff});
+  addViewPart(g,new THREE.TorusGeometry(.16,.018,6,24),arc,.18,-.13,-.56,Math.PI/2,0,0,{emissive:0x1c7898,transparent:true,opacity:.9});
+  addViewPart(g,new THREE.TorusGeometry(.16,.018,6,24),arc,.5,-.16,-.54,Math.PI/2,0,0,{emissive:0x1c7898,transparent:true,opacity:.9});
+ }
  else if(currentWeapon===KATANA_INDEX){
   // Clean connected katana: same style, much longer triangular blade.
   const bladeCol=frostMelee?0x8cf7ff:0xcfd3dc,handleCol=frostMelee?0x07121c:0x07080b,guardCol=frostMelee?0x102b44:0x050609,pommelCol=frostMelee?0x57d9ff:0x111318;
@@ -1159,6 +1176,15 @@ function makeRemoteWeaponModel(i,p={}){
    remotePart(g,new THREE.BoxGeometry(.24,.22,.1),0x3c4652,0,0,.39,0,0,.16);
    remotePart(g,new THREE.OctahedronGeometry(.09,0),0xbdf5ff,.04,.14,-.22,0,0,0,{transparent:true,opacity:.92,emissive:0x1b5e75});
    const frostWord=makeTextDecalMesh('Frost',.24,.08,'#133f5a',0);frostWord.position.set(-.2,.02,-.23);frostWord.rotation.y=Math.PI/2;g.add(frostWord);
+  }else if(i===LIGHTNING_GAUNTLETS_INDEX){
+   remotePart(g,new THREE.BoxGeometry(.24,.2,.28),0x141922,-.13,0,-.08,0,0,.08,{metalness:.34,roughness:.26});
+   remotePart(g,new THREE.BoxGeometry(.24,.2,.28),0x141922,.13,0,-.08,0,0,-.08,{metalness:.34,roughness:.26});
+   remotePart(g,new THREE.BoxGeometry(.2,.09,.2),0x2c3442,-.13,.1,-.16,0,0,.08,{metalness:.5,roughness:.2});
+   remotePart(g,new THREE.BoxGeometry(.2,.09,.2),0x2c3442,.13,.1,-.16,0,0,-.08,{metalness:.5,roughness:.2});
+   remotePart(g,new THREE.SphereGeometry(.055,12,12),0xffffff,-.13,.13,-.18,0,0,0,{emissive:0x66ddff});
+   remotePart(g,new THREE.SphereGeometry(.055,12,12),0xffffff,.13,.13,-.18,0,0,0,{emissive:0x66ddff});
+   remotePart(g,new THREE.TorusGeometry(.14,.016,6,24),0x63ddff,-.13,.13,-.18,Math.PI/2,0,0,{emissive:0x1c7898,transparent:true,opacity:.9});
+   remotePart(g,new THREE.TorusGeometry(.14,.016,6,24),0x63ddff,.13,.13,-.18,Math.PI/2,0,0,{emissive:0x1c7898,transparent:true,opacity:.9});
   }else if(i===5){
    remotePart(g,new THREE.BoxGeometry(.2,.16,.62),pal.main,0,0,-.18);
    remotePart(g,new THREE.CylinderGeometry(.035,.035,1.15,14),pal.dark,0,.02,-.8,Math.PI/2,0,0,{metalness:.32});
@@ -1962,6 +1988,24 @@ function updateWeaponAnimation(dt){
  }else if(weaponAnim.name==='grappleFire'){
   weaponView.position.z-=.25*swing;
   weaponView.rotation.x-=.35*swing;
+ }else if(weaponAnim.name==='inspect'){
+  const ease=Math.sin(Math.min(1,p)*Math.PI);
+  weaponView.position.x-=.25*ease;
+  weaponView.position.y+=.12*ease;
+  weaponView.position.z-=.32*ease;
+  weaponView.rotation.y+=1.3*ease;
+  weaponView.rotation.x+=.18*ease;
+  weaponView.rotation.z-=.22*ease;
+  weaponView.scale.set(1+.08*ease,1+.08*ease,1+.08*ease);
+ }else if(weaponAnim.name==='lightningPunch'){
+  weaponView.position.z-=.28*swing;
+  weaponView.rotation.x-=.42*swing;
+  weaponView.rotation.z+=(Math.sin(performance.now()*.02)>.0?.65:-.65)*swing;
+ }else if(weaponAnim.name==='thunderDash'){
+  weaponView.position.z-=.36*swing;
+  weaponView.position.y-=.08*swing;
+  weaponView.rotation.x-=.28*swing;
+  weaponView.scale.set(1+.1*swing,1+.1*swing,1+.1*swing);
  }else if(weaponAnim.name==='gravitySlam'){
   weaponView.position.y-=.32*swing;
   weaponView.position.z-=.18*swing;
@@ -2162,6 +2206,7 @@ function attack(){
   if(currentWeapon===SCYTHE_INDEX){playWeaponAnimation('scytheSlash',.34);meleeAttack(false);return}
   if(currentWeapon===ENERGY_SPEAR_INDEX){playWeaponAnimation('meleeSwing',.3);meleeAttack(false);return}
   if(currentWeapon===MAGIC_STAFF_INDEX){playWeaponAnimation('meleeSwing',.28);meleeAttack(false);return}
+  if(currentWeapon===LIGHTNING_GAUNTLETS_INDEX){playWeaponAnimation('lightningPunch',.24);meleeAttack(false);setMessage('ELECTRIC PUNCH!',350);return}
   playWeaponAnimation('meleeSwing',.28);meleeAttack(false);return
  }
  if(!consumeAmmo())return;
@@ -2577,7 +2622,36 @@ function magicStaffBlink(){
  setMessage('STAFF BLINK!',550);
  canShoot=false;setTimeout(()=>canShoot=true,260);
 }
-function rightSpecial(){let w=weapons[currentWeapon];if(isReloading)return;if(invisState.drinking||isInvisibleActive()){setMessage('Invisible - weapons disabled',450);return;}if(currentWeapon===GRAVITY_HAMMER_INDEX){gravityHammerSlam();return}if(currentWeapon===SCYTHE_INDEX){scytheDash();return}if(currentWeapon===ENERGY_SPEAR_INDEX){throwEnergySpear();return}if(currentWeapon===MAGIC_STAFF_INDEX){magicStaffBlink();return}if(currentWeapon===KATANA_INDEX){startKatanaBlock();return}if(currentWeapon===7&&gameMode==='match'&&roundPhase==='playing'&&canShoot){canShoot=false;setTimeout(()=>canShoot=true,w.cooldown);playWeaponAnimation('knifeBackstab',.38);meleeAttack(true);return}if(w.scope){isADS=true;const so=$('scopeOverlay');so.classList.toggle('mediumScope',!!w.mediumScope);so.style.display='block'}}
+function inspectCurrentWeapon(){
+ if(gameMode==='lobby'||!weaponView||menuOpen||shopOpen||chatOpen||emoteMenuOpen||roundPhase==='select'||roundPhase==='mapvote'||roundPhase==='modevote')return;
+ if(isReloading||isCombatFrozen()||isTagFrozen()||invisState.drinking)return;
+ playWeaponAnimation('inspect',1.15);setMessage('Inspecting '+(weapons[currentWeapon]?.name||'weapon'),550);
+}
+function lightningGauntletFx(pos){
+ const g=new THREE.Group();
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.7,.045,8,40),new THREE.MeshBasicMaterial({color:0x63ddff,transparent:true,opacity:.9}));ring.rotation.x=Math.PI/2;
+ const orb=new THREE.Mesh(new THREE.SphereGeometry(.22,16,16),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.75}));g.add(ring,orb);g.position.copy(pos);scene.add(g);
+ let t=0,iv=setInterval(()=>{t+=.14;g.scale.set(1+t,1+t,1+t);g.rotation.y+=.3;ring.material.opacity-=.09;orb.material.opacity-=.1;if(ring.material.opacity<=0){clearInterval(iv);scene.remove(g)}},24);
+}
+function thunderDash(){
+ const w=weapons[LIGHTNING_GAUNTLETS_INDEX];
+ if(currentWeapon!==LIGHTNING_GAUNTLETS_INDEX||gameMode!=='match'||roundPhase!=='playing'||isReloading||isDisasterMode())return;
+ const now=Date.now(),cd=w.thunderDashCooldown||7000,left=cd-(now-lightningDashLast);
+ if(left>0){setMessage('Thunder Dash cooldown '+Math.ceil(left/1000)+'s',650);return;}
+ lightningDashLast=now;canShoot=false;setTimeout(()=>canShoot=true,520);playWeaponAnimation('thunderDash',.36);
+ const dir=getLookDirection();dir.y=0;if(dir.lengthSq()<.001)dir.set(0,0,-1);dir.normalize();
+ player.vel.x=dir.x*(w.thunderDashSpeed||70);player.vel.z=dir.z*(w.thunderDashSpeed||70);player.vel.y=Math.max(player.vel.y,1.5);
+ lightningGauntletFx(player.pos.clone());
+ const start=player.pos.clone(),duration=Math.max(130,Math.round((w.thunderDashDistance||10)/(w.thunderDashSpeed||70)*1000));
+ setTimeout(()=>{
+  const op=getRemoteOpponent();if(!op)return;
+  const opPos=new THREE.Vector3(op.x||0,op.y||1.7,op.z||0);
+  const end=player.pos.clone();
+  if(pointSegmentDistance(start,end,opPos)<1.35){applyDamage(w.thunderDashDamage||50,false);freezeOpponent(w.stunDuration||600);lightningGauntletFx(opPos);setMessage('THUNDER DASH HIT! 50 DAMAGE',800);}
+ },duration);
+ setMessage('THUNDER DASH!',500);
+}
+function rightSpecial(){let w=weapons[currentWeapon];if(isReloading)return;if(invisState.drinking||isInvisibleActive()){setMessage('Invisible - weapons disabled',450);return;}if(currentWeapon===GRAVITY_HAMMER_INDEX){gravityHammerSlam();return}if(currentWeapon===LIGHTNING_GAUNTLETS_INDEX){thunderDash();return}if(currentWeapon===SCYTHE_INDEX){scytheDash();return}if(currentWeapon===ENERGY_SPEAR_INDEX){throwEnergySpear();return}if(currentWeapon===MAGIC_STAFF_INDEX){magicStaffBlink();return}if(currentWeapon===KATANA_INDEX){startKatanaBlock();return}if(currentWeapon===7&&gameMode==='match'&&roundPhase==='playing'&&canShoot){canShoot=false;setTimeout(()=>canShoot=true,w.cooldown);playWeaponAnimation('knifeBackstab',.38);meleeAttack(true);return}if(w.scope){isADS=true;const so=$('scopeOverlay');so.classList.toggle('mediumScope',!!w.mediumScope);so.style.display='block'}}
 function stopADS(){isADS=false;const so=$('scopeOverlay');so.style.display='none';so.classList.remove('mediumScope')}
 function startKatanaBlock(){
  if(currentWeapon!==KATANA_INDEX||gameMode!=='match'||roundPhase!=='playing'||isReloading)return;
@@ -3505,7 +3579,7 @@ document.addEventListener('keydown',e=>{
     if(k==='tab'){e.preventDefault();keys={};toggleSettings();closeShop();closeCodePanel();closeUpdatesPanel();closeChat();if(roundPhase!=='select'&&roundPhase!=='mapvote'&&roundPhase!=='modevote')showLoadout(false);}
     return;
   }
-  if(['w','a','s','d',' ','shift','ctrl','e','tab','/','c','1','2','3','4','5','6','r','v','enter','escape'].includes(k))e.preventDefault();
+  if(['w','a','s','d',' ','shift','ctrl','e','tab','/','c','1','2','3','4','5','6','r','v','h','enter','escape'].includes(k))e.preventDefault();
   if(k==='escape'&&npcDialogOpen){closeNpcDialog();return;}
   if(k==='c'){openPrivatePanel();setTimeout(()=>{$('privateJoinInput')?.focus()},40);return;}
   if(k==='/'){toggleChat();return;}
@@ -3514,6 +3588,7 @@ document.addEventListener('keydown',e=>{
   if(k==='v'){openEmoteMenu();return;}
   if(['w','a','s','d',' ','shift','ctrl'].includes(k)) keys[k]=true;
   if(k==='r')reloadCurrent();
+  if(k==='h'){inspectCurrentWeapon();return;}
   if(k==='e')interact();
   if(['1','2','3','4'].includes(k)){
     let ids=Object.values(loadout);
