@@ -122,7 +122,7 @@
       <li>Gravity Hammer now has right-click Gravity Slam.</li>
       <li>Warpstone support teleports once per round.</li>
       <li>Added Grappling Hook, Invisibility Potion, Shorty, Railgun, Crossbow, Scythe, Slingshot, Energy Spear, and Magic Staff.</li><li>Improved Scythe model/dash and locked Slingshot balls inside the arena.</li>
-      <li>Laser Gun rapidly fires glowing laser bullets.</li><li>Added the Frost Shotgun: 7 shells, 100 reserve ammo, and a final cryo shell that deals bonus damage and freezes opponents for 3 seconds.</li><li>Fixed the Vedted123 NPC reward and moved the Minimalist RPG skin to the RPG weapon card in Settings → Weapons.</li><li>Weapons are hidden in the lobby, Gravity Slam knockback is stronger, and the Frost Shotgun now costs 25 shards.</li><li>Added H weapon inspection and Lightning Gauntlets: 20-damage punches, a 50-damage Thunder Dash, and a 25-shard price.</li>
+      <li>Laser Gun rapidly fires glowing laser bullets.</li><li>Added the Frost Shotgun: 7 shells, 100 reserve ammo, and a final cryo shell that deals bonus damage and freezes opponents for 3 seconds.</li><li>Fixed the Vedted123 NPC reward and moved the Minimalist RPG skin to the RPG weapon card in Settings → Weapons.</li><li>Weapons are hidden in the lobby, Gravity Slam knockback is stronger, and the Frost Shotgun now costs 25 shards.</li><li>Added H weapon inspection and Lightning Gauntlets: 20-damage punches, a 50-damage Thunder Dash, and a 25-shard price.</li><li>Rebuilt Schoolyard, fixed Laser Tag movement traps and tunnels, and gave Fists a double jump.</li>
     </ul>
   </div>
 </div>
@@ -144,7 +144,7 @@ const LOBBY_Z=46,ARENA_Z=0;
 const STARTS={blue:new THREE.Vector3(-14,1.7,24),red:new THREE.Vector3(14,1.7,-24)};
 const MAP_OPTIONS=['base','schoolyard','lasertag','rooftop','trampoline'];
 const MAP_LABELS={base:'Base',schoolyard:'Schoolyard',lasertag:'Lasertag',rooftop:'Rooftop Run',trampoline:'Trampoline Park',disaster:'Disaster Island'};
-const MAP_DESCS={base:'Classic Crossfire 1v1 arena.',schoolyard:'Bright playground with slides, towers, swings, and open lanes.',lasertag:'Neon green grid maze with tunnels and tight walls.',rooftop:'Clean box-only rooftop map with safe platforms and no glitchy slopes.',trampoline:'Bouncy arena with real working trampolines.',disaster:'A dangerous tropical island full of natural disasters.'};
+const MAP_DESCS={base:'Classic Crossfire 1v1 arena.',schoolyard:'Redesigned school campus with a basketball court, play fort, bleachers, cover, and clean lanes.',lasertag:'Neon arena with wider corridors and solid shot-blocking tunnels.',rooftop:'Clean box-only rooftop map with safe platforms and no glitchy slopes.',trampoline:'Bouncy arena with real working trampolines.',disaster:'A dangerous tropical island full of natural disasters.'};
 const MAP_SPAWNS={base:STARTS,schoolyard:{blue:new THREE.Vector3(-20,1.7,22),red:new THREE.Vector3(20,1.7,-22)},lasertag:{blue:new THREE.Vector3(-22,1.7,22),red:new THREE.Vector3(22,1.7,-22)},rooftop:{blue:new THREE.Vector3(-22,1.7,20),red:new THREE.Vector3(22,1.7,-20)},trampoline:{blue:new THREE.Vector3(-23,1.7,23),red:new THREE.Vector3(23,1.7,-23)},disaster:{blue:new THREE.Vector3(-8,1.7,0),red:new THREE.Vector3(8,1.7,0)}};
 const MAP_LIMITS={base:26,schoolyard:28,lasertag:28,rooftop:27,trampoline:28,disaster:20};
 let activeMap='base',builtArenaMap=null,mapVoteChoice=null,modeVoteChoice=null,lastTaggerSeen=null;let arenaObjects=[],trampolineZones=[];let cachedLaserGridTexture=null;
@@ -438,34 +438,92 @@ function makeBaseArena(){
  arenaMesh(new THREE.GridHelper(size,size,0x5577aa,0x22334f));
 }
 function makeSchoolyardArena(){
- const size=64,half=size/2;const sand=new THREE.MeshStandardMaterial({color:0xd9c475,roughness:.9});const blue=new THREE.MeshStandardMaterial({color:0x1e5bff,roughness:.5});const teal=new THREE.MeshStandardMaterial({color:0x75f0e6,roughness:.55});const sky=new THREE.MeshStandardMaterial({color:0x2aa9ff,roughness:.45});const wood=new THREE.MeshStandardMaterial({color:0x6b3d22,roughness:.65});
- const floor=new THREE.Mesh(new THREE.BoxGeometry(size,1,size),sand);floor.position.y=-.55;floor.receiveShadow=true;arenaMesh(floor);
- addArenaWall(0,2,-half,size,4,1,0x6fb8d8);addArenaWall(0,2,half,size,4,1,0x6fb8d8);addArenaWall(-half,2,0,1,4,size,0x6fb8d8);addArenaWall(half,2,0,1,4,size,0x6fb8d8);
- // playground towers and bridge
- addArenaWall(-7,1.55,0,4.4,3.1,4.4,blue);addArenaWall(4,1.55,2,4.4,3.1,4.4,blue);addArenaWall(-1.5,2.7,1,9,1.2,2.2,teal);
- const roof1=new THREE.Mesh(new THREE.ConeGeometry(3.2,1.5,4),sky);roof1.position.set(-7,4.05,0);roof1.rotation.y=Math.PI/4;arenaMesh(roof1);
- const roof2=new THREE.Mesh(new THREE.ConeGeometry(3.2,1.5,4),sky);roof2.position.set(4,4.05,2);roof2.rotation.y=Math.PI/4;arenaMesh(roof2);
- const slide1=new THREE.Mesh(new THREE.BoxGeometry(2.2,.28,9),sky);slide1.position.set(-13,1.55,5.5);slide1.rotation.x=.48;slide1.rotation.z=-.12;arenaMesh(slide1);
- const slide2=new THREE.Mesh(new THREE.BoxGeometry(2.0,.28,8),teal);slide2.position.set(10,1.45,-3.6);slide2.rotation.x=-.42;slide2.rotation.z=.15;arenaMesh(slide2);
- for(let i=0;i<5;i++){addInvisibleArenaBlock(-13,.25+i*.28,1.8+i*1.55,2.4,.35,1.25);addInvisibleArenaBlock(10,.25+i*.25,.2-i*1.45,2.2,.35,1.2);}
- addInvisibleArenaBlock(-7,3.25,0,4.8,.35,4.8);addInvisibleArenaBlock(4,3.25,2,4.8,.35,4.8);addInvisibleArenaBlock(-1.5,3.45,1,9.2,.35,2.4);
- // swing set, benches, stepping stones
- addArenaWall(15,2,10,.35,4,9,wood);addArenaWall(21,2,10,.35,4,9,wood);addArenaWall(18,4,10,7,.35,.35,wood);addArenaWall(18,1.1,7,2,.25,1,0x1e5bff);addArenaWall(18,1.1,13,2,.25,1,0x1e5bff);
- addArenaWall(-21,.5,-8,5,1,1.5,0x3a7bd5);addArenaWall(19,.5,-15,5,1,1.5,0x3a7bd5);
- for(let i=0;i<7;i++){const stone=new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,.15,18),new THREE.MeshStandardMaterial({color:i%2?0x2aa9ff:0x75f0e6,roughness:.55}));stone.position.set(-16+i*4,.08,-17+Math.sin(i)*2);arenaMesh(stone);}
- addArenaWall(-20,1.25,16,7,2.5,2.2,teal);addArenaWall(20,1.25,18,8,2.5,2.2,blue);addArenaWall(0,1.1,-16,12,2.2,2.2,0xffdf73);
+ const size=64,half=size/2;
+ const grass=new THREE.MeshStandardMaterial({color:0x65a84d,roughness:.9});
+ const asphalt=new THREE.MeshStandardMaterial({color:0x303843,roughness:.88});
+ const concrete=new THREE.MeshStandardMaterial({color:0xc6cbd0,roughness:.82});
+ const brick=new THREE.MeshStandardMaterial({color:0xa84832,roughness:.78});
+ const blue=new THREE.MeshStandardMaterial({color:0x2764d8,roughness:.52});
+ const yellow=new THREE.MeshStandardMaterial({color:0xffcf3d,roughness:.5});
+ const wood=new THREE.MeshStandardMaterial({color:0x7a4b28,roughness:.7});
+ const dark=new THREE.MeshStandardMaterial({color:0x27303b,roughness:.68});
+ const floor=new THREE.Mesh(new THREE.BoxGeometry(size,1,size),grass);floor.position.y=-.55;floor.receiveShadow=true;arenaMesh(floor);
+ addArenaWall(0,2,-half,size,4,1,brick);addArenaWall(0,2,half,size,4,1,brick);addArenaWall(-half,2,0,1,4,size,brick);addArenaWall(half,2,0,1,4,size,brick);
+ // Main paved school courtyard and basketball court.
+ addArenaWall(0,.08,-12,28,.16,22,asphalt);
+ addArenaWall(0,.13,-12,25,.08,.16,0xffffff);addArenaWall(0,.13,-1,25,.08,.16,0xffffff);
+ addArenaWall(-12.5,.13,-12,.16,.08,22,0xffffff);addArenaWall(12.5,.13,-12,.16,.08,22,0xffffff);
+ addArenaWall(0,.13,-12,.16,.08,22,0xffcf3d);
+ // Two sturdy basketball hoops; all collision is box-based and stable.
+ for(const z of [-20,-4]){
+  addArenaWall(0,1.7,z,.35,3.4,.35,dark);
+  addArenaWall(0,3.2,z+(z< -12?1:-1),4.4,.18,.28,0xffffff);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(.48,.055,8,24),new THREE.MeshStandardMaterial({color:0xff6a00,roughness:.4,metalness:.15}));rim.position.set(0,2.75,z+(z< -12?1.35:-1.35));rim.rotation.x=Math.PI/2;arenaMesh(rim);
+ }
+ // Central playground fort with two accessible towers, bridge, stairs, and safe cover underneath.
+ addArenaWall(-9,1.5,10,5,3,5,blue);addArenaWall(9,1.5,10,5,3,5,yellow);
+ addArenaWall(0,3.25,10,13,.5,3,concrete);
+ addArenaWall(-9,3.35,10,5.4,.35,5.4,concrete);addArenaWall(9,3.35,10,5.4,.35,5.4,concrete);
+ addArenaWall(-9,4.45,10,.35,2.2,5.2,dark);addArenaWall(9,4.45,10,.35,2.2,5.2,dark);
+ // Wide stairs instead of glitch-prone slopes.
+ for(let i=0;i<5;i++)addArenaWall(-16+i*1.25,.28+i*.28,10,1.35,.56,4.2,concrete);
+ for(let i=0;i<5;i++)addArenaWall(16-i*1.25,.28+i*.28,10,1.35,.56,4.2,concrete);
+ // Low slide made from broad stepped pieces, easy to traverse without snagging.
+ for(let i=0;i<6;i++)addArenaWall(-9,.22+i*.22,17+i*.9,3.2,.34,1.05,0x2aa9ff);
+ // Cafeteria patio / bleachers on the opposite side.
+ for(let row=0;row<3;row++){
+  addArenaWall(-22,.3+row*.45,-8+row*1.25,8,.6,1.6,wood);
+  addArenaWall(22,.3+row*.45,-8+row*1.25,8,.6,1.6,wood);
+ }
+ // Symmetrical cover pieces, planters, and open combat lanes.
+ addArenaWall(-22,1.15,18,7,2.3,2.1,brick);addArenaWall(22,1.15,18,7,2.3,2.1,brick);
+ addArenaWall(-20,1.05,1,2.4,2.1,7,concrete);addArenaWall(20,1.05,1,2.4,2.1,7,concrete);
+ addArenaWall(-6,.8,-25,5,1.6,2.2,blue);addArenaWall(6,.8,-25,5,1.6,2.2,yellow);
+ for(const [x,z] of [[-25,7],[25,7],[-15,24],[15,24]]){
+  addArenaWall(x,.55,z,3.2,1.1,3.2,brick);
+  const tree=new THREE.Mesh(new THREE.CylinderGeometry(.22,.3,3.2,8),new THREE.MeshStandardMaterial({color:0x6b4424,roughness:.8}));tree.position.set(x,2.1,z);arenaMesh(tree);
+  const crown=new THREE.Mesh(new THREE.SphereGeometry(1.25,12,10),new THREE.MeshStandardMaterial({color:0x3d8d45,roughness:.85}));crown.position.set(x,3.8,z);arenaMesh(crown);
+ }
+ // School sign and center path.
+ addArenaWall(0,.07,22,6,.14,18,concrete);
+ addArenaWall(0,1.2,27,10,2.4,1.2,brick);
+ const sign=makeTextDecalMesh('SCHOOLYARD',3.8,.7,'#ffffff',0);sign.position.set(0,1.45,26.37);arenaMesh(sign);
 }
 function makeLasertagArena(){
- const size=64,half=size/2,mat=laserGridMat();const floor=new THREE.Mesh(new THREE.BoxGeometry(size,1,size),new THREE.MeshStandardMaterial({color:0x030604,roughness:.85,emissive:0x001b09,emissiveIntensity:.6}));floor.position.y=-.55;floor.receiveShadow=true;arenaMesh(floor);
+ const size=64,half=size/2,mat=laserGridMat();
+ const floor=new THREE.Mesh(new THREE.BoxGeometry(size,1,size),new THREE.MeshStandardMaterial({color:0x030604,roughness:.85,emissive:0x001b09,emissiveIntensity:.6}));floor.position.y=-.55;floor.receiveShadow=true;arenaMesh(floor);
  const grid=new THREE.GridHelper(size,size,0x10ff68,0x064b20);grid.position.y=.02;arenaMesh(grid);
  addArenaWall(0,2,-half,size,4,1,mat);addArenaWall(0,2,half,size,4,1,mat);addArenaWall(-half,2,0,1,4,size,mat);addArenaWall(half,2,0,1,4,size,mat);
- // maze walls and tunnels from the sketch
- const wallspec=[[-18,1.6,0,3,3.2,24],[-9,1.6,-14,15,3.2,3],[4,1.6,-9,3,3.2,18],[14,1.6,-18,15,3.2,3],[21,1.6,2,3,3.2,20],[10,1.6,13,20,3.2,3],[-8,1.6,15,3,3.2,16],[-20,1.6,20,15,3.2,3],[0,1.6,1,12,3.2,3],[0,1.6,8,3,3.2,10],[16,1.6,22,3,3.2,8],[-24,1.6,-18,3,3.2,12]];
+ // Wide, clean maze lanes. Every solid piece is in the walls array, so it blocks players and shots.
+ const wallspec=[
+  [-20,1.6,3,2.2,3.2,18],[-20,1.6,-20,2.2,3.2,8],
+  [-10,1.6,-14,14,3.2,2.2],[-4,1.6,14,2.2,3.2,14],
+  [7,1.6,-10,2.2,3.2,17],[16,1.6,-20,14,3.2,2.2],
+  [20,1.6,3,2.2,3.2,18],[11,1.6,15,16,3.2,2.2],
+  [-17,1.6,22,12,3.2,2.2],[0,1.6,0,10,3.2,2.2]
+ ];
  wallspec.forEach(a=>addArenaWall(...a,mat));
- const tunnelMat=laserGridMat();
- function tunnel(x,z,rot=0){const t=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,7,18,1,true),tunnelMat);t.position.set(x,1.7,z);t.rotation.z=Math.PI/2;t.rotation.y=rot;arenaMesh(t);addArenaWall(x,1.05,z,7,.8,1.2,tunnelMat);}
- tunnel(-21,-6,Math.PI/2);tunnel(9,1,0);tunnel(-1,22,Math.PI/2);addInvisibleArenaBlock(-21,3.95,-6,7.2,.35,4.8);addInvisibleArenaBlock(9,3.95,1,7.2,.35,4.8);addInvisibleArenaBlock(-1,3.95,22,7.2,.35,4.8);
- const neon=new THREE.PointLight(0x10ff68,1.4,34);neon.position.set(0,5,0);arenaMesh(neon);const neon2=new THREE.PointLight(0x10ff68,1,28);neon2.position.set(-18,4,15);arenaMesh(neon2);
+ // Rectangular tunnels replace the old hollow cylinders. Their openings are roomy and their side/roof boxes block bullets.
+ function solidTunnel(x,z,length=10,rot=0){
+  const side=.45,inside=4.6,height=3.4,roof=.45;
+  if(Math.abs(rot)<.1){
+   addArenaWall(x-inside/2-side/2,height/2,z,side,height,length,mat);
+   addArenaWall(x+inside/2+side/2,height/2,z,side,height,length,mat);
+   addArenaWall(x,height+roof/2,z,inside+side*2,roof,length,mat);
+  }else{
+   addArenaWall(x,height/2,z-inside/2-side/2,length,height,side,mat);
+   addArenaWall(x,height/2,z+inside/2+side/2,length,height,side,mat);
+   addArenaWall(x,height+roof/2,z,length,roof,inside+side*2,mat);
+  }
+  const glow=new THREE.PointLight(0x10ff68,.75,12);glow.position.set(x,2.1,z);arenaMesh(glow);
+ }
+ solidTunnel(-23,-6,10,0);solidTunnel(10,3,11,Math.PI/2);solidTunnel(-1,24,10,Math.PI/2);
+ // Corner cover and center pillars, with generous clearance around all spawn routes.
+ addArenaWall(-27,1.25,10,3,2.5,5,mat);addArenaWall(27,1.25,-10,3,2.5,5,mat);
+ addArenaWall(-9,1.1,3,3,2.2,3,mat);addArenaWall(10,1.1,-1,3,2.2,3,mat);
+ const neon=new THREE.PointLight(0x10ff68,1.45,36);neon.position.set(0,5,0);arenaMesh(neon);
+ const neon2=new THREE.PointLight(0x10ff68,1,28);neon2.position.set(-18,4,15);arenaMesh(neon2);
+ const neon3=new THREE.PointLight(0x10ff68,1,28);neon3.position.set(18,4,-15);arenaMesh(neon3);
 }
 
 function makePalmTree(x,z){
@@ -1811,14 +1869,14 @@ function updatePlayer(dt){
     player.vel.z = horizontal.z;
   }
 
-  const daggersEquipped = currentWeapon===DAGGERS_INDEX && gameMode==='match';
+  const doubleJumpMelee = (currentWeapon===DAGGERS_INDEX || currentWeapon===2) && gameMode==='match';
   if (controlsAllowed && keys[' '] && !jumpLatch && !isADS) {
     if(slideState.active)endSlide();
     if (player.grounded) {
       player.vel.y = 8.4;
       player.grounded = false;
       player.jumpCount = 1;
-    } else if (daggersEquipped && player.jumpCount < 2) {
+    } else if (doubleJumpMelee && player.jumpCount < 2) {
       player.vel.y = 8.2;
       player.jumpCount = 2;
       setMessage('Double Jump!',300);
