@@ -2606,7 +2606,7 @@ function spawnOneFireball(origin,target){
  disasterState.fireballs.push({mesh,marker,pos:origin.clone(),vel,life:flight+1,target:target.clone()});
 }
 function spawnDisasterFireball(){
- // Volcano volley: 10 fireballs at once, each with an X warning marker.
+ 
  const origin=disasterState.volcanoes[Math.floor(Math.random()*disasterState.volcanoes.length)];if(!origin)return;
  for(let i=0;i<10;i++){
   const ang=Math.random()*Math.PI*2,rad=3+Math.random()*17;
@@ -2616,7 +2616,7 @@ function spawnDisasterFireball(){
 }
 
 function spawnTsunami(){
- // Tsunamis now start fully in the ocean and move only toward the shoreline.
+ 
  const axis=Math.random()<.5?'x':'z';
  const sign=Math.random()<.5?-1:1;
  const mesh=new THREE.Mesh(
@@ -3081,7 +3081,7 @@ function listenPrivateRoom(code){
   }
  });
 }
-function leavePrivateRoom(){
+function leavePrivateRoom(){ // leave private room.
  const matchCode=(currentMatch&&currentMatch.privateCode)||currentPrivateCode;
  if(gameMode==='match'&&currentMatchRef){
   const winner=remoteSide||(mySide==='blue'?'red':'blue');
@@ -3440,7 +3440,7 @@ function startGameAfterLoading(){
   init3D();
   renderSettings();
   renderShop();
-  authStart();
+  authStart(); // startfs authentication process. 
  },5000);
 }
 startGameAfterLoading();
